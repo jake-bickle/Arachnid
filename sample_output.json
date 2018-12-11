@@ -1,0 +1,74 @@
+[
+    {
+        "netloc": "www.example.org",
+        "path": [
+            {
+                "name": "/index.html",
+                "email": [
+                    "example@gmail.com",
+                    "example2@gmail.com"
+                ],
+                "document": [
+                    {
+                        "name": "my_personal_files.txt",
+                        "type": "txt"
+                    }, 
+
+                    {
+                        "name": "boring_normal_file.docx",
+                        "type": "docx"
+                    },
+                    {
+                        "name": "special_document.xyz",
+                        "type": "xyz"
+                    }
+                ],
+                "social": [
+                    {
+                        "link": "https://www.facebook.com/BillGates/",
+                        "site": "facebook"
+                    },
+                    {
+                        "link": "https://www.linkedin.com/in/jacob-bickle",
+                        "site": "linkedin"
+                    }
+                ],
+                "custom_string_occurance": true,
+                "custom_regex_occurance": true,
+                "phone": [
+                    "1-800-123-4567",
+                    "123-345-6789"
+                ]
+            },
+            {
+                "name": "/help.html",
+                "email": [
+                ],
+                "document": [
+                ],
+                "social": [
+                ],
+                "custom_string_occurance": false,
+                "custom_regex_occurance": false,
+                "phone": [
+                ]
+            }
+        ]
+    },
+    {
+        "netloc": "www.example.com",
+        "path":[
+        ]
+    },
+    {
+        "netloc": "my.example.com",
+        "path":[
+        ]
+    },
+    {
+        "netloc": "www.example.io",
+        "path":[
+        ]
+    }
+
+]
