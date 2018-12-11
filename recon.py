@@ -74,7 +74,7 @@ class URL:
         self.url = url
 
     def scheme(self):
-        return self.url.split('/')[2].split('.')[0]
+        return self.url.split('/')[0][:-1]
 
     def domain(self):
         return self.url.split('/')[2].split(':')[0]
