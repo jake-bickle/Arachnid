@@ -1,7 +1,8 @@
 import urllib.request as request
+import urllib.parse as urlparser
+from objdict import ObjDict
 from bs4 import BeautifulSoup as bs
 from io import TextIOWrapper
-import re
 from enum import Enum
 from collections import deque
 
@@ -72,78 +73,22 @@ class Crawler_Config:
         self.crawler_delay = Amount.none 
         self.fuzz_level = Amount.HIGH
 
-class URL:
-    def __init__(self, url):
-        # TODO Test if it's a valid url
-        self.url = url
-
-    def scheme(self):
-        return self.url.split('/')[0][:-1]
-
-    def domain(self):
-        return self.url.split('/')[2].split(':')[0]
-
-    def subdomain(self):
-        return self.url.split('/')[2].split('.')[0] 
-
-    def port(self):
-        parts = self.url.split(':')
-        if len(parts) < 3:
-            return -1
-        else:
-            return int(parts[2].split('/')[0])
-
-    def path(self):
-        path_start_index = self._find_nth(self.url, '/', 3)
-        fragment_start_index = self.url.find('#')
-        query_start_index = self.url.find('?')
-
-        if (fragment_start_index == -1 and query_start_index == -1):
-            return self.url[path_start_index:]
-        elif (fragment_start_index < query_start_index):
-            return self.url[path_start_index:fragment_start_index]
-        else:
-            return self.url[path_start_index:query_start_index]
-
-    def query(self):
-        raw_query = self.url.split('?')[1].split('#')[0]
-        pairs = raw_query.split('&')
-        query_data = {}
-        for pair in pairs:
-            key, value = pair.split('=')
-            query_data[key] = value
-        return query_data
-
-    def fragment(self):
-        return self.url.split('#')[1]
-
-    def homepage(self):
-        path_start_index = self._find_nth(self.url, '/', 3)
-        if path_start_index != -1:
-            return self.url[:path_start_index]
-        else:
-            return self.url
-
-    @staticmethod
-    def _find_nth(haystack, needle, n):
-        start = haystack.find(needle)
-        while start >= 0 and n > 1:
-            start = haystack.find(needle, start + len(needle))
-            n -= 1
-        return start
-
 class Crawler:
     def __init__(self):
         self.config = Crawler_Config
+        self.output = ObjDict() 
 
     def crawl(seed_url):
-        seed = URL(seed_url)
-        paths_to_crawl = deque 
+        seed = urlparser.urlparse(seed_url)
+        paths_to_crawl = deque(seed.path)
         crawled_paths = deque
 
-        # Download page, parse it, 
+        self.output.netloc = seed.netloc
+
+        # Download page, parse it, add to output, move onto next path
         while (stack):
-            url = base + stack.pop()
+            path = paths_to_crawl.pop()
+            url = urlparser.join(seed_url, path)
             page_data = download(url)
          
 
