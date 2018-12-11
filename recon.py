@@ -114,15 +114,19 @@ class URL:
         return self.url.split('#')[1]
 
     def homepage(self):
-        path_start_index = self._find_nth('/', self.url, 3)
-        return self.url[:path_start_index]
+        path_start_index = self._find_nth(self.url, '/', 3)
+        if path_start_index != -1:
+            return self.url[:path_start_index]
+        else:
+            return self.url
 
     @staticmethod
-    def _find_nth(needle, haystack, n):
-        parts = haystack.split(needle, n + 1)
-        if len(parts) <= n + 1:
-            return -1
-        return len(haystack) - len(parts[-1]) - len(needle)
+    def _find_nth(haystack, needle, n):
+        start = haystack.find(needle)
+        while start >= 0 and n > 1:
+            start = haystack.find(needle, start + len(needle))
+            n -= 1
+        return start
 
 class Crawler:
     def __init__(self):
