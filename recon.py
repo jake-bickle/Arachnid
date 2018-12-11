@@ -1,6 +1,7 @@
 import urllib.request as request
 from bs4 import BeautifulSoup as bs
 from io import TextIOWrapper
+import re
 from enum import Enum
 from collections import deque
 
@@ -22,6 +23,7 @@ class Crawler_Config:
         self.scrape_social_media = True
         self.scrape_street_address = True
         self.scrape_common_documents = True
+        self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         self.custom_doc = None
         self.custom_str = None
@@ -40,6 +42,7 @@ class Crawler_Config:
         self.scrape_social_media = True
         self.scrape_street_address = True
         self.scrape_common_documents = True
+        self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         self.custom_doc = None
         self.custom_str = None
@@ -58,6 +61,7 @@ class Crawler_Config:
         self.scrape_social_media = True
         self.scrape_street_address = True
         self.scrape_common_documents = True
+        self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         self.custom_doc = None
         self.custom_str = None
@@ -90,7 +94,7 @@ class URL:
             return int(parts[2].split('/')[0])
 
     def path(self):
-        path_start_index = self.url.find('/', self.url.find(':') + 3)
+        path_start_index = self._find_nth(self.url, '/', 3)
         fragment_start_index = self.url.find('#')
         query_start_index = self.url.find('?')
 
