@@ -116,7 +116,7 @@ class Crawler:
             # Grab phone_numbers and add to output
             if (config.scrape_email):
                 emails = Scraper.scrape_email(page_contents)
-                page_data.email = list(email for email in emails)
+                page_data.email = emails
 
             #TODO This index number must be changed according to the current netloc
             output[0].path.append(page_data)
