@@ -1,6 +1,7 @@
 [
     {
         "netloc": "www.example.org",
+        "inaccessable_paths": 0,
         "path": [
             {
                 "name": "/index.html",
@@ -57,16 +58,19 @@
     },
     {
         "netloc": "www.example.com",
+        "inaccessable_paths": 0,
         "path":[
         ]
     },
     {
         "netloc": "my.example.com",
+        "inaccessable_paths": 0,
         "path":[
         ]
     },
     {
         "netloc": "www.example.io",
+        "inaccessable_paths": 20,
         "path":[
         ]
     }
