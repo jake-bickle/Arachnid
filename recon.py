@@ -67,6 +67,12 @@ class Crawler_Config:
         self.crawler_delay = Amount.none 
         self.fuzz_level = Amount.HIGH
 
+class netloc:
+    def __init__(self, name, path = list()):
+        self.name = name
+        self.inaccesable_paths = 0
+        self.path = path
+
 class Crawler:
     def __init__(self):
         self.config = Crawler_Config
