@@ -78,27 +78,54 @@ class Crawler:
         self.config = Crawler_Config
         self.output = list()
 
-    def crawl(seed_url):
+    def crawl(self, seed_url):
         seed = urlparser.urlparse(seed_url)
         paths_to_crawl = deque(seed.path)
         crawled_paths = deque
 
-        self.output.netloc = seed.netloc
+        # Create netloc object and place into output
+            current_netloc = netloc(seed.netloc)
+            current_netloc_index = 0
+            self.output.append(current_netloc)
 
         # Download page, parse it, add to output, move onto next path
-        while (stack):
+        while (paths_to_crawl):
             path = paths_to_crawl.pop()
             url = urlparser.join(seed_url, path)
-            page_data = download(url)
+            page_contents = download(url)
+            page_data = list()
+            page_data.name = path
+
+            # Grab links and add to paths_to_crawl
+            if (config.scrape_links):
+                hrefs = self.scrape_href(page_contents)
+                paths_to_crawl.append(href for href in hrefs)
+
+            # Grab phone_numbers and add to output
+            if (config.scrape_email):
+                emails = scrape_email(page_contents)
+                #TODO This index number must be changed according to the current netloc
+                page_data.email = list(email for email in emails)
+
+            output[0].path = page_data
+                
+
          
 
     #TODO Wrap in try-catch
-    def download(url):
+    def download(self, url):
         req = request.Request(url, headers=None) #TODO headers should be what the class information we gathered
         open_page = request.urlopen(req)
         page = TextIOWrapper(open_page, encoding="utf-8")
         page_data = page.read()
         return bs(page_data, "html.parser") # html.parser might be replaced with lxml
+
+    def scrape_href(self, page_contents):
+        anchors = page_data.findAll('a')
+        return list(anchor.get('href') for anchor in anchors)
+
+    def scrape_email(self, page_contents):
+        pass
 
     def generate_fuzz_list():
         pass
