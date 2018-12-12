@@ -1,5 +1,6 @@
 import urllib.request as request
 import urllib.parse as urlparser
+import re
 from objdict import ObjDict
 from bs4 import BeautifulSoup as bs
 from io import TextIOWrapper
@@ -73,6 +74,17 @@ class netloc:
         self.inaccesable_paths = 0
         self.path = path
 
+class Scraper:
+
+        email_regex = "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.\s-]{1,64}@[a-zA-Z0-9-]+\.{1}[a-zA-Z0-9-]+$"
+    def scrape_href(self, page_contents):
+        anchors = page_data.findAll('a')
+        return list(anchor.get('href') for anchor in anchors)
+
+    def scrape_email(self, page_contents):
+        for regex in site.findAll(href=re.compile(r"mailto")):
+
+
 class Crawler:
     def __init__(self):
         self.config = Crawler_Config
@@ -93,23 +105,21 @@ class Crawler:
             path = paths_to_crawl.pop()
             url = urlparser.join(seed_url, path)
             page_contents = download(url)
-            page_data = list()
+            page_data = ObjDict()
             page_data.name = path
 
             # Grab links and add to paths_to_crawl
             if (config.scrape_links):
-                hrefs = self.scrape_href(page_contents)
+                hrefs = Scraper.scrape_href(page_contents)
                 paths_to_crawl.append(href for href in hrefs)
 
             # Grab phone_numbers and add to output
             if (config.scrape_email):
-                emails = scrape_email(page_contents)
-                #TODO This index number must be changed according to the current netloc
+                emails = Scraper.scrape_email(page_contents)
                 page_data.email = list(email for email in emails)
 
-            output[0].path = page_data
-                
-
+            #TODO This index number must be changed according to the current netloc
+            output[0].path.append(page_data)
          
 
     #TODO Wrap in try-catch
@@ -120,12 +130,6 @@ class Crawler:
         page_data = page.read()
         return bs(page_data, "html.parser") # html.parser might be replaced with lxml
 
-    def scrape_href(self, page_contents):
-        anchors = page_data.findAll('a')
-        return list(anchor.get('href') for anchor in anchors)
-
-    def scrape_email(self, page_contents):
-        pass
-
     def generate_fuzz_list():
         pass
+
