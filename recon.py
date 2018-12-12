@@ -22,52 +22,46 @@ class Crawler_Config:
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.scrape_street_address = True
         self.scrape_common_documents = True
         self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         self.custom_doc = None
         self.custom_str = None
         self.custom_str_case_sensitive = False
-        self.find_custom_str_occurances = False # TODO Does this need to be here? Or does custom_str do the trick?
         self.custom_regex = None
         self.find_custom_regex_occurances = False # TODO Does this need to be here? Or does custom_regexdo the trick?
         self.crawler_delay = Amount.NONE
         self.fuzz_level = Amount.LOW
 
-    def set_stealth_options(self):
+    def set_stealth(self):
         self.scrape_links = True
         self.scrape_subdomains = False
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.scrape_street_address = True
         self.scrape_common_documents = True
         self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         self.custom_doc = None
         self.custom_str = None
         self.custom_str_case_sensitive = False
-        self.find_custom_str_occurances = False # TODO Does this need to be here? Or does custom_str do the trick?
         self.custom_regex = None
         self.find_custom_regex_occurances = False # TODO Does this need to be here? Or does custom_regexdo the trick?
         self.crawler_delay = Amount.HIGH
         self.fuzz_level = Amount.NONE
 
-    def set_aggressive_options(self):
+    def set_aggressive(self):
         self.scrape_links = True
         self.scrape_subdomains = True
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.scrape_street_address = True
         self.scrape_common_documents = True
         self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
         self.custom_doc = None
         self.custom_str = None
         self.custom_str_case_sensitive = False
-        self.find_custom_str_occurances = False # TODO Does this need to be here? Or does custom_str do the trick?
         self.custom_regex = None
         self.find_custom_regex_occurances = False # TODO Does this need to be here? Or does custom_regexdo the trick?
         self.crawler_delay = Amount.none 
@@ -76,7 +70,7 @@ class Crawler_Config:
 class Crawler:
     def __init__(self):
         self.config = Crawler_Config
-        self.output = ObjDict() 
+        self.output = list()
 
     def crawl(seed_url):
         seed = urlparser.urlparse(seed_url)
