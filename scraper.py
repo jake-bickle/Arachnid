@@ -1,4 +1,6 @@
+import re
 from bs4 import BeautifulSoup
+
 class regex_patterns:
     EMAIL = re.compile(r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.\s-]{1,64}@[a-zA-Z0-9-]+\.{1}[a-zA-Z0-9-]+$")
 

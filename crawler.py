@@ -1,6 +1,5 @@
 import urllib.request as request
 import urllib.parse as urlparser
-import re
 from objdict import ObjDict
 from scraper import Scraper
 from io import TextIOWrapper
