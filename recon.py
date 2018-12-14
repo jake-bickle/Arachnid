@@ -74,15 +74,29 @@ class netloc:
         self.inaccesable_paths = 0
         self.path = path
 
-class Scraper:
+class Scraper(bs):
 
-        email_regex = "^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.\s-]{1,64}@[a-zA-Z0-9-]+\.{1}[a-zA-Z0-9-]+$"
-    def scrape_href(self, page_contents):
-        anchors = page_data.findAll('a')
+    email_regex = r"^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~.\s-]{1,64}@[a-zA-Z0-9-]+\.{1}[a-zA-Z0-9-]+$"
+    # This does NOT include German phone numbers. Possible fix in future patch
+    phone_regex = r"^[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}$"
+    common_document_regex = r".+\.\w{3,4}?"
+    common_document_formats = ("doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "ods", "odp", "pdf", "txt", "rtf", "zip", "7z", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg")
+
+    def scrape_href(self):
+        anchors = self.findAll('a')
         return list(anchor.get('href') for anchor in anchors)
 
-    def scrape_email(self, page_contents):
-        for regex in site.findAll(href=re.compile(r"mailto")):
+    def scrape_email(self):
+        # We want this search to find emails in mailtos and in plain text
+        unsanitised_emails = list()
+        def search(tag):
+            if tag.has_attr("href"):
+                return "mailto" in tag.get("href")
+            elif tag.string is not None:
+                return re.match(email_regex, tag.string)
+
+        unsanitised_emails = self.find_all(search)
+        return unsanitised_emails
 
 
 class Crawler:
@@ -96,27 +110,22 @@ class Crawler:
         crawled_paths = deque
 
         # Create netloc object and place into output
-            current_netloc = netloc(seed.netloc)
-            current_netloc_index = 0
-            self.output.append(current_netloc)
+        current_netloc = netloc(seed.netloc)
+        current_netloc_index = 0
+        self.output.append(current_netloc)
 
         # Download page, parse it, add to output, move onto next path
         while (paths_to_crawl):
             path = paths_to_crawl.pop()
             url = urlparser.join(seed_url, path)
-            page_contents = download(url)
-            page_data = ObjDict()
-            page_data.name = path
 
-            # Grab links and add to paths_to_crawl
+            #Wrap in try-catch
+            page_contents = self.download(url)
             if (config.scrape_links):
-                hrefs = Scraper.scrape_href(page_contents)
-                paths_to_crawl.append(href for href in hrefs)
+                anchors = page_contents.findAll('a')
+                pages_to_crawl.append(anchor.get('href') for anchor in anchors)
 
-            # Grab phone_numbers and add to output
-            if (config.scrape_email):
-                emails = Scraper.scrape_email(page_contents)
-                page_data.email = emails
+            page_data = scrape_page_data(page_contents)
 
             #TODO This index number must be changed according to the current netloc
             output[0].path.append(page_data)
