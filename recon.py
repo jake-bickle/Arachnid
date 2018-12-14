@@ -82,11 +82,11 @@ class Scraper(bs):
     common_document_regex = r".+\.\w{3,4}?"
     common_document_formats = ("doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "ods", "odp", "pdf", "txt", "rtf", "zip", "7z", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg")
 
-    def scrape_href(self):
+    def find_all_paths(self):
         anchors = self.findAll('a')
         return list(anchor.get('href') for anchor in anchors)
 
-    def scrape_email(self):
+    def find_all_emails(self):
         # We want this search to find emails in mailtos and in plain text
         unsanitised_emails = list()
         def search(tag):
