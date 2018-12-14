@@ -12,6 +12,8 @@ class test_scraper(unittest.TestCase):
                 <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
                 <a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
                 <a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
+                <a href="/direct/path">Link</a>
+                <a href="relative/path">Link</a>
                 and they lived at the bottom of a well.</p>
 
                 <p class="story">...</p>
@@ -29,12 +31,14 @@ class test_scraper(unittest.TestCase):
 
 
     def test_scrape_paths(self):
-        paths = self.scraper.scrape_paths()
-        self.assertTrue(paths = ['/elsie', '/lacie', '/tillie'])
+        paths = self.scraper.find_all_paths()
+        correct_output = ['/elsie', '/lacie', '/tillie', 'relative/path', "/direct/path"]
+        self.assertEqual(sorted(correct_output), sorted(paths))
 
-    def test_scrape_email(self):
-        emails = self.scraper.scrape_email(page_contents)
-        self.assertTrue (emails = ["webmaster@example.com", "jbickle@example.com"])
+    # def test_scrape_email(self):
+        # emails = self.scraper.find_all_emails()
+        # correct_output = ["jbickle@example.com", "webmaster@example.com"]
+        # self.assertEqual(sorted(emails), correct_output)
 
 if __name__ == "__main__":
     unittest.main()
