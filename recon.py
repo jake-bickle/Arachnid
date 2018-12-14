@@ -137,7 +137,29 @@ class Crawler:
         open_page = request.urlopen(req)
         page = TextIOWrapper(open_page, encoding="utf-8")
         page_data = page.read()
-        return bs(page_data, "html.parser") # html.parser might be replaced with lxml
+        return Scraper(page_data, "html.parser") # html.parser might be replaced with lxml
+
+    def scrape_page(page_contents):
+        page_data = ObjDict()
+        page_data.name = path
+
+        if (config.scrape_email):
+            page_data.email = page_contents.find_all_emails(page_contents)
+        if (config.scrape_subdomains):
+            pass
+        if (config.scrape_phone_number):
+            page_data.phone = page_contents.find_all_phone_numbers(page_contents)
+        if (config.scrape_social_media):
+            page_data.social = page_contents.find_all_socials(page_contents)
+        if (config.scrape_common_docs):
+            page_data.document = page_contents.find_all_documents()
+        if (config.custom_doc is not None):
+            pass
+        if (config.custom_str is not None):
+            pass
+        if (config.custom_regex is not None):
+            pass
+
 
     def generate_fuzz_list():
         pass
