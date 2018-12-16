@@ -1,8 +1,35 @@
 import re
 from bs4 import BeautifulSoup
 import urllib.parse as urlparser
+import tldextract
 
 import pdb
+
+class Social:
+    def __init__(self,link=""):
+        self.link = link
+        self.site = tldextract.extract(link).domain
+
+    def __eq__(self, other):
+        if isinstance(other, Social):
+            return self.link == other.link
+        else:
+            return False
+
+    def __lt__(self, other):
+        if isinstance(other, Social):
+            return self.link < other.link
+        else:
+            return NotImplemented
+
+    def __str__(self):
+        return self.link
+
+    def __repr__(self):
+        return "Social(link=\"" + self.link + "\" site=\"" + self.site + "\")"
+
+    def __hash__(self):
+        return hash(str(self))
 
 class regex_patterns:
     URL = re.compile(r"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$")
