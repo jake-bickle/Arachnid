@@ -34,8 +34,11 @@
                         "site": "linkedin"
                     }
                 ],
-                "custom_string_occurance": true,
-                "custom_regex_occurance": true,
+                "custom_string_occurances": 5,
+                "custom_regex": [
+                        "1234",
+                        "Hello, world!"
+                ],
                 "phone": [
                     "1-800-123-4567",
                     "123-345-6789"
@@ -50,8 +53,9 @@
                 ],
                 "social": [
                 ],
-                "custom_string_occurance": false,
-                "custom_regex_occurance": false,
+                "custom_string_occurances": 0,
+                "custom_regex": [
+                ],
                 "phone": [
                 ]
             }
@@ -60,8 +64,10 @@
     {
         "netloc": "www.example.com",
         "path":[
-            "name": "/broken/page.html",
-            "accessible": true
+            {
+                "name": "/broken/page.html",
+                "accessible": false 
+            }
         ]
     },
     {
