@@ -75,7 +75,7 @@ class netloc:
 
 class Crawler:
     def __init__(self):
-        self.config = Crawler_Config
+        self.config = Crawler_Config()
         self.output = list()
 
     def crawl(self, seed_url):
@@ -88,24 +88,27 @@ class Crawler:
         current_netloc_index = 0
         self.output.append(current_netloc)
 
-        # Download page, parse it, add to output, move onto next path
         while (paths_to_crawl):
             path = paths_to_crawl.pop()
             url = urlparser.join(seed_url, path)
+            url_string = urlparser.unsplit(url)
 
-            #Wrap in try-catch
+            # TODO Wrap in try-catch
             page_contents = self.download(url)
             if (config.scrape_links):
-                anchors = page_contents.findAll('a')
-                pages_to_crawl.append(anchor.get('href') for anchor in anchors)
+                paths = page_contents.scrape_hrefs()
+                for paths in paths:
+                    if not paths.startswith('/'):
+                        path = urlparser.join(url_string, path)
+                    paths_to_crawl.append(path)
 
             page_data = scrape_page_data(page_contents)
+            page_data.path = path
 
             #TODO This index number must be changed according to the current netloc
             output[0].path.append(page_data)
          
 
-    #TODO Wrap in try-catch
     def download(self, url):
         req = request.Request(url, headers=None) #TODO headers should be what the class information we gathered
         open_page = request.urlopen(req)
@@ -126,11 +129,17 @@ class Crawler:
         if (config.scrape_social_media):
             page_data.social = page_contents.find_all_socials(page_contents)
         if (config.scrape_common_docs):
-            page_data.document = page_contents.find_all_documents()
-        if (config.custom_doc is not None):
-            pass
+            if (config.custom_doc is None):
+                page_data.document = page_contents.find_all_documents()
+            else:
+                pass
         if (config.custom_str is not None):
-            pass
+            #TODO config needs to gather custom_str
+            if config.custom_str_case_sensitive:
+                page_data.custom_string_occurance = page_contents.has_string_occurance("I NEED SOMETHING", case_sensitive=True)
+            else:
+                page_data.custom_string_occurance = page_contents.has_string_occurance("I NEED SOMETHING", case_sensitive=False)
+
         if (config.custom_regex is not None):
             pass
 
