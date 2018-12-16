@@ -1,10 +1,10 @@
 [
     {
         "netloc": "www.example.org",
-        "inaccessable_paths": 0,
         "path": [
             {
                 "name": "/index.html",
+                "accessible": true,
                 "email": [
                     "example@gmail.com",
                     "example2@gmail.com"
@@ -43,6 +43,7 @@
             },
             {
                 "name": "/help.html",
+                "accessible": true,
                 "email": [
                 ],
                 "document": [
@@ -58,21 +59,19 @@
     },
     {
         "netloc": "www.example.com",
-        "inaccessable_paths": 0,
         "path":[
+            "name": "/broken/page.html",
+            "accessible": true
         ]
     },
     {
         "netloc": "my.example.com",
-        "inaccessable_paths": 0,
         "path":[
         ]
     },
     {
         "netloc": "www.example.io",
-        "inaccessable_paths": 20,
         "path":[
         ]
     }
-
 ]
