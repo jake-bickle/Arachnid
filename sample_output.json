@@ -10,19 +10,9 @@
                     "example2@gmail.com"
                 ],
                 "document": [
-                    {
                         "name": "my_personal_files.txt",
-                        "type": "txt"
-                    }, 
-
-                    {
                         "name": "boring_normal_file.docx",
-                        "type": "docx"
-                    },
-                    {
-                        "name": "special_document.xyz",
-                        "type": "xyz"
-                    }
+                        "name": "special_document.xyz"
                 ],
                 "social": [
                     {
