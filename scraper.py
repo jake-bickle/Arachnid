@@ -1,7 +1,7 @@
 import re
 from bs4 import BeautifulSoup
-import urllib.parse as urlparser
-import tldextract
+import urllib.parse as urlparser     
+import tldextract  # parse domain,subdomain information
 
 import pdb
 
@@ -71,9 +71,12 @@ class Scraper(BeautifulSoup, regex_patterns):
         # Finds all documents of common type
         pass
 
+    def find_all_social(self):
+        pass
+
     def find_all_regex(self, regex):
         pass
 
-    def has_string_occurance(self, string, case_sensitive=False):
+    def string_occurances(self, string, case_sensitive=False):
         pass
 
