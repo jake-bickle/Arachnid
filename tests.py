@@ -9,8 +9,8 @@ class test_scraper(unittest.TestCase):
 
     def test_find_all_email(self):
         emails = self.scraper.find_all_emails()
-        correct_output = ["jakebickle@example.com", "webmaster@example.com", "jondoe@example.com"]
-        self.assertEqual(sorted(emails), correct_output)
+        correct_output = ["tobinshields@example.com","jakebickle@example.com", "webmaster@example.com", "jondoe@example.com"]
+        self.assertEqual(sorted(emails), sorted(correct_output))
 
     def test_find_all_phones(self):
         phone_numbers = self.scraper.find_all_phones()
