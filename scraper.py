@@ -43,15 +43,6 @@ class regex_patterns:
     COMMON_SOCIAL = ["facebook", "twitter", "twitch", "pintrest", "github", "myspace", "plus.google", "instagram", "tumblr", "flickr", "deviantart"]
 
 class Scraper(BeautifulSoup, regex_patterns):
-    def find_all_paths(self):
-        anchors = self.findAll('a')
-        paths = list()
-        for anchor in anchors:
-            href = anchor.get("href")
-            if (re.match(self.URL, href)):
-                paths.append(urlparser.urlparse(href).path)
-        return paths
-
     # TODO Doesn't work 
     def find_all_emails(self):
         # We want this search to find emails in mailtos and in plain text

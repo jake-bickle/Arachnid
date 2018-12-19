@@ -7,11 +7,6 @@ class test_scraper(unittest.TestCase):
             self.html_doc = myfile.read()
         self.scraper = Scraper(self.html_doc, "html.parser")
 
-    def test_find_all_paths(self):
-        paths = self.scraper.find_all_paths()
-        correct_output = ['/elsie', '/lacie', '/tillie', 'relative/path', "/direct/path"]
-        self.assertEqual(sorted(correct_output), sorted(paths))
-
     def test_find_all_email(self):
         emails = self.scraper.find_all_emails()
         correct_output = ["jakebickle@example.com", "webmaster@example.com", "jondoe@example.com"]
