@@ -1,10 +1,11 @@
 import urllib.request as request
-import urllib.parse as urlparser
+import urllib.parse as urlparse
+import tldextract  # parse domain,subdomain information
 from objdict import ObjDict
 from scraper import Scraper
 from io import TextIOWrapper
 from enum import Enum
-from collections import deque
+from collections import deque, nametuple
 
 class Amount(Enum):
     NONE = 0
@@ -73,40 +74,61 @@ class netloc:
         self.inaccesable_paths = 0
         self.path = path
 
+# Might combine these two to create results I want
+class UrlParser(urlparse, tldextract):
+    def parse_url(url=""):
+        u_rslt = urlparser.urlparse(url)
+        e_rslt = tldextract.extract(urlparser_result.netloc)
+        ParseResult = namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
+        return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffic, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
+
+class Domain_Paths_Container:
+    def __init__(self, domain):
+        self.paths_to_crawl = list()
+        self.crawled_paths = list()
+        self.domain = domain
+
 class Crawler:
-    def __init__(self):
-        self.config = Crawler_Config()
+    def __init__(self, config = Crawler_Config()):
+        self.config = config
         self.output = list()
 
     def crawl(self, seed_url):
         seed = urlparser.urlparse(seed_url)
+        domains_to_crawl = deque(tldextract.extract(seed_url)) # Different combinations of subdomains and suffix that are picked up during the crawl
+        crawled_domains = deque
         paths_to_crawl = deque(seed.path)
         crawled_paths = deque
 
-        # Create netloc object and place into output
-        current_netloc = netloc(seed.netloc)
-        current_netloc_index = 0
-        self.output.append(current_netloc)
+        while (domains_to_crawl):
+            current_domain = domains_to_crawl.pop()
+            current_domain_address = seed.shcheme + current_domain
+            domain_data = ObjDict()
+            domain_data.netloc = current_domain
+            domain_data.path = list()
 
-        while (paths_to_crawl):
-            path = paths_to_crawl.pop()
-            url = urlparser.join(seed_url, path)
-            url_string = urlparser.unsplit(url)
+            while (paths_to_crawl):
+                path = paths_to_crawl.pop()
+                url = urlparser.join(current_domain_address, path)
+                # TODO Wrap in try-catch
+                page_contents = self.download(url)
+                if (config.scrape_links):
+                    paths = page_contents.scrape_hrefs()
+                    for paths in paths:
+                        if path not in crawled_paths:
+                            if not paths.startswith('/'):
+                                path = urlparser.join(url.geturl(), path)
+                            paths_to_crawl.append(path)
+                page_data = scrape_page_data(page_contents)
+                page_data.path = path
+                page_data.accessible = True
+                domain_data.path.append(page_data)
+                crawled_paths.append(path)
 
-            # TODO Wrap in try-catch
-            page_contents = self.download(url)
-            if (config.scrape_links):
-                paths = page_contents.scrape_hrefs()
-                for paths in paths:
-                    if not paths.startswith('/'):
-                        path = urlparser.join(url_string, path)
-                    paths_to_crawl.append(path)
+            crawled_domains.append(current_domain)
+            self.output.append(domain_data)
 
-            page_data = scrape_page_data(page_contents)
-            page_data.path = path
-
-            #TODO This index number must be changed according to the current netloc
-            output[0].path.append(page_data)
+        return self.output
          
 
     def download(self, url):
