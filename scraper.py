@@ -43,16 +43,14 @@ class regex_patterns:
 class Scraper(BeautifulSoup, regex_patterns):
     def find_all_emails(self):
         string_emails = [email for email in self.find_all(string=self.EMAIL)]
-        href_emails = [email.get("href") for email in self.find_all(href=re.compile(r"mailto"))]
+        href_emails = [email.get("href") for email in self.find_all(href=re.compile(r"mailto:"))]
         sanitised_emails = []
         for email in string_emails:
             emails = re.findall(self.EMAIL, email)
             for email in emails:
                 sanitised_emails.append(email)
         for email in href_emails:
-            # Strip away "mailto:"
-            sanitised_emails.append(email[7:])
-
+            sanitised_emails.append(email[7:])  # Strip away "mailto:"
         return sanitised_emails
 
     def find_all_phones(self):
