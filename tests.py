@@ -1,4 +1,5 @@
 import unittest
+import re
 from scraper import Scraper, Social
 
 class test_scraper(unittest.TestCase):
@@ -14,7 +15,7 @@ class test_scraper(unittest.TestCase):
 
     def test_find_all_phones(self):
         phone_numbers = self.scraper.find_all_phones()
-        correct_output = ["1-800-123-4567","1-200-300-4000", "180012344567", "(1)212-500-3024", "212-500-3024" ]
+        correct_output = ["1-800-123-4567", "1-200-300-4000", "8001234567", "12-123-123-1234", "212-500-3024"]
         self.assertEqual(sorted(phone_numbers), sorted(correct_output))
 
     def test_find_all_documents(self):
@@ -30,8 +31,8 @@ class test_scraper(unittest.TestCase):
         self.assertEqual(sorted(social), sorted(correct_output))
 
     def test_find_all_regex(self):
-        visa_regex = re.compilie(r"^4[0-9]{12}(?:[0-9]{3})?$")
-        visa_cards = self.find_all_regex(visa_regex)
+        visa_regex_string = r"4[0-9]{12}(?:[0-9]{3})?"
+        visa_cards = self.scraper.find_all_regex(visa_regex_string)
         self.assertEqual(visa_cards, ["4123456789012345"] )
 
     def test_find_all_regex_tags(self):
@@ -39,22 +40,25 @@ class test_scraper(unittest.TestCase):
         self.asserEqual(address_tags, ["<address>"])
 
     def test_string_occurances_case_insensitive(self):
-        has_string = self.string_occurances("bazinga")
-        self.assertTrue(has_string)
+        occurances = self.scraper.string_occurances("bazinga")
+        self.assertEqual(occurances, 1)
 
-        has_string = self.string_occurances("Doesn'texist")
-        self.assertFalse(has_string)
+        occurances = self.scraper.string_occurances("Doesn'texist")
+        self.assertEqual(occurances, 0)
 
     def test_string_occurances_case_sensitive(self):
-        has_string = self.string_occurances("bazinga")
-        self.assertFalse(has_string)
+        occurances = self.scraper.string_occurances("bazinga", case_sensitive=True)
+        self.assertEqual(occurances, 0)
 
-        has_string = self.string_occurances("Bazinga")
-        self.assertTrue(has_string)
+        occurances = self.scraper.string_occurances("Bazinga", case_sensitive=True)
+        self.assertEqual(occurances, 1)
+
+        occurances = self.scraper.string_occurances("Doesn'texist")
+        self.assertEqual(occurances, 0)
 
     def test_string_occurances_of_tags(self):
-        has_string = self.string_occurances("<p>")
-        self.assertFalse(has_string)
+        occurances = self.scraper.string_occurances("<p>")
+        self.assertEqual(occurances, 0)
 
 
 if __name__ == "__main__":
