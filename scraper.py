@@ -67,7 +67,7 @@ class Scraper(BeautifulSoup, regex_patterns):
 
     def find_all_documents(self, types=()):
         # Finds all documents of common type
-        pass
+        documents = [anchor.get("href") for anchor in self.find_all(href=re.compile())]
 
     def find_all_social(self):
         pass
