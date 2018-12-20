@@ -34,7 +34,7 @@ class Social:
 class regex_patterns:
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
     # TODO This does NOT include German phone numbers. Possible fix in future patch
-    PHONE = re.compile(r"^[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}$")
+    PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
     COMMON_DOCUMENT = re.compile(r".+\.\w{3,4}?")
     COMMON_DOCUMENT_FORMATS = ("doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "ods", "odp", "pdf", "txt", "rtf", "zip", "7z", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg")
     SOCIAL = re.compile(r".+\.\w{2,5}")
@@ -54,7 +54,16 @@ class Scraper(BeautifulSoup, regex_patterns):
         return sanitised_emails
 
     def find_all_phones(self):
-        pass
+        string_phones = [phone for phone in self.find_all(string=self.PHONE)]
+        href_phones = [anchor.get("href") for anchor in self.find_all(href=re.compile(r"tel:"))]
+        sanitised_phones = []
+        for phone in string_phones:
+            phones = re.findall(self.PHONE, phone)
+            for phone in phones:
+                sanitised_phones.append(phone.strip())
+        for phone in href_phones:
+            sanitised_phones.append(phone[4:])
+        return sanitised_phones
 
     def find_all_documents(self, types=()):
         # Finds all documents of common type
