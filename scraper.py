@@ -82,6 +82,13 @@ class Scraper(BeautifulSoup, regex_patterns):
                 sanitized_strings.append(pattern)
         return sanitized_strings
 
-    def string_occurances(self, string, case_sensitive=False):
-        pass
+
+    def string_occurances(self, string="", case_sensitive=False):
+        if (case_sensitive):
+            return len([tag for tag in self.find_all(string=re.compile(string))])
+        else:
+            # def case_insensitive_search(tag):
+                # pass
+                # if tag.has_attr("string"):
+            return len([tag for tag in self.find_all(string=re.compile(string, re.IGNORECASE))])
 
