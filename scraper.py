@@ -72,8 +72,15 @@ class Scraper(BeautifulSoup, regex_patterns):
     def find_all_social(self):
         pass
 
-    def find_all_regex(self, regex):
-        pass
+    def find_all_regex(self, string=""):
+        regex = re.compile(string)
+        sanitized_strings = []
+        strings_with_patterns = [string for string in self.find_all(string=re.compile(regex))]
+        for string in strings_with_patterns:
+            found_patterns = re.findall(regex, string)
+            for pattern in found_patterns:
+                sanitized_strings.append(pattern)
+        return sanitized_strings
 
     def string_occurances(self, string, case_sensitive=False):
         pass
