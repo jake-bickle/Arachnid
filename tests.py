@@ -1,4 +1,5 @@
 import unittest
+from collections import deque
 from scraper import Scraper, Social
 from urlparser import UrlParser, ParseResult
 
@@ -78,13 +79,44 @@ class test_urlparser(unittest.TestCase):
 
     def test_get_url_with_all_components(self):
         url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
-        result = UrlParser.parse_url(url).get_url()
+        gesult = UrlParser.parse_url(url).get_url()
         self.assertEqual(result, url)
 
     def test_get_url_with_some_components(self):
         url = "https://www.example.com/path/to/location"
         result = UrlParser.parse_url(url).get_url()
         self.assertEqual(result, url)
+
+
+from crawler import Path_Scheduler
+class test_path_scheduler(unittest.TestCase):
+    def test_add_new_path(self):
+        example_site = Path_Scheduler("https://www.example.com")
+        example_site.add_path("/path/to/location")
+        self.assertEqual(example_site.paths_to_crawl, deque(["/path/to/location"]))
+
+    def test_add_existing_uncrawled_path(self):
+        example_site = Path_Scheduler("https://www.example.com")
+        path = "/path/to/location"
+        example_site.add_path(path)
+        self.assertFalse(example_site.add_path(path))
+
+    def test_add_existing_crawled_path(self):
+        example_site = Path_Scheduler("https://www.example.com")
+        path = "/path/to/location"
+        example_site.add_path(path)
+        example_site.next_path()
+        self.assertFalse(example_site.add_path(path))
+
+    def test_next_path(self):
+        example_site = Path_Scheduler("https://www.example.com")
+        path = "/path/to/location"
+        example_site.add_path(path)
+        self.assertEqual(example_site.next_path(), path)
+
+    def test_next_path_empty_container(self):
+        example_site = Path_Scheduler("https://www.example.com")
+        self.assertEqual(example_site.next_path(), None)
 
 if __name__ == "__main__":
     unittest.main()

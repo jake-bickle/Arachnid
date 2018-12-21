@@ -74,11 +74,30 @@ class Crawler_Config:
         # self.name = name
         # self.path = path
 
-class Domain_Paths_Container:
-    def __init__(self, domain):
-        self.paths_to_crawl = list()
-        self.crawled_paths = list()
-        self.domain = domain
+class Path_Scheduler:
+    def __init__(self, base):
+        self.paths_to_crawl = deque()
+        self.crawled_paths = set() 
+        self.base = base
+
+    def add_path(self, path):
+        if self.path_exists(path):
+            return False
+        self.paths_to_crawl.append(path)
+        return True
+
+    # Perhaps this could be a generator
+    def next_path(self):
+        try:
+            path = self.paths_to_crawl.popleft()
+        except(IndexError):
+            return None
+        self.crawled_paths.add(path)
+        return path
+
+    def path_exists(self, path):
+        return path in self.crawled_paths or self.paths_to_crawl
+
 
 class Crawler:
     def __init__(self, config = Crawler_Config()):
