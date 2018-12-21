@@ -39,3 +39,10 @@ class UrlParser:
     def join_url(base="", url ="", allow_fragments=True):
         return urllib.urljoin(url, other)
 
+    def is_subdomain(url1="", url2=""):
+        # Does not return true if they are the same netloc
+        url1_netloc = tldextract.extract(url1) 
+        url2_netloc = tldextract.extract(url2)
+        return url1_netloc != url2_netloc and url1_netloc.domain == url2_netloc.domain
+
+

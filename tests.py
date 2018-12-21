@@ -79,7 +79,7 @@ class test_urlparser(unittest.TestCase):
 
     def test_get_url_with_all_components(self):
         url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
-        gesult = UrlParser.parse_url(url).get_url()
+        result = UrlParser.parse_url(url).get_url()
         self.assertEqual(result, url)
 
     def test_get_url_with_some_components(self):
@@ -87,6 +87,20 @@ class test_urlparser(unittest.TestCase):
         result = UrlParser.parse_url(url).get_url()
         self.assertEqual(result, url)
 
+    def test_is_subdomain_true(self):
+        url1 = "https://www.example.com"
+        url2 = "https://www.example.io"
+        self.assertTrue(UrlParser.is_subdomain(url1, url2))
+
+    def test_is_subdomain_false(self):
+        url1 = "https://www.example.com"
+        url2 = "https://www.otherwebsite.com"
+        self.assertFalse(UrlParser.is_subdomain(url1, url2))
+
+    def test_is_subdomain_same_website(self):
+        url1 = "https://www.example.com/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertFalse(UrlParser.is_subdomain(url1, url2))
 
 from crawler import Path_Scheduler
 class test_path_scheduler(unittest.TestCase):
