@@ -4,7 +4,7 @@ from objdict import ObjDict
 from scraper import Scraper
 from io import TextIOWrapper
 from enum import Enum
-from collections import deque, nametuple
+from collections import deque
 
 class Amount(Enum):
     NONE = 0
@@ -14,7 +14,7 @@ class Amount(Enum):
 
 class Crawler_Config:
     def __init__(self):
-        self.set_default()
+        self.set_default_options()
 
     def set_default_options(self):
         self.scrape_links = True
@@ -67,11 +67,12 @@ class Crawler_Config:
         self.crawler_delay = Amount.none 
         self.fuzz_level = Amount.HIGH
 
-class netloc:
-    def __init__(self, name, path = list()):
-        self.name = name
-        self.inaccesable_paths = 0
-        self.path = path
+# I would like to do this, but ObjDict doesn't seem to work completely? dumps() suppress or exclude_nulls doesn't work
+# class netloc(ObjDict):
+    # __keys__ = "name path"
+    # def __init__(self, name, path = list()):
+        # self.name = name
+        # self.path = path
 
 class Domain_Paths_Container:
     def __init__(self, domain):
