@@ -102,6 +102,16 @@ class test_urlparser(unittest.TestCase):
         url2 = "https://www.example.com/path/to/location"
         self.assertFalse(UrlParser.is_subdomain(url1, url2))
 
+    def test_same_netloc_true(self):
+        url1 = "https://www.example.com/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertTrue(UrlParser.same_netloc(url1, url2))
+
+    def test_same_netloc_false(self):
+        url1 = "https://www.example.com"
+        url2 = "https://www.otherwebsite.com"
+        self.assertFalse(UrlParser.same_netloc(url1, url2))
+
 from crawler import Path_Scheduler
 class test_path_scheduler(unittest.TestCase):
     def test_add_new_path(self):

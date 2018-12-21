@@ -43,6 +43,9 @@ class UrlParser:
         # Does not return true if they are the same netloc
         url1_netloc = tldextract.extract(url1) 
         url2_netloc = tldextract.extract(url2)
-        return url1_netloc != url2_netloc and url1_netloc.domain == url2_netloc.domain
+        return url1_netloc.domain == url2_netloc.domain and url1_netloc != url2_netloc
 
-
+    def same_netloc(url1="", url2=""):
+        url1_netloc = urllib.parse.urlparse(url1).netloc
+        url2_netloc = urllib.parse.urlparse(url2).netloc
+        return url1_netloc == url2_netloc 
