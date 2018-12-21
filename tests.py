@@ -1,5 +1,6 @@
 import unittest
 from scraper import Scraper, Social
+from urlparser import UrlParser, ParseResult
 
 class test_scraper(unittest.TestCase):
     def setUp(self):
@@ -61,6 +62,29 @@ class test_scraper(unittest.TestCase):
         has_string = self.string_occurances("<p>")
         self.assertFalse(has_string)
 
+
+class test_urlparser(unittest.TestCase):
+    def test_parse_url_with_all_components(self):
+        url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
+        result = UrlParser.parse_url(url)
+        correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "param1=value1&param2=value2", "param3=value3", "frag")
+        self.assertEqual(result, correct_output)
+
+    def test_parse_url_with_some_components(self):
+        url = "https://www.example.com/path/to/location"
+        result = UrlParser.parse_url(url)
+        correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "", "", "")
+        self.assertEqual(result, correct_output)
+
+    def test_get_url_with_all_components(self):
+        url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
+        result = UrlParser.parse_url(url).get_url()
+        self.assertEqual(result, url)
+
+    def test_get_url_with_some_components(self):
+        url = "https://www.example.com/path/to/location"
+        result = UrlParser.parse_url(url).get_url()
+        self.assertEqual(result, url)
 
 if __name__ == "__main__":
     unittest.main()
