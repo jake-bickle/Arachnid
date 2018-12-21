@@ -1,6 +1,5 @@
 import urllib.request as request
-import urllib.parse as urlparse
-import tldextract  # parse domain,subdomain information
+from urlparser import UrlParser
 from objdict import ObjDict
 from scraper import Scraper
 from io import TextIOWrapper
@@ -73,14 +72,6 @@ class netloc:
         self.name = name
         self.inaccesable_paths = 0
         self.path = path
-
-# Might combine these two to create results I want
-class UrlParser(urlparse, tldextract):
-    def parse_url(url=""):
-        u_rslt = urlparser.urlparse(url)
-        e_rslt = tldextract.extract(urlparser_result.netloc)
-        ParseResult = namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
-        return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffic, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
 
 class Domain_Paths_Container:
     def __init__(self, domain):
