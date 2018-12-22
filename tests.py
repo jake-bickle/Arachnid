@@ -2,6 +2,8 @@ import unittest
 import re
 from scraper import Scraper, Social
 
+import pdb
+
 class test_scraper(unittest.TestCase):
     def setUp(self):
         with open("test_website/index.html") as myfile:
@@ -18,9 +20,14 @@ class test_scraper(unittest.TestCase):
         correct_output = ["1-800-123-4567", "1-200-300-4000", "8001234567", "12-123-123-1234", "212-500-3024"]
         self.assertEqual(sorted(phone_numbers), sorted(correct_output))
 
-    def test_find_all_documents(self):
-        documents = self.scraper.find_all_documents()
-        correct_output = ["myfile.txt", "some_text.docx"]
+    def test_find_all_common_documents(self):
+        documents = self.scraper.find_all_common_documents()
+        correct_output = ["myfile.txt", "some_text.docx", "test.pdf", "presentation.pptx"]
+        self.assertEqual(sorted(documents), sorted(correct_output))
+
+    def test_find_all_common_documents_with_custom_type(self):
+        documents = self.scraper.find_all_common_documents(custom_formats=("cpp", "xyz"))
+        correct_output = ["myfile.txt", "some_text.docx", "SPECIAL_DOCUMENT.cpp", "test.pdf", "presentation.pptx"]
         self.assertEqual(sorted(documents), sorted(correct_output))
 
     def test_find_all_social(self):
