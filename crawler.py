@@ -1,5 +1,5 @@
 import urllib.request as request
-import urllib.parse as urlparser
+from urlparser import UrlParser
 from objdict import ObjDict
 from scraper import Scraper
 from io import TextIOWrapper
@@ -14,7 +14,7 @@ class Amount(Enum):
 
 class Crawler_Config:
     def __init__(self):
-        self.set_default()
+        self.set_default_options()
 
     def set_default_options(self):
         self.scrape_links = True
@@ -67,46 +67,79 @@ class Crawler_Config:
         self.crawler_delay = Amount.none 
         self.fuzz_level = Amount.HIGH
 
-class netloc:
-    def __init__(self, name, path = list()):
-        self.name = name
-        self.inaccesable_paths = 0
-        self.path = path
+# I would like to do this, but ObjDict doesn't seem to work completely? dumps() suppress or exclude_nulls doesn't work
+# class netloc(ObjDict):
+    # __keys__ = "name path"
+    # def __init__(self, name, path = list()):
+        # self.name = name
+        # self.path = path
+
+class Path_Scheduler:
+    def __init__(self, base):
+        self.paths_to_crawl = deque()
+        self.crawled_paths = set() 
+        self.base = base
+
+    def add_path(self, path):
+        if self.path_exists(path):
+            return False
+        self.paths_to_crawl.append(path)
+        return True
+
+    # Perhaps this could be a generator
+    def next_path(self):
+        try:
+            path = self.paths_to_crawl.popleft()
+        except(IndexError):
+            return None
+        self.crawled_paths.add(path)
+        return path
+
+    def path_exists(self, path):
+        return path in self.crawled_paths or self.paths_to_crawl
+
 
 class Crawler:
-    def __init__(self):
-        self.config = Crawler_Config()
+    def __init__(self, config = Crawler_Config()):
+        self.config = config
         self.output = list()
 
     def crawl(self, seed_url):
         seed = urlparser.urlparse(seed_url)
+        domains_to_crawl = deque(tldextract.extract(seed_url)) # Different combinations of subdomains and suffix that are picked up during the crawl
+        crawled_domains = deque
         paths_to_crawl = deque(seed.path)
         crawled_paths = deque
 
-        # Create netloc object and place into output
-        current_netloc = netloc(seed.netloc)
-        current_netloc_index = 0
-        self.output.append(current_netloc)
+        while (domains_to_crawl):
+            current_domain = domains_to_crawl.pop()
+            current_domain_address = seed.shcheme + current_domain
+            domain_data = ObjDict()
+            domain_data.netloc = current_domain
+            domain_data.path = list()
 
-        while (paths_to_crawl):
-            path = paths_to_crawl.pop()
-            url = urlparser.join(seed_url, path)
-            url_string = urlparser.unsplit(url)
+            while (paths_to_crawl):
+                path = paths_to_crawl.pop()
+                url = urlparser.join(current_domain_address, path)
+                # TODO Wrap in try-catch
+                page_contents = self.download(url)
+                if (config.scrape_links):
+                    paths = page_contents.scrape_hrefs()
+                    for paths in paths:
+                        if path not in crawled_paths:
+                            if not paths.startswith('/'):
+                                path = urlparser.join(url.geturl(), path)
+                            paths_to_crawl.append(path)
+                page_data = scrape_page_data(page_contents)
+                page_data.path = path
+                page_data.accessible = True
+                domain_data.path.append(page_data)
+                crawled_paths.append(path)
 
-            # TODO Wrap in try-catch
-            page_contents = self.download(url)
-            if (config.scrape_links):
-                paths = page_contents.scrape_hrefs()
-                for paths in paths:
-                    if not paths.startswith('/'):
-                        path = urlparser.join(url_string, path)
-                    paths_to_crawl.append(path)
+            crawled_domains.append(current_domain)
+            self.output.append(domain_data)
 
-            page_data = scrape_page_data(page_contents)
-            page_data.path = path
-
-            #TODO This index number must be changed according to the current netloc
-            output[0].path.append(page_data)
+        return self.output
          
 
     def download(self, url):
