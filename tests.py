@@ -22,15 +22,19 @@ class test_scraper(unittest.TestCase):
         correct_output = ["1-800-123-4567", "1-200-300-4000", "8001234567", "12-123-123-1234", "212-500-3024"]
         self.assertEqual(sorted(phone_numbers), sorted(correct_output))
 
-    def test_find_all_common_documents(self):
-        documents = self.scraper.find_all_common_documents()
-        correct_output = ["myfile.txt", "some_text.docx", "test.pdf", "presentation.pptx"]
+    def test_find_all_documents(self):
+        documents = self.scraper.find_all_documents(["txt", "docx"])
+        correct_output = ["myfile.txt", "some_text.docx"]
         self.assertEqual(sorted(documents), sorted(correct_output))
 
-    def test_find_all_common_documents_with_custom_type(self):
-        documents = self.scraper.find_all_common_documents(custom_formats=("cpp", "xyz"))
-        correct_output = ["myfile.txt", "some_text.docx", "SPECIAL_DOCUMENT.cpp", "test.pdf", "presentation.pptx"]
+        documents = self.scraper.find_all_documents(["cpp", "pdf", "pptx"])
+        correct_output = ["SPECIAL_DOCUMENT.cpp", "test.pdf", "presentation.pptx"]
         self.assertEqual(sorted(documents), sorted(correct_output))
+
+    def test_find_all_documents_no_arguments(self):
+        documents = self.scraper.find_all_documents()
+        correct_output = []
+        self.assertEqual(documents, correct_output)
 
     def test_find_all_social(self):
         social = self.scraper.find_all_social()
@@ -117,6 +121,57 @@ class test_urlparser(unittest.TestCase):
         url1 = "https://www.example.com"
         url2 = "https://www.otherwebsite.com"
         self.assertFalse(UrlParser.same_netloc(url1, url2))
+
+from urlparser import SocialMediaParser
+class test_social_media_parser(unittest.TestCase):
+    def test_parse_facebook_profile(self):
+        url = "https://www.facebook.com/jake-bickle"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_parse_facebook_profile_too_few_paths(self):
+        url = "https://www.facebook.com/"
+        self.assertFalse(SocialMediaParser.is_profile(url))
+
+    def test_parse_facebook_profile_too_many_dirs(self):
+        url = "https://www.facebook.com/some/random/location"
+        self.assertFalse(SocialMediaParser.is_profile(url))
+
+    def test_parse_instagram_profile_with_params_query_frag(self):
+        url = "https://www.instagram.com/jake-bickle?lang=en;key=value#here"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_parse_twitch_profile(self):
+        url = "https://www.twitch.com/jake-bickle"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_non_social_media(self):
+        url = "https://www.non-media.com/location"
+        self.assertFalse(SocialMediaParser.is_profile(url))
+
+    def test_parse_flickr_profile(self):
+        url = "https://www.flickr.com/photos/tobin-shields"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_parse_flickr_profile_too_many_dirs(self):
+        url = "https://www.flickr.com/photos/path/to/location"
+        self.assertFalse(SocialMediaParser.is_profile(url))
+
+    def test_parse_flickr_profile_wrong_dir(self):
+        url = "https://www.flickr.com/some/location"
+        self.assertFalse(SocialMediaParser.is_profile(url))
+
+    def test_parse_linkedin_profile(self):
+        url = "https://www.linkedin.com/in/tobin-shields"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_parse_tumblr_profile(self):
+        url = "https://some-profile.tumblr.com/"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_parse_tumblr_profile_with_normal_subdomain(self):
+        url = "https://www.tumblr.com/"
+        self.assertFalse(SocialMediaParser.is_profile(url))
+
 
 from crawler import Path_Scheduler
 class test_path_scheduler(unittest.TestCase):
