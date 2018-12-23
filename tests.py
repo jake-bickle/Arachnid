@@ -40,7 +40,8 @@ class test_scraper(unittest.TestCase):
         social = self.scraper.find_all_social()
         correct_output = [Social("https://www.linkedin.com/in/jacob-bickle"),
                           Social("https://www.facebook.com/BillGates/"),
-                          Social("https://www.github.com/TobinShields")]
+                          Social("https://www.github.com/TobinShields"),
+                          Social("https://some-person.tumblr.com/")]
         self.assertEqual(sorted(social), sorted(correct_output))
 
     def test_find_all_regex(self):
@@ -142,6 +143,10 @@ class test_social_media_parser(unittest.TestCase):
 
     def test_parse_twitch_profile(self):
         url = "https://www.twitch.com/jake-bickle"
+        self.assertTrue(SocialMediaParser.is_profile(url))
+
+    def test_parse_github_profile(self):
+        url = "https://www.github.com/jake-bickle"
         self.assertTrue(SocialMediaParser.is_profile(url))
 
     def test_non_social_media(self):
