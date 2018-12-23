@@ -1,28 +1,18 @@
 [
     {
         "netloc": "www.example.org",
-        "inaccessable_paths": 0,
         "path": [
             {
                 "name": "/index.html",
+                "accessible": true,
                 "email": [
                     "example@gmail.com",
                     "example2@gmail.com"
                 ],
                 "document": [
-                    {
                         "name": "my_personal_files.txt",
-                        "type": "txt"
-                    }, 
-
-                    {
                         "name": "boring_normal_file.docx",
-                        "type": "docx"
-                    },
-                    {
-                        "name": "special_document.xyz",
-                        "type": "xyz"
-                    }
+                        "name": "special_document.xyz"
                 ],
                 "social": [
                     {
@@ -34,8 +24,11 @@
                         "site": "linkedin"
                     }
                 ],
-                "custom_string_occurance": true,
-                "custom_regex_occurance": true,
+                "custom_string_occurances": 5,
+                "custom_regex": [
+                        "1234",
+                        "Hello, world!"
+                ],
                 "phone": [
                     "1-800-123-4567",
                     "123-345-6789"
@@ -43,14 +36,16 @@
             },
             {
                 "name": "/help.html",
+                "accessible": true,
                 "email": [
                 ],
                 "document": [
                 ],
                 "social": [
                 ],
-                "custom_string_occurance": false,
-                "custom_regex_occurance": false,
+                "custom_string_occurances": 0,
+                "custom_regex": [
+                ],
                 "phone": [
                 ]
             }
@@ -58,21 +53,21 @@
     },
     {
         "netloc": "www.example.com",
-        "inaccessable_paths": 0,
         "path":[
+            {
+                "name": "/broken/page.html",
+                "accessible": false 
+            }
         ]
     },
     {
         "netloc": "my.example.com",
-        "inaccessable_paths": 0,
         "path":[
         ]
     },
     {
         "netloc": "www.example.io",
-        "inaccessable_paths": 20,
         "path":[
         ]
     }
-
 ]
