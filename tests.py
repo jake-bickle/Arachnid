@@ -50,8 +50,8 @@ class test_scraper(unittest.TestCase):
         self.assertEqual(visa_cards, ["4123456789012345"] )
 
     def test_find_all_regex_tags(self):
-        address_tags = self.find_all_regex(r"<address>")
-        self.asserEqual(address_tags, ["<address>"])
+        address_tags = self.scraper.find_all_regex(r"<address>")
+        self.assertEqual(address_tags, [])
 
     def test_string_occurances_case_insensitive(self):
         occurances = self.scraper.string_occurances("bazinga")

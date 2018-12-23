@@ -31,13 +31,12 @@ class Social:
         return hash(str(self))
 
 class regex_patterns:
+    LINK = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
     # TODO This does NOT include German phone numbers. Possible fix in future patch
     PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
-    COMMON_DOCUMENT = re.compile(r".+\.\w{2,4}?")
-    COMMON_DOCUMENT_FORMATS = ("doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "ods", "odp", "pdf", "txt", "rtf", "zip", "7z", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg")
     SOCIAL = re.compile(r".+\.\w{2,5}")
-    COMMON_SOCIAL = ["facebook", "twitter", "twitch", "pintrest", "github", "myspace", "plus.google", "instagram", "tumblr", "flickr", "deviantart"]
+    COMMON_SOCIAL = ("facebook", "twitter", "twitch", "pintrest", "github", "myspace", "instagram", "tumblr", "flickr", "deviantart")
 
 class Scraper(BeautifulSoup, regex_patterns):
     def find_all_emails(self):
@@ -64,21 +63,26 @@ class Scraper(BeautifulSoup, regex_patterns):
             sanitised_phones.append(phone[4:])
         return sanitised_phones
 
-    def find_all_common_documents(self, custom_formats=()):
+    def find_all_documents(self, formats=list()):
         # Finds all documents of common type
-        file_formats_to_search = custom_formats + self.COMMON_DOCUMENT_FORMATS
         found_documents = list()
         for anchor in self.find_all("a"):
             attributes = anchor.attrs
             for value in attributes.values():
-                for file_format in file_formats_to_search:
+                for file_format in formats:
                     if str(value).endswith(file_format):
                         found_documents.append(value)
         return found_documents
-                    
 
     def find_all_social(self):
-        pass
+        found_social = list()
+        html_doc = str(self)
+        links = self.LINK.findall(html_doc) 
+        if links is not None:
+            for link in links:
+                if SocialMediaParser.is_profile(link):
+                    found_social.append(Social(link))
+        return found_social
 
     def find_all_regex(self, string=""):
         regex = re.compile(string)
