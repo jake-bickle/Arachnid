@@ -1,14 +1,13 @@
 import re
+from urlparser import UrlParser, SocialMediaParser
 from bs4 import BeautifulSoup
-import urllib.parse as urlparser     
-import tldextract  # parse domain,subdomain information
 
 import pdb
 
 class Social:
     def __init__(self,link=""):
         self.link = link
-        self.site = tldextract.extract(link).domain
+        self.site = UrlParser.parse_url(link).domain
 
     def __eq__(self, other):
         if isinstance(other, Social):
@@ -91,13 +90,9 @@ class Scraper(BeautifulSoup, regex_patterns):
                 sanitized_strings.append(pattern)
         return sanitized_strings
 
-
     def string_occurances(self, string="", case_sensitive=False):
         if (case_sensitive):
             return len([tag for tag in self.find_all(string=re.compile(string))])
         else:
-            # def case_insensitive_search(tag):
-                # pass
-                # if tag.has_attr("string"):
             return len([tag for tag in self.find_all(string=re.compile(string, re.IGNORECASE))])
 
