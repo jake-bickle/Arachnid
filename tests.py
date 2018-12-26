@@ -99,8 +99,15 @@ class test_urlparser(unittest.TestCase):
         self.assertEqual(result, url)
 
     def test_is_subdomain_true(self):
-        url1 = "https://www.example.com"
-        url2 = "https://www.example.io"
+        url1 = "https://social.example.com"
+        url2 = "https://www.example.com"
+        self.assertTrue(UrlParser.is_subdomain(url1, url2))
+
+    def test_is_subdomain_parsed_results(self):
+        url1 = "https://social.example.com"
+        url2 = "https://www.example.com"
+        url1 = UrlParser.parse_url(url1)
+        url2 = UrlParser.parse_url(url2)
         self.assertTrue(UrlParser.is_subdomain(url1, url2))
 
     def test_is_subdomain_false(self):
@@ -112,6 +119,21 @@ class test_urlparser(unittest.TestCase):
         url1 = "https://www.example.com/path"
         url2 = "https://www.example.com/path/to/location"
         self.assertFalse(UrlParser.is_subdomain(url1, url2))
+
+    def test_same_subdomain_true(self):
+        url1 = "https://www.example.com/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertTrue(UrlParser.same_domain(url1, url2))
+
+    def test_same_subdomain_different_suffix(self):
+        url1 = "https://www.example.org/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertFalse(UrlParser.same_domain(url1, url2))
+
+    def test_same_subdomain_different_domain(self):
+        url1 = "https://www.myexample.com/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertFalse(UrlParser.same_domain(url1, url2))
 
     def test_same_netloc_true(self):
         url1 = "https://www.example.com/path"

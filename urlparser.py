@@ -40,8 +40,8 @@ class UrlParser:
         e_rslt = tldextract.extract(u_rslt.netloc)
         return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
 
-    def join_url(base="", url ="", allow_fragments=True):
-        return urllib.urljoin(url, other)
+    def join_url(base="", path="", allow_fragments=True):
+        return urllib.parse.urljoin(base, path)
 
     def is_subdomain(url1, url2):
         if not isinstance(url1, ParseResult):
@@ -49,7 +49,14 @@ class UrlParser:
         if not isinstance(url2, ParseResult):
             url2 = UrlParser.parse_url(url2)
         # Does not return true if they are the same netloc
-        return url1.domain == url2.domain and not url1.subdomain == url2.subdomain and url1.suffix == url2.suffix 
+        return UrlParser.same_domain(url1, url2) and url1.subdomain != url2.subdomain
+
+    def same_domain(url1, url2):
+        if not isinstance(url1, ParseResult):
+            url1 = UrlParser.parse_url(url1)
+        if not isinstance(url2, ParseResult):
+            url2 = UrlParser.parse_url(url2)
+        return url1.domain == url2.domain and url1.suffix == url2.suffix
 
     def same_netloc(url1="", url2=""):
         url1_netloc = urllib.parse.urlparse(url1).netloc
