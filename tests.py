@@ -200,35 +200,154 @@ class test_social_media_parser(unittest.TestCase):
         self.assertFalse(SocialMediaParser.is_profile(url))
 
 
-from crawler import Path_Scheduler
-class test_path_scheduler(unittest.TestCase):
-    def test_add_new_path(self):
-        example_site = Path_Scheduler("https://www.example.com")
-        example_site.add_path("/path/to/location")
-        self.assertEqual(example_site.paths_to_crawl, deque(["/path/to/location"]))
+# from crawler import Path_Scheduler
+# class test_path_scheduler(unittest.TestCase):
+    # def test_add_new_path(self):
+        # example_site = Path_Scheduler("https://www.example.com")
+        # example_site.add_path("/path/to/location")
+        # self.assertEqual(example_site.paths_to_crawl, deque(["/path/to/location"]))
 
-    def test_add_existing_uncrawled_path(self):
-        example_site = Path_Scheduler("https://www.example.com")
-        path = "/path/to/location"
-        example_site.add_path(path)
-        self.assertFalse(example_site.add_path(path))
+    # def test_add_existing_uncrawled_path(self):
+        # example_site = Path_Scheduler("https://www.example.com")
+        # path = "/path/to/location"
+        # example_site.add_path(path)
+        # self.assertFalse(example_site.add_path(path))
 
-    def test_add_existing_crawled_path(self):
-        example_site = Path_Scheduler("https://www.example.com")
-        path = "/path/to/location"
-        example_site.add_path(path)
-        example_site.next_path()
-        self.assertFalse(example_site.add_path(path))
+    # def test_add_existing_crawled_path(self):
+        # example_site = Path_Scheduler("https://www.example.com")
+        # path = "/path/to/location"
+        # example_site.add_path(path)
+        # example_site.next_path()
+        # self.assertFalse(example_site.add_path(path))
+
+    # def test_next_path(self):
+        # example_site = Path_Scheduler("https://www.example.com")
+        # path = "/path/to/location"
+        # example_site.add_path(path)
+        # self.assertEqual(example_site.next_path(), path)
+
+    # def test_next_path_empty_container(self):
+        # example_site = Path_Scheduler("https://www.example.com")
+        # self.assertEqual(example_site.next_path(), None)
+
+from scheduler import DomainBlock
+from collections import deque
+class test_domain_block(unittest.TestCase):
+    def test_constructor_paths_to_crawl_base_directory(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com/")
+        block = DomainBlock(parsed_url)
+        correct_output = deque(["/"])
+        self.assertEqual(block.paths_to_crawl, correct_output)
+
+    def test_constructor_paths_to_crawl_no_path(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com")
+        block = DomainBlock(parsed_url)
+        correct_output = deque(["/"])
+        self.assertEqual(block.paths_to_crawl, correct_output)
+
+    def test_constructor_paths_to_crawl_with_path(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        block = DomainBlock(parsed_url)
+        correct_output = deque(["/path/to/location"])
+        self.assertEqual(block.paths_to_crawl, correct_output)
+
+    def test_add_path(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        block = DomainBlock(parsed_url)
+        block.add_path("/other/path")
+        correct_output = deque(["/path/to/location", "/other/path"])
+        self.assertEqual(sorted(block.paths_to_crawl), sorted(correct_output))
+
+    def test_add_path_already_added(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        block = DomainBlock(parsed_url)
+        block.add_path("/other/path")
+        correct_output = deque(["/path/to/location", "/other/path"])
+        self.assertFalse(block.add_path("/other/path"))
 
     def test_next_path(self):
-        example_site = Path_Scheduler("https://www.example.com")
-        path = "/path/to/location"
-        example_site.add_path(path)
-        self.assertEqual(example_site.next_path(), path)
+        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        block = DomainBlock(parsed_url)
+        correct_output = "https://www.example.com/path/to/location"
+        self.assertEqual(block.next_url(), correct_output)
 
-    def test_next_path_empty_container(self):
-        example_site = Path_Scheduler("https://www.example.com")
-        self.assertEqual(example_site.next_path(), None)
+    def test_next_path_multiple_adds(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        block = DomainBlock(parsed_url)
+        block.add_path("/other/page")
+        block.add_path("/other")
+        correct_output = "https://www.example.com/other"
+        self.assertEqual(block.next_url(), correct_output)
+
+    def test_next_path_empty(self):
+        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        block = DomainBlock(parsed_url)
+        block.next_url()
+        self.assertFalse(block.next_url())
+
+from scheduler import Scheduler
+class test_scheduler(unittest.TestCase):
+    def test_schedule_one_url(self):
+        schedule = Scheduler("https://www.example.com/path/to/location") # Constructor calls upon schedule_url
+        block = schedule.blocks_to_crawl.pop()
+        url = block.paths_to_crawl[0]
+        correct_output = "/path/to/location"
+        self.assertEqual(url, correct_output)
+
+    def test_schedule_multiple_url_same_netloc(self):
+        schedule = Scheduler("https://www.example.com/path/to/location") # Constructor calls upon schedule_url
+        schedule.schedule_url("https://www.example.com/path/to")
+        block = schedule.blocks_to_crawl.pop()
+        url = block.paths_to_crawl[1]
+        correct_output = "/path/to"
+        self.assertEqual(url, correct_output)
+
+    def test_schedule_multiple_url_different_subdomain(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        schedule.schedule_url("https://www.example.com/path/to")
+        www_example = schedule.blocks_to_crawl.pop()
+        my_example = schedule.blocks_to_crawl.pop()
+        self.assertNotEqual(www_example, my_example)
+        self.assertTrue(www_example.next_url())
+        self.assertTrue(my_example.next_url())
+
+    def test_schedule_same_url_twice(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        has_been_scheduled = schedule.schedule_url("https://my.example.com/path/to/location")
+        self.assertFalse(has_been_scheduled)
+
+    def test_schedule_url_different_domain(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        has_been_scheduled = schedule.schedule_url("https://my.example.org/path/to/location")
+        self.assertFalse(has_been_scheduled)
+
+    def test_next_url(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        correct_output = "https://my.example.com/path/to/location"
+        self.assertEqual(schedule.next_url(), correct_output)
+
+    def test_next_url_empty_queue(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        schedule.next_url()
+        self.assertFalse(schedule.next_url())
+
+    def test_next_url_new_domain_block(self):
+        my_example = "https://my.example.com/"
+        www_example = "https://www.example.com/"
+        schedule = Scheduler(my_example) # Constructor calls upon schedule_url
+        schedule.schedule_url(www_example)
+        self.assertEqual(schedule.next_url(), my_example)
+        self.assertEqual(schedule.next_url(), www_example)
+
+    def test_schedule_url_already_crawled(self):
+        url = "https://my.example.com/path/to/location"
+        schedule = Scheduler(url) # Constructor calls upon schedule_url
+        schedule.next_url()
+        self.assertFalse(schedule.schedule_url(url))
+
+    def test_constructor(self):
+        schedule = Scheduler("https://www.example.com/path/to/location")
+        pass
 
 if __name__ == "__main__":
     unittest.main()
