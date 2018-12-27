@@ -2,9 +2,110 @@ import unittest
 import re
 from collections import deque
 from scraper import Scraper, Social
-from urlparser import UrlParser, ParseResult
-
 import pdb
+
+import urlparser as UrlParser
+from urlparser import ParseResult
+class test_urlparser(unittest.TestCase):
+    def test_parse_url_with_all_components(self):
+        url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
+        result = UrlParser.parse_url(url)
+        correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "param1=value1&param2=value2", "param3=value3", "frag")
+        self.assertEqual(result, correct_output)
+
+    def test_parse_url_with_some_components(self):
+        url = "https://www.example.com/path/to/location"
+        result = UrlParser.parse_url(url)
+        correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "", "", "")
+        self.assertEqual(result, correct_output)
+
+    def test_get_url_with_all_components(self):
+        url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
+        result = UrlParser.parse_url(url).get_url()
+        self.assertEqual(result, url)
+
+    def test_get_url_with_some_components(self):
+        url = "https://www.example.com/path/to/location"
+        result = UrlParser.parse_url(url).get_url()
+        self.assertEqual(result, url)
+
+    def test_is_subdomain_true(self):
+        url1 = "https://www.example.com"
+        url2 = "https://www.example.io"
+        self.assertTrue(UrlParser.is_subdomain(url1, url2))
+
+    def test_is_subdomain_false(self):
+        url1 = "https://www.example.com"
+        url2 = "https://www.otherwebsite.com"
+        self.assertFalse(UrlParser.is_subdomain(url1, url2))
+
+    def test_is_subdomain_same_website(self):
+        url1 = "https://www.example.com/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertFalse(UrlParser.is_subdomain(url1, url2))
+
+    def test_same_netloc_true(self):
+        url1 = "https://www.example.com/path"
+        url2 = "https://www.example.com/path/to/location"
+        self.assertTrue(UrlParser.same_netloc(url1, url2))
+
+    def test_same_netloc_false(self):
+        url1 = "https://www.example.com"
+        url2 = "https://www.otherwebsite.com"
+        self.assertFalse(UrlParser.same_netloc(url1, url2))
+
+class test_social_media_parser(unittest.TestCase):
+    def test_parse_facebook_profile(self):
+        url = "https://www.facebook.com/jake-bickle"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_parse_facebook_profile_too_few_paths(self):
+        url = "https://www.facebook.com/"
+        self.assertFalse(UrlParser.is_social_media_profile(url))
+
+    def test_parse_facebook_profile_too_many_dirs(self):
+        url = "https://www.facebook.com/some/random/location"
+        self.assertFalse(UrlParser.is_social_media_profile(url))
+
+    def test_parse_instagram_profile_with_params_query_frag(self):
+        url = "https://www.instagram.com/jake-bickle?lang=en;key=value#here"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_parse_twitch_profile(self):
+        url = "https://www.twitch.com/jake-bickle"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_parse_github_profile(self):
+        url = "https://www.github.com/jake-bickle"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_non_social_media(self):
+        url = "https://www.non-media.com/location"
+        self.assertFalse(UrlParser.is_social_media_profile(url))
+
+    def test_parse_flickr_profile(self):
+        url = "https://www.flickr.com/photos/tobin-shields"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_parse_flickr_profile_too_many_dirs(self):
+        url = "https://www.flickr.com/photos/path/to/location"
+        self.assertFalse(UrlParser.is_social_media_profile(url))
+
+    def test_parse_flickr_profile_wrong_dir(self):
+        url = "https://www.flickr.com/some/location"
+        self.assertFalse(UrlParser.is_social_media_profile(url))
+
+    def test_parse_linkedin_profile(self):
+        url = "https://www.linkedin.com/in/tobin-shields"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_parse_tumblr_profile(self):
+        url = "https://some-profile.tumblr.com/"
+        self.assertTrue(UrlParser.is_social_media_profile(url))
+
+    def test_parse_tumblr_profile_with_normal_subdomain(self):
+        url = "https://www.tumblr.com/"
+        self.assertFalse(UrlParser.is_social_media_profile(url))
 
 class test_scraper(unittest.TestCase):
     def setUp(self):
@@ -73,109 +174,6 @@ class test_scraper(unittest.TestCase):
     def test_string_occurances_of_tags(self):
         occurances = self.scraper.string_occurances("<p>")
         self.assertEqual(occurances, 0)
-
-
-class test_urlparser(unittest.TestCase):
-    def test_parse_url_with_all_components(self):
-        url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
-        result = UrlParser.parse_url(url)
-        correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "param1=value1&param2=value2", "param3=value3", "frag")
-        self.assertEqual(result, correct_output)
-
-    def test_parse_url_with_some_components(self):
-        url = "https://www.example.com/path/to/location"
-        result = UrlParser.parse_url(url)
-        correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "", "", "")
-        self.assertEqual(result, correct_output)
-
-    def test_get_url_with_all_components(self):
-        url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
-        result = UrlParser.parse_url(url).get_url()
-        self.assertEqual(result, url)
-
-    def test_get_url_with_some_components(self):
-        url = "https://www.example.com/path/to/location"
-        result = UrlParser.parse_url(url).get_url()
-        self.assertEqual(result, url)
-
-    def test_is_subdomain_true(self):
-        url1 = "https://www.example.com"
-        url2 = "https://www.example.io"
-        self.assertTrue(UrlParser.is_subdomain(url1, url2))
-
-    def test_is_subdomain_false(self):
-        url1 = "https://www.example.com"
-        url2 = "https://www.otherwebsite.com"
-        self.assertFalse(UrlParser.is_subdomain(url1, url2))
-
-    def test_is_subdomain_same_website(self):
-        url1 = "https://www.example.com/path"
-        url2 = "https://www.example.com/path/to/location"
-        self.assertFalse(UrlParser.is_subdomain(url1, url2))
-
-    def test_same_netloc_true(self):
-        url1 = "https://www.example.com/path"
-        url2 = "https://www.example.com/path/to/location"
-        self.assertTrue(UrlParser.same_netloc(url1, url2))
-
-    def test_same_netloc_false(self):
-        url1 = "https://www.example.com"
-        url2 = "https://www.otherwebsite.com"
-        self.assertFalse(UrlParser.same_netloc(url1, url2))
-
-from urlparser import SocialMediaParser
-class test_social_media_parser(unittest.TestCase):
-    def test_parse_facebook_profile(self):
-        url = "https://www.facebook.com/jake-bickle"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_parse_facebook_profile_too_few_paths(self):
-        url = "https://www.facebook.com/"
-        self.assertFalse(SocialMediaParser.is_profile(url))
-
-    def test_parse_facebook_profile_too_many_dirs(self):
-        url = "https://www.facebook.com/some/random/location"
-        self.assertFalse(SocialMediaParser.is_profile(url))
-
-    def test_parse_instagram_profile_with_params_query_frag(self):
-        url = "https://www.instagram.com/jake-bickle?lang=en;key=value#here"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_parse_twitch_profile(self):
-        url = "https://www.twitch.com/jake-bickle"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_parse_github_profile(self):
-        url = "https://www.github.com/jake-bickle"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_non_social_media(self):
-        url = "https://www.non-media.com/location"
-        self.assertFalse(SocialMediaParser.is_profile(url))
-
-    def test_parse_flickr_profile(self):
-        url = "https://www.flickr.com/photos/tobin-shields"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_parse_flickr_profile_too_many_dirs(self):
-        url = "https://www.flickr.com/photos/path/to/location"
-        self.assertFalse(SocialMediaParser.is_profile(url))
-
-    def test_parse_flickr_profile_wrong_dir(self):
-        url = "https://www.flickr.com/some/location"
-        self.assertFalse(SocialMediaParser.is_profile(url))
-
-    def test_parse_linkedin_profile(self):
-        url = "https://www.linkedin.com/in/tobin-shields"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_parse_tumblr_profile(self):
-        url = "https://some-profile.tumblr.com/"
-        self.assertTrue(SocialMediaParser.is_profile(url))
-
-    def test_parse_tumblr_profile_with_normal_subdomain(self):
-        url = "https://www.tumblr.com/"
-        self.assertFalse(SocialMediaParser.is_profile(url))
 
 
 from crawler import Path_Scheduler
