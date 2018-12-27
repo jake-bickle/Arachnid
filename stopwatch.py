@@ -7,6 +7,9 @@ class Stopwatch:
     def start(self):
         self.start_time = time.time()
 
+    def restart(self):
+        self.start()
+
     def wait(self):
         elapsed_time = time.time() - self.start_time
         remaining_time = self.time_limit - elapsed_time
