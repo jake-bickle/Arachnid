@@ -1,10 +1,9 @@
-import urllib.request as request
+import requests
+from scheduler import Scheduler
+from scraper import Scraper
 from urlparser import UrlParser
 from objdict import ObjDict
-from scraper import Scraper
-from io import TextIOWrapper
 from enum import Enum
-from collections import deque
 
 class Amount(Enum):
     NONE = 0
@@ -79,51 +78,16 @@ class Crawler:
         self.config = config
         self.output = list()
 
-    def crawl(self, seed_url):
-        seed = urlparser.urlparse(seed_url)
-        domains_to_crawl = deque(tldextract.extract(seed_url)) # Different combinations of subdomains and suffix that are picked up during the crawl
-        crawled_domains = deque
-        paths_to_crawl = deque(seed.path)
-        crawled_paths = deque
+    def crawl(self, seed_url="https://www.calcharter.com"):
+        seed = UrlParser.parse_url(seed_url)
+        # TODO: Fix: New subdomains won't have fuzz or robots added 
+        scheduler = Scheduler(seed)
 
-        while (domains_to_crawl):
-            current_domain = domains_to_crawl.pop()
-            current_domain_address = seed.shcheme + current_domain
-            domain_data = ObjDict()
-            domain_data.netloc = current_domain
-            domain_data.path = list()
-
-            while (paths_to_crawl):
-                path = paths_to_crawl.pop()
-                url = urlparser.join(current_domain_address, path)
-                # TODO Wrap in try-catch
-                page_contents = self.download(url)
-                if (config.scrape_links):
-                    paths = page_contents.scrape_hrefs()
-                    for paths in paths:
-                        if path not in crawled_paths:
-                            if not paths.startswith('/'):
-                                path = urlparser.join(url.geturl(), path)
-                            paths_to_crawl.append(path)
-                page_data = scrape_page_data(page_contents)
-                page_data.path = path
-                page_data.accessible = True
-                domain_data.path.append(page_data)
-                crawled_paths.append(path)
-
-            crawled_domains.append(current_domain)
-            self.output.append(domain_data)
-
-        return self.output
-         
-
-    def download(self, url):
-        req = request.Request(url, headers=None) #TODO headers should be what the class information we gathered
-        open_page = request.urlopen(req)
-        page = TextIOWrapper(open_page, encoding="utf-8")
-        page_data = page.read()
-        return Scraper(page_data, "html.parser") # html.parser might be replaced with lxml
-
+        url_to_crawl = schedular.next_url()
+        while (url_to_crawl):
+            request = requests.get(url_to_crawl, headers={})
+            page_data = Scraper(request.text, "html.parser")
+            
     def scrape_page(page_contents):
         page_data = ObjDict()
         page_data.name = path
