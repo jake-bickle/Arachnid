@@ -1,8 +1,9 @@
 import requests
+import urlparser
 import timewidgets
+
 from scheduler import Scheduler
 from scraper import Scraper
-from urlparser import UrlParser
 from objdict import ObjDict
 from enum import Enum
 

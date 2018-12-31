@@ -1,5 +1,5 @@
 import re
-from urlparser import UrlParser, SocialMediaParser
+import urlparser
 from bs4 import BeautifulSoup
 
 import pdb
@@ -7,7 +7,7 @@ import pdb
 class Social:
     def __init__(self,link=""):
         self.link = link
-        self.site = UrlParser.parse_url(link).domain
+        self.site = urlparser.parse_url(link).domain
 
     def __eq__(self, other):
         if isinstance(other, Social):
@@ -80,7 +80,7 @@ class Scraper(BeautifulSoup, regex_patterns):
         links = self.LINK.findall(html_doc) 
         if links is not None:
             for link in links:
-                if SocialMediaParser.is_profile(link):
+                if urlparser.is_social_media_profile(link):
                     found_social.append(Social(link))
         return found_social
 

@@ -2,8 +2,6 @@ import tldextract
 import urllib.parse
 from collections import namedtuple
 
-import pdb
-
 class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])):
     def get_url(self):
         url = self.get_base()
@@ -38,39 +36,36 @@ class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "s
                 url += self.suffix
         return url
 
-class UrlParser:
-    """ Wrapper class that combines urllib.parse and tldextract. """
-    def parse_url(url=""):
-        u_rslt = urllib.parse.urlparse(url)
-        e_rslt = tldextract.extract(u_rslt.netloc)
-        return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
+def parse_url(url=""):
+    u_rslt = urllib.parse.urlparse(url)
+    e_rslt = tldextract.extract(u_rslt.netloc)
+    return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
 
-    def join_url(base="", path="", allow_fragments=True):
-        return urllib.parse.urljoin(base, path)
+def join_url(base="", path="", allow_fragments=True):
+    return urllib.parse.urljoin(base, path)
 
-    def is_subdomain(url1, url2):
-        if not isinstance(url1, ParseResult):
-            url1 = UrlParser.parse_url(url1)
-        if not isinstance(url2, ParseResult):
-            url2 = UrlParser.parse_url(url2)
-        # Does not return true if they are the same netloc
-        return UrlParser.same_domain(url1, url2) and url1.subdomain != url2.subdomain
+def is_subdomain(url1, url2):
+    if not isinstance(url1, ParseResult):
+        url1 = UrlParser.parse_url(url1)
+    if not isinstance(url2, ParseResult):
+        url2 = UrlParser.parse_url(url2)
+    # Does not return true if they are the same netloc
+    return UrlParser.same_domain(url1, url2) and url1.subdomain != url2.subdomain
 
-    def same_domain(url1, url2):
-        if not isinstance(url1, ParseResult):
-            url1 = UrlParser.parse_url(url1)
-        if not isinstance(url2, ParseResult):
-            url2 = UrlParser.parse_url(url2)
-        return url1.domain == url2.domain and url1.suffix == url2.suffix
+def same_domain(url1, url2):
+    if not isinstance(url1, ParseResult):
+        url1 = UrlParser.parse_url(url1)
+    if not isinstance(url2, ParseResult):
+        url2 = UrlParser.parse_url(url2)
+    return url1.domain == url2.domain and url1.suffix == url2.suffix
 
-    def same_netloc(url1="", url2=""):
-        url1_netloc = urllib.parse.urlparse(url1).netloc
-        url2_netloc = urllib.parse.urlparse(url2).netloc
-        return url1_netloc == url2_netloc 
-
+def same_netloc(url1="", url2=""):
+    url1_netloc = urllib.parse.urlparse(url1).netloc
+    url2_netloc = urllib.parse.urlparse(url2).netloc
+    return url1_netloc == url2_netloc 
 
 # https://www.media.com/profile-page
-class CommonProfileFormat:
+class _CommonProfileFormat:
     def __init__(self, domain=None):
         self.domain = domain
 
@@ -79,7 +74,7 @@ class CommonProfileFormat:
         return dir_count == 1
 
 # https://www.media.com/sub-dir/profile-page
-class OneDirDeepProfileFormat:
+class _OneDirDeepProfileFormat:
     def __init__(self, domain=None, prof_dirs=None):
         self.domain = domain
         self.prof_dirs = prof_dirs
@@ -89,7 +84,7 @@ class OneDirDeepProfileFormat:
         return directories[0] in self.prof_dirs and len(directories) == 2
 
 # https://profile-page.media.com/
-class SubdomainProfileFormat:
+class _SubdomainProfileFormat:
     def __init__(self, domain=None, forbidden_subdomains=None):
         self.domain = domain
         self.forbidden_subdomains = forbidden_subdomains
@@ -101,27 +96,23 @@ class SubdomainProfileFormat:
                 return False
         return dir_count == 0
 
-# TODO Truncate this mess
-class Format:
-    COMMON_PROFILE_FORMAT = (CommonProfileFormat("facebook"),
-                             CommonProfileFormat("twitter"),
-                             CommonProfileFormat("twitch"),
-                             CommonProfileFormat("pintrest"),
-                             CommonProfileFormat("github"),
-                             CommonProfileFormat("myspace"),
-                             CommonProfileFormat("instagram"),
-                             CommonProfileFormat("deviantart"))
-    SUBDOMAIN_PROFILE_FORMAT = (SubdomainProfileFormat("tumblr", forbidden_subdomains={'www'}),)
-    ONE_DIR_DEEP_PROFILE_FORMAT = (OneDirDeepProfileFormat("flickr", prof_dirs={'photos'}),
-                                   OneDirDeepProfileFormat("linkedin", prof_dirs={'in'}))
-    SOCIAL_MEDIA = COMMON_PROFILE_FORMAT + SUBDOMAIN_PROFILE_FORMAT + ONE_DIR_DEEP_PROFILE_FORMAT
+_SOCIAL_MEDIA = (_CommonProfileFormat("facebook"),
+                 _CommonProfileFormat("twitter"),
+                 _CommonProfileFormat("twitch"),
+                 _CommonProfileFormat("pintrest"),
+                 _CommonProfileFormat("github"),
+                 _CommonProfileFormat("myspace"),
+                 _CommonProfileFormat("instagram"),
+                 _CommonProfileFormat("deviantart"),
+                 _SubdomainProfileFormat("tumblr", forbidden_subdomains={'www'}),
+                 _OneDirDeepProfileFormat("flickr", prof_dirs={'photos'}),
+                 _OneDirDeepProfileFormat("linkedin", prof_dirs={'in'})
+                )
 
-
-class SocialMediaParser():
-    def is_profile(url=""):
-        url = UrlParser.parse_url(url)
-        for social_media_profile_format in Format.SOCIAL_MEDIA:
-            if social_media_profile_format.domain == url.domain:
-                return social_media_profile_format.follows_pattern(url)
-        return False
+def is_social_media_profile(url=""):
+    url = parse_url(url)
+    for social_media_profile_format in _SOCIAL_MEDIA:
+        if social_media_profile_format.domain == url.domain:
+            return social_media_profile_format.follows_pattern(url)
+    return False
 
