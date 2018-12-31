@@ -16,3 +16,12 @@ class Stopwatch:
         if remaining_time > 0:
             time.sleep(remaining_time)
 
+class Timer:
+    def start(self):
+        self.start_time = time.time()
+
+    def restart(self):
+        self.start()
+
+    def elapsed(self):
+        return time.time() - self.start_time
