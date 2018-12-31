@@ -61,17 +61,6 @@ class Scraper(BeautifulSoup, regex_patterns):
             sanitised_phones.append(phone[4:])
         return sanitised_phones
 
-    def find_all_documents(self, formats=list()):
-        # Finds all documents of common type
-        found_documents = list()
-        for anchor in self.find_all("a"):
-            attributes = anchor.attrs
-            for value in attributes.values():
-                for file_format in formats:
-                    if str(value).endswith(file_format):
-                        found_documents.append(value)
-        return found_documents
-
     def find_all_social(self):
         found_social = list()
         html_doc = str(self)
