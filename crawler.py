@@ -1,4 +1,5 @@
 import requests
+import timewidgets
 from scheduler import Scheduler
 from scraper import Scraper
 from urlparser import UrlParser
@@ -11,7 +12,7 @@ class Amount(Enum):
     MEDIUM = 2
     HIGH = 3
 
-class Crawler_Config:
+class CrawlerConfig:
     def __init__(self):
         self.set_default_options()
 
@@ -73,20 +74,64 @@ class Crawler_Config:
         # self.name = name
         # self.path = path
 
+# TODO: Fix: New subdomains won't have fuzz or robots added 
 class Crawler:
-    def __init__(self, config = Crawler_Config()):
+    def __init__(self, seed="https://www.calcharter.com", config=CrawlerConfig()):
         self.config = config
         self.output = list()
 
-    def crawl(self, seed_url="https://www.calcharter.com"):
-        seed = UrlParser.parse_url(seed_url)
-        # TODO: Fix: New subdomains won't have fuzz or robots added 
-        scheduler = Scheduler(seed)
+    # def crawl_next(self):
+        # url_to_crawl = schedular.next_url()
+        # request = requests.get(url_to_crawl, headers={})
+        # page_data = Scraper(request.text, "html.parser")
 
-        url_to_crawl = schedular.next_url()
-        while (url_to_crawl):
-            request = requests.get(url_to_crawl, headers={})
-            page_data = Scraper(request.text, "html.parser")
+    def crawl(seed):
+        self.scheduler = Scheduluer(seed)
+        sw = timewidgets.Stopwatch(self.config.crawler_delay)
+        timer = timewidgets.Timer()
+        timer.start()
+        next_url = self.scheduler.next_url()
+        while (next_url):
+            sw.start()
+            if timer.elapsed() > 30:
+                timer.restart()
+                # Overwrite json file
+            self.crawl_page(next_url)
+            next_url = self.scheduler.next_url()
+            sw.wait()  # Delay the crawler to throw off automated systems
+        # Overwrite output one last time
+
+
+    def crawl_page(url):
+        p_url = urlparser.parse_url(url)
+        netloc_output = self._get_netloc_from_output(p_url.get_netloc())
+        if netloc_output is None:
+            netloc_output = dict()
+            netloc_output["netloc"] = p_url.get_netloc()
+            netloc_output["pages"] = list()
+            netloc_output["documents"] = list()
+            self.output.append(netloc_output)
+        request = requests.get(url_to_crawl, headers={}) # TODO Adjust header info
+        if "text/html" not in request.headers["content-type"]:
+            doc_output = dict()
+            doc_output["path"] = p_url.path
+            cd = request.headers["content-disposition"]
+            f_s = cd.find("filename")+10
+            f_e = cd.find("\"", filename_s)
+            doc_output["name"] = cd[f_s:f_e]  # filename must be parsed from content-disposition
+            doc_output["type"] = request.headers["content-type"]
+            netloc_output["documents"].append(doc_output)
+        else:
+            page_data = Scraper(r.text)
+            netloc_output["pages"].append(self.extract_page_data(page_data))
+            anchors = page_data.find_all("a")
+            for a in anchors:
+                if a.href:
+                    url = urlparser.parse_url(a.href)
+
+    def _write_output():
+        with open("crawled_site.json", "w") as output:
+            pass
             
     def scrape_page(page_contents):
         page_data = ObjDict()
