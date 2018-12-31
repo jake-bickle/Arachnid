@@ -20,6 +20,11 @@ class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "s
         url = ""
         if self.scheme:
             url += self.scheme + "://"
+        url += self.get_netloc()
+        return url
+
+    def get_netloc(self):
+        url = ""
         url += self.subdomain
         if self.domain:
             if self.subdomain:
@@ -96,6 +101,7 @@ class SubdomainProfileFormat:
                 return False
         return dir_count == 0
 
+# TODO Truncate this mess
 class Format:
     COMMON_PROFILE_FORMAT = (CommonProfileFormat("facebook"),
                              CommonProfileFormat("twitter"),
