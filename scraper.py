@@ -2,34 +2,6 @@ import re
 import urlparser
 from bs4 import BeautifulSoup
 
-import pdb
-
-class Social:
-    def __init__(self,link=""):
-        self.link = link
-        self.site = urlparser.parse_url(link).domain
-
-    def __eq__(self, other):
-        if isinstance(other, Social):
-            return self.link == other.link
-        else:
-            return False
-
-    def __lt__(self, other):
-        if isinstance(other, Social):
-            return self.link < other.link
-        else:
-            return NotImplemented
-
-    def __str__(self):
-        return self.link
-
-    def __repr__(self):
-        return "Social(link=\"" + self.link + "\" site=\"" + self.site + "\")"
-
-    def __hash__(self):
-        return hash(str(self))
-
 class regex_patterns:
     LINK = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
@@ -68,7 +40,8 @@ class Scraper(BeautifulSoup, regex_patterns):
         if links is not None:
             for link in links:
                 if urlparser.is_social_media_profile(link):
-                    found_social.append(Social(link))
+                    media = {"link": link, "domain": urlparser.parse_url(link).domain}
+                    found_social.append(media)
         return found_social
 
     def find_all_regex(self, string=""):
