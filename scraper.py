@@ -35,8 +35,6 @@ class regex_patterns:
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
     # TODO This does NOT include German phone numbers. Possible fix in future patch
     PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
-    SOCIAL = re.compile(r".+\.\w{2,5}")
-    COMMON_SOCIAL = ("facebook", "twitter", "twitch", "pintrest", "github", "myspace", "instagram", "tumblr", "flickr", "deviantart")
 
 class Scraper(BeautifulSoup, regex_patterns):
     def find_all_emails(self):
