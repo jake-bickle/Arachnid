@@ -1,0 +1,7 @@
+Google Bot: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+Bing Bot: Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)
+Yahoo Bot: Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)
+Duck Duck Go: DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)
+BaiDu Bot: Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)
+YanDex Bot: Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)
+Default FireFox: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:10.0) Gecko/20100101 Firefox/10.0
