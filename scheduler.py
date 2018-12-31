@@ -1,4 +1,4 @@
-from urlparser import UrlParser
+import urlparser
 from collections import deque
 
 class DomainBlock:
@@ -22,7 +22,7 @@ class DomainBlock:
             path = self.paths_to_crawl.pop()
         except(IndexError):
             return None
-        url = UrlParser.join_url(self.parsed_url.get_url(), path)
+        url = urlparser.join_url(self.parsed_url.get_url(), path)
         return url
 
     def path_already_added(self, path):
@@ -33,7 +33,7 @@ class Scheduler:
     def __init__(self, url=""):
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
-        self.seed_url = UrlParser.parse_url(url)
+        self.seed_url = urlparser.parse_url(url)
         self.schedule_url(url)
 
     def schedule_url(self, url=""):
@@ -42,10 +42,10 @@ class Scheduler:
             - It has already been crawled
             - It has already been scheduled
         """
-        parsed_url = UrlParser.parse_url(url)
+        parsed_url = urlparser.parse_url(url)
         if self.url_has_been_crawled(url):
             return False
-        if not UrlParser.same_domain(parsed_url, self.seed_url):
+        if not urlparser.same_domain(parsed_url, self.seed_url):
             return False
         block = self._get_domain_block(parsed_url)
         if block is None:

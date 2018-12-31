@@ -4,130 +4,130 @@ from collections import deque
 from scraper import Scraper, Social
 import pdb
 
-import urlparser as UrlParser
+import urlparser
 from urlparser import ParseResult
 class test_urlparser(unittest.TestCase):
     def test_parse_url_with_all_components(self):
         url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
-        result = UrlParser.parse_url(url)
+        result = urlparser.parse_url(url)
         correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "param1=value1&param2=value2", "param3=value3", "frag")
         self.assertEqual(result, correct_output)
 
     def test_parse_url_with_some_components(self):
         url = "https://www.example.com/path/to/location"
-        result = UrlParser.parse_url(url)
+        result = urlparser.parse_url(url)
         correct_output = ParseResult("https", "www", "example", "com", "/path/to/location", "", "", "")
         self.assertEqual(result, correct_output)
 
     def test_get_url_with_all_components(self):
         url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
-        result = UrlParser.parse_url(url).get_url()
+        result = urlparser.parse_url(url).get_url()
         self.assertEqual(result, url)
 
     def test_get_url_with_some_components(self):
         url = "https://www.example.com/path/to/location"
-        result = UrlParser.parse_url(url).get_url()
+        result = urlparser.parse_url(url).get_url()
         self.assertEqual(result, url)
 
     def test_is_subdomain_true(self):
         url1 = "https://social.example.com"
         url2 = "https://www.example.com"
-        self.assertTrue(UrlParser.is_subdomain(url1, url2))
+        self.assertTrue(urlparser.is_subdomain(url1, url2))
 
     def test_is_subdomain_parsed_results(self):
         url1 = "https://social.example.com"
         url2 = "https://www.example.com"
-        url1 = UrlParser.parse_url(url1)
-        url2 = UrlParser.parse_url(url2)
-        self.assertTrue(UrlParser.is_subdomain(url1, url2))
+        url1 = urlparser.parse_url(url1)
+        url2 = urlparser.parse_url(url2)
+        self.assertTrue(urlparser.is_subdomain(url1, url2))
 
     def test_is_subdomain_false(self):
         url1 = "https://www.example.com"
         url2 = "https://www.otherwebsite.com"
-        self.assertFalse(UrlParser.is_subdomain(url1, url2))
+        self.assertFalse(urlparser.is_subdomain(url1, url2))
 
     def test_is_subdomain_same_website(self):
         url1 = "https://www.example.com/path"
         url2 = "https://www.example.com/path/to/location"
-        self.assertFalse(UrlParser.is_subdomain(url1, url2))
+        self.assertFalse(urlparser.is_subdomain(url1, url2))
 
     def test_same_subdomain_true(self):
         url1 = "https://www.example.com/path"
         url2 = "https://www.example.com/path/to/location"
-        self.assertTrue(UrlParser.same_domain(url1, url2))
+        self.assertTrue(urlparser.same_domain(url1, url2))
 
     def test_same_subdomain_different_suffix(self):
         url1 = "https://www.example.org/path"
         url2 = "https://www.example.com/path/to/location"
-        self.assertFalse(UrlParser.same_domain(url1, url2))
+        self.assertFalse(urlparser.same_domain(url1, url2))
 
     def test_same_subdomain_different_domain(self):
         url1 = "https://www.myexample.com/path"
         url2 = "https://www.example.com/path/to/location"
-        self.assertFalse(UrlParser.same_domain(url1, url2))
+        self.assertFalse(urlparser.same_domain(url1, url2))
 
     def test_same_netloc_true(self):
         url1 = "https://www.example.com/path"
         url2 = "https://www.example.com/path/to/location"
-        self.assertTrue(UrlParser.same_netloc(url1, url2))
+        self.assertTrue(urlparser.same_netloc(url1, url2))
 
     def test_same_netloc_false(self):
         url1 = "https://www.example.com"
         url2 = "https://www.otherwebsite.com"
-        self.assertFalse(UrlParser.same_netloc(url1, url2))
+        self.assertFalse(urlparser.same_netloc(url1, url2))
 
 class test_social_media_parser(unittest.TestCase):
     def test_parse_facebook_profile(self):
         url = "https://www.facebook.com/jake-bickle"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_parse_facebook_profile_too_few_paths(self):
         url = "https://www.facebook.com/"
-        self.assertFalse(UrlParser.is_social_media_profile(url))
+        self.assertFalse(urlparser.is_social_media_profile(url))
 
     def test_parse_facebook_profile_too_many_dirs(self):
         url = "https://www.facebook.com/some/random/location"
-        self.assertFalse(UrlParser.is_social_media_profile(url))
+        self.assertFalse(urlparser.is_social_media_profile(url))
 
     def test_parse_instagram_profile_with_params_query_frag(self):
         url = "https://www.instagram.com/jake-bickle?lang=en;key=value#here"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_parse_twitch_profile(self):
         url = "https://www.twitch.com/jake-bickle"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_parse_github_profile(self):
         url = "https://www.github.com/jake-bickle"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_non_social_media(self):
         url = "https://www.non-media.com/location"
-        self.assertFalse(UrlParser.is_social_media_profile(url))
+        self.assertFalse(urlparser.is_social_media_profile(url))
 
     def test_parse_flickr_profile(self):
         url = "https://www.flickr.com/photos/tobin-shields"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_parse_flickr_profile_too_many_dirs(self):
         url = "https://www.flickr.com/photos/path/to/location"
-        self.assertFalse(UrlParser.is_social_media_profile(url))
+        self.assertFalse(urlparser.is_social_media_profile(url))
 
     def test_parse_flickr_profile_wrong_dir(self):
         url = "https://www.flickr.com/some/location"
-        self.assertFalse(UrlParser.is_social_media_profile(url))
+        self.assertFalse(urlparser.is_social_media_profile(url))
 
     def test_parse_linkedin_profile(self):
         url = "https://www.linkedin.com/in/tobin-shields"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_parse_tumblr_profile(self):
         url = "https://some-profile.tumblr.com/"
-        self.assertTrue(UrlParser.is_social_media_profile(url))
+        self.assertTrue(urlparser.is_social_media_profile(url))
 
     def test_parse_tumblr_profile_with_normal_subdomain(self):
         url = "https://www.tumblr.com/"
-        self.assertFalse(UrlParser.is_social_media_profile(url))
+        self.assertFalse(urlparser.is_social_media_profile(url))
 
 class test_scraper(unittest.TestCase):
     def setUp(self):
@@ -232,45 +232,45 @@ from scheduler import DomainBlock
 from collections import deque
 class test_domain_block(unittest.TestCase):
     def test_constructor_paths_to_crawl_base_directory(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/")
+        parsed_url = urlparser.parse_url("https://www.example.com/")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/"])
         self.assertEqual(block.paths_to_crawl, correct_output)
 
     def test_constructor_paths_to_crawl_no_path(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com")
+        parsed_url = urlparser.parse_url("https://www.example.com")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/"])
         self.assertEqual(block.paths_to_crawl, correct_output)
 
     def test_constructor_paths_to_crawl_with_path(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/path/to/location"])
         self.assertEqual(block.paths_to_crawl, correct_output)
 
     def test_add_path(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         block.add_path("/other/path")
         correct_output = deque(["/path/to/location", "/other/path"])
         self.assertEqual(sorted(block.paths_to_crawl), sorted(correct_output))
 
     def test_add_path_already_added(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         block.add_path("/other/path")
         correct_output = deque(["/path/to/location", "/other/path"])
         self.assertFalse(block.add_path("/other/path"))
 
     def test_next_path(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         correct_output = "https://www.example.com/path/to/location"
         self.assertEqual(block.next_url(), correct_output)
 
     def test_next_path_multiple_adds(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         block.add_path("/other/page")
         block.add_path("/other")
@@ -278,7 +278,7 @@ class test_domain_block(unittest.TestCase):
         self.assertEqual(block.next_url(), correct_output)
 
     def test_next_path_empty(self):
-        parsed_url = UrlParser.parse_url("https://www.example.com/path/to/location")
+        parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         block.next_url()
         self.assertFalse(block.next_url())
