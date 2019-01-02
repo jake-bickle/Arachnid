@@ -5,13 +5,7 @@ from collections import namedtuple
 class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])):
     def get_url(self):
         url = self.get_base()
-        url += self.path
-        if self.params:
-            url += ';' + self.params
-        if self.query:
-            url += '?' + self.query
-        if self.fragment:
-            url += '#' + self.fragment
+        url += self.get_extension()
         return url
 
     def get_base(self):
@@ -26,14 +20,23 @@ class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "s
         url += self.subdomain
         if self.domain:
             if self.subdomain:
-                url += '.' + self.domain
-            else:
-                url += domain
+                url += '.' 
+            url += self.domain
         if self.suffix:
             if self.subdomain or self.domain:
-                url += '.' + self.suffix
-            else:
-                url += self.suffix
+                url += '.' 
+            url += self.suffix
+        return url
+
+    def get_extension(self):
+        url = ""
+        url += self.path
+        if self.params:
+            url += ';' + self.params
+        if self.query:
+            url += '?' + self.query
+        if self.fragment:
+            url += '#' + self.fragment
         return url
 
 def parse_url(url=""):
