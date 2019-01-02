@@ -1,6 +1,8 @@
 import urlparser
 from collections import deque
 
+import pdb
+
 class DomainBlock:
     """ Holds a stack of paths to be crawled for an arbitrary net location """
     def __init__(self, parsed_url):
@@ -53,7 +55,7 @@ class Scheduler:
             self.blocks_to_crawl.append(block)
             return True
         else:
-            return block.add_path(parsed_url.path)
+            return block.add_path(parsed_url.get_extension())
 
     def next_url(self):
         if not self.blocks_to_crawl: 
