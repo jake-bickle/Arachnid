@@ -9,6 +9,16 @@ class regex_patterns:
     PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
 
 class Scraper(BeautifulSoup, regex_patterns):
+    def find_all_hrefs(self):
+        anchors = self.find_all("a")
+        hrefs = []
+        for a in anchors:
+            try:
+                hrefs.append(a["href"])
+            except:
+                pass  # Ignore anchors without href
+        return hrefs
+
     def find_all_emails(self):
         string_emails = [email for email in self.find_all(string=self.EMAIL)]
         href_emails = [email.get("href") for email in self.find_all(href=re.compile(r"mailto:"))]
