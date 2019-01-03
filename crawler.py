@@ -110,7 +110,7 @@ class Crawler:
             data = parser.extract()
             data["path"] = p_url.get_extension()
             for href in Scraper(r.text, "html.parser").find_all_hrefs():
-                self.schedule.schedule_url(urlparser.join_url(url, href))
+                self.schedule.schedule_url(urlparser.join_url(url, href, allow_fragments=True))
             netloc_data["pages"].append(data)
         else:
             parser = requestparser.DocumentRequest(r, self.config.documents)
@@ -125,7 +125,7 @@ class Crawler:
                 return dictionary
         return None
 
-    def output_to_file(self,  filename):
+    def output_to_file(self, filename):
         with open(filename, "w") as f:
             data = json.dumps(self.output, indent=4)
             f.write(data)
