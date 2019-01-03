@@ -1,4 +1,5 @@
 import requests
+import requestparser
 import urlparser
 import timewidgets
 import json
@@ -78,54 +79,45 @@ class Crawler:
         self.output = list()
 
     def crawl(self):
-        self.scheduler = Scheduler(self.seed)
+        self.schedule = Scheduler(self.seed)
         sw = timewidgets.Stopwatch(0) # TODO: make work with enum self.config.crawler_delay
         timer = timewidgets.Timer()
         timer.start()
-        next_url = self.scheduler.next_url()
+        next_url = self.schedule.next_url()
         while (next_url):
             sw.start()
-            if timer.elapsed() > 5:
+            if timer.elapsed() > 30:  
                 self.output_to_file("arachnid_data.json")
                 timer.restart()
             self.crawl_page(next_url)
-            next_url = self.scheduler.next_url()
+            next_url = self.schedule.next_url()
             sw.wait()  # Delay the crawler to throw off automated systems
-        self._write_to_file("arachnid_data.json")
+        self.output_to_file("arachnid_data.json")
 
     def crawl_page(self, url):
         print(url)
         p_url = urlparser.parse_url(url)
-        netloc_output = self._get_netloc_from_output(p_url.get_netloc())
-        if netloc_output is None:
-            netloc_output = dict()
-            netloc_output["netloc"] = p_url.get_netloc()
-            netloc_output["pages"] = list()
-            netloc_output["documents"] = list()
-            self.output.append(netloc_output)
-        request = requests.get(url, headers={"User-Agent": self.config.agent}) 
-        if "text/html" not in request.headers["content-type"]:
-            pass
-            # doc_output = dict()
-            # doc_output["path"] = p_url.path
-            # cd = request.headers["content-disposition"]
-            # f_s = cd.find("filename")+10
-            # f_e = cd.find("\"", filename_s)
-            # doc_output["name"] = cd[f_s:f_e]  # filename must be parsed from content-disposition
-            # doc_output["type"] = request.headers["content-type"]
-            # netloc_output["documents"].append(doc_output)
+        netloc_data = self._get_netloc_from_output(p_url.get_netloc())
+        if netloc_data is None:
+            netloc_data = dict()
+            netloc_data["netloc"] = p_url.get_netloc()
+            netloc_data["pages"] = list()
+            netloc_data["documents"] = list()
+            self.output.append(netloc_data)
+        r = requests.get(url, headers={"User-Agent": self.config.agent}) 
+        if "text/html" in r.headers["content-type"]:
+            parser = requestparser.HTMLRequest(r, self.config)
+            data = parser.extract()
+            data["path"] = p_url.get_extension()
+            for href in Scraper(r.text, "html.parser").find_all_hrefs():
+                self.schedule.schedule_url(urlparser.join_url(url, href))
+            netloc_data["pages"].append(data)
         else:
-            page_data = Scraper(request.text, "html.parser")  #TODO May change to different parser
-            anchors = page_data.find_all("a")
-            for a in anchors:
-                try:
-                    new_url = urlparser.join_url(url, a["href"])
-                    self.scheduler.schedule_url(new_url)
-                except AttributeError:
-                    pass  # If the anchor has no href, move on
-            page_dict = self._extract_page_data(page_data)
-            page_dict["path"] = p_url.path
-            netloc_output["pages"].append(page_dict)
+            parser = requestparser.DocumentRequest(r, self.config.documents)
+            data = parser.extract()
+            if data:
+                data["path"] = p_url.get_extension()
+                netloc_data["documents"].append(data)
 
     def _get_netloc_from_output(self, netloc):
         for dictionary in self.output:
@@ -138,20 +130,3 @@ class Crawler:
             data = json.dumps(self.output, indent=4)
             f.write(data)
             
-    def _extract_page_data(self, page_contents):
-        page_data = dict()
-        if (self.config.scrape_email):
-            page_data["email"] = page_contents.find_all_emails()
-        if (self.config.scrape_phone_number):
-            page_data["phone"] = page_contents.find_all_phones()
-        if (self.config.scrape_social_media):
-            page_data["social"] = page_contents.find_all_social()
-        if (self.config.custom_str):
-            if self.config.custom_str_case_sensitive:
-                page_data["custom_string_occurances"] = page_contents.string_occurances(self.config.custom_str, case_sensitive=True)
-            else:
-                page_data["custom_string_occurances"] = page_contents.string_occurances(self.config.custom_str, case_sensitive=False)
-        if (self.config.custom_regex):
-            page_data["custom_regex"] = page_contents.find_all_regex(self.config.custom_regex)
-        return page_data
-
