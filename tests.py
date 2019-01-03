@@ -1,7 +1,7 @@
 import unittest
 import re
 from collections import deque
-from scraper import Scraper, Social
+from scraper import Scraper
 import pdb
 
 import urlparser
@@ -145,27 +145,13 @@ class test_scraper(unittest.TestCase):
         correct_output = ["1-800-123-4567", "1-200-300-4000", "8001234567", "12-123-123-1234", "212-500-3024"]
         self.assertEqual(sorted(phone_numbers), sorted(correct_output))
 
-    def test_find_all_documents(self):
-        documents = self.scraper.find_all_documents(["txt", "docx"])
-        correct_output = ["myfile.txt", "some_text.docx"]
-        self.assertEqual(sorted(documents), sorted(correct_output))
-
-        documents = self.scraper.find_all_documents(["cpp", "pdf", "pptx"])
-        correct_output = ["SPECIAL_DOCUMENT.cpp", "test.pdf", "presentation.pptx"]
-        self.assertEqual(sorted(documents), sorted(correct_output))
-
-    def test_find_all_documents_no_arguments(self):
-        documents = self.scraper.find_all_documents()
-        correct_output = []
-        self.assertEqual(documents, correct_output)
-
     def test_find_all_social(self):
         social = self.scraper.find_all_social()
-        correct_output = [Social("https://www.linkedin.com/in/jacob-bickle"),
-                          Social("https://www.facebook.com/BillGates/"),
-                          Social("https://www.github.com/TobinShields"),
-                          Social("https://some-person.tumblr.com/")]
-        self.assertEqual(sorted(social), sorted(correct_output))
+        correct_output = [{"link": "https://www.linkedin.com/in/jacob-bickle", "domain": "linkedin"},
+                          {"link": "https://www.facebook.com/BillGates/", "domain": "facebook"},
+                          {"link": "https://www.github.com/TobinShields", "domain": "github"},
+                          {"link": "https://some-person.tumblr.com/", "domain": "tumblr"}]
+        self.assertEqual(social, correct_output)
 
     def test_find_all_regex(self):
         visa_regex_string = r"4[0-9]{12}(?:[0-9]{3})?"
