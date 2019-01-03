@@ -49,9 +49,7 @@ class Scheduler:
             - It has already been scheduled
         """
         parsed_url = urlparser.parse_url(url)
-        if not urlparser.same_domain(parsed_url, self.seed_url):
-            return False
-        if self.has_been_crawled(url):
+        if not urlparser.same_domain(parsed_url, self.seed_url) or self.has_been_crawled(url):
             return False
         block = self._get_domain_block(parsed_url)
         if block is None:
@@ -74,10 +72,9 @@ class Scheduler:
     def has_been_crawled(self, url):
         return url in self.crawled_urls
 
-    def _get_domain_block(self, url):
+    def _get_domain_block(self, parsed_url):
         for block in self.blocks_to_crawl:
-            b_sub = urlparser.parse_url(block.base).subdomain
-            if b_sub == url.subdomain:
+            if block.base == parsed_url.get_base():
                 return block
         return None
 
