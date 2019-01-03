@@ -45,7 +45,7 @@ def parse_url(url=""):
     return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
 
 def join_url(base="", path="", allow_fragments=True):
-    return urllib.parse.urljoin(base, path)
+    return urllib.parse.urljoin(base, path, allow_fragments)
 
 def same_domain(url1, url2):
     if not isinstance(url1, ParseResult):
