@@ -25,10 +25,10 @@ class CrawlerConfig:
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.scrape_common_documents = True
+        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
+                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
         self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-        self.custom_doc = None
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
@@ -42,10 +42,10 @@ class CrawlerConfig:
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.scrape_common_documents = True
+        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
+                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
         self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-        self.custom_doc = None
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
@@ -59,10 +59,10 @@ class CrawlerConfig:
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.scrape_common_documents = True
+        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
+                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
         self.scrape_robots = False
         self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-        self.custom_doc = None
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
