@@ -274,17 +274,16 @@ class test_scheduler(unittest.TestCase):
     def test_schedule_one_url(self):
         schedule = Scheduler("https://www.example.com/path/to/location") # Constructor calls upon schedule_url
         block = schedule.blocks_to_crawl.pop()
-        url = block.paths_to_crawl[0]
+        ext = block.extensions_to_crawl[0]
         correct_output = "/path/to/location"
-        self.assertEqual(url, correct_output)
+        self.assertEqual(ext, correct_output)
 
     def test_schedule_multiple_url_same_netloc(self):
         schedule = Scheduler("https://www.example.com/path/to/location") # Constructor calls upon schedule_url
         schedule.schedule_url("https://www.example.com/path/to")
         block = schedule.blocks_to_crawl.pop()
-        url = block.paths_to_crawl[1]
-        correct_output = "/path/to"
-        self.assertEqual(url, correct_output)
+        correct_output = deque(["/path/to", "/path/to/location"])
+        self.assertEqual(sorted(block.extensions_to_crawl), sorted(correct_output))
 
     def test_schedule_multiple_url_different_subdomain(self):
         schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
@@ -304,6 +303,26 @@ class test_scheduler(unittest.TestCase):
         schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
         has_been_scheduled = schedule.schedule_url("https://my.example.org/path/to/location")
         self.assertFalse(has_been_scheduled)
+
+    def test_schedule_url_fragment(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        has_been_scheduled = schedule.schedule_url("https://my.example.com/path/to/location#maincontent")
+        self.assertTrue(has_been_scheduled)
+
+    def test_schedule_url_query(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        has_been_scheduled = schedule.schedule_url("https://my.example.com/path/to/location?key=val")
+        self.assertTrue(has_been_scheduled)
+
+    def test_schedule_url_params(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        has_been_scheduled = schedule.schedule_url("https://my.example.com/path/to/location;key=val")
+        self.assertTrue(has_been_scheduled)
+
+    def test_schedule_url_variety(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        has_been_scheduled = schedule.schedule_url("https://my.example.com/path/to/location?key1=val1;key2=val2#frag")
+        self.assertTrue(has_been_scheduled)
 
     def test_next_url(self):
         schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
