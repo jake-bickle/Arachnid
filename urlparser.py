@@ -84,7 +84,7 @@ class _OneDirDeepProfileFormat:
 
     def follows_pattern(self, parsed_url):
         directories = [path for path in parsed_url.path.split("/") if path]
-        return directories[0] in self.prof_dirs and len(directories) == 2
+        return len(directories) == 2 and directories[0] in self.prof_dirs
 
 # https://profile-page.media.com/
 class _SubdomainProfileFormat:
