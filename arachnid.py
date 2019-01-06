@@ -99,13 +99,13 @@ parser.add_argument("--no-subdomain",
                     action="store_false", 
                     help="Don't crawl subdomains of the seed URL")
 
-agressions = parser.add_mutually_exclusive_group()
-agressions.add_argument("--stealth", 
+aggressions = parser.add_mutually_exclusive_group()
+aggressions.add_argument("--stealth", 
                     dest="stealth", 
                     action="store_true", 
                     help="Use a preset of options to crawl quietly")
 
-agressions.add_argument("--aggressive", 
+aggressions.add_argument("--aggressive", 
                     dest="aggressive", 
                     action="store_true", 
                     help="Use a preset of options to crawl loudly")
