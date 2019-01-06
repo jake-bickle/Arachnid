@@ -97,11 +97,7 @@ parser.add_argument("-a", "--agent",
 parser.add_argument("--no-subdomain", 
                     dest="scrape_subdomains", 
                     action="store_false", 
-                    help="Don't attempt to crawl a subdomain of the domain")
-
-parser.add_argument("--layout-only",
-                    action="store_true",
-                    help="Don't scrape any information, only find the layout of the website.")
+                    help="Don't crawl subdomains of the seed URL")
 
 agressions = parser.add_mutually_exclusive_group()
 agressions.add_argument("--stealth", 
