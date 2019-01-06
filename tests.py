@@ -342,6 +342,12 @@ class test_scheduler(unittest.TestCase):
         self.assertEqual(schedule.next_url(), my_example)
         self.assertEqual(schedule.next_url(), www_example)
 
+    def test_next_url_extensions(self):
+        schedule = Scheduler("https://my.example.com/path/to/location") # Constructor calls upon schedule_url
+        schedule.schedule_url("https://my.example.com/path/to/location?key=val;word=bird#frag")
+        correct_output = "https://my.example.com/path/to/location?key=val;word=bird#frag" 
+        self.assertEqual(schedule.next_url(), correct_output)
+
     def test_schedule_url_already_crawled(self):
         url = "https://my.example.com/path/to/location"
         schedule = Scheduler(url) # Constructor calls upon schedule_url
@@ -349,13 +355,10 @@ class test_scheduler(unittest.TestCase):
         self.assertFalse(schedule.schedule_url(url))
 
 import requests
-import requestparser
+import responseparser
 from crawler import CrawlerConfig
-class test_requestparser(unittest.TestCase):
+class test_responseparser(unittest.TestCase):
     pass
-
-
-
 
 from arachnid import generate_crawler
 class test_generate_crawler(unittest.TestCase):
@@ -372,6 +375,12 @@ class test_generate_crawler(unittest.TestCase):
         pass
 
     def test_agent(self):
+        pass
+    
+    def test_doc(self):
+        pass
+
+    def test_find(self):
         pass
 
 

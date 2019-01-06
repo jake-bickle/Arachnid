@@ -1,5 +1,5 @@
 import requests
-import requestparser
+import responseparser
 import random
 import urlparser
 import timewidgets
@@ -86,14 +86,14 @@ class Crawler:
             self.output.append(netloc_data)
         r = requests.get(url, headers={"User-Agent": self.config.agent}) 
         if "text/html" in r.headers["content-type"]:
-            parser = requestparser.HTMLRequest(r, self.config)
+            parser = responseparser.HTMLRequest(r, self.config)
             data = parser.extract()
             data["path"] = p_url.get_extension()
             for href in Scraper(r.text, "html.parser").find_all_hrefs():
                 self.schedule.schedule_url(urlparser.join_url(url, href, allow_fragments=True))
             netloc_data["pages"].append(data)
         else:
-            parser = requestparser.DocumentRequest(r, self.config.documents)
+            parser = responseparser.DocumentRequest(r, self.config.documents)
             data = parser.extract()
             if data:
                 data["path"] = p_url.get_extension()

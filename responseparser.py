@@ -9,16 +9,16 @@ def _get_matching_element(a, b):
                 return x
     return None
 
-class DocumentRequest:
-    def __init__(self, request, applicable_types):
-        self.request = request
+class Documentresponse:
+    def __init__(self, response, applicable_types):
+        self.response = response
         self.applicable_types = applicable_types
 
     def extract(self):
         data = dict()
         data["name"] = self._get_filename() 
-        data["code"] = self.request.status_code
-        possible_extensions = [t.lstrip(".") for t in mimetypes.guess_all_extensions(self.request.headers["content-type"])]
+        data["code"] = self.response.status_code
+        possible_extensions = [t.lstrip(".") for t in mimetypes.guess_all_extensions(self.response.headers["content-type"])]
         data["type"] = _get_matching_element(self.applicable_types, possible_extensions)
         if data["type"]:
             return data 
@@ -26,22 +26,22 @@ class DocumentRequest:
 
     def _get_filename(self):
         try:
-            cd = self.request.headers["content-disposition"]
+            cd = self.response.headers["content-disposition"]
             f_s = cd.find("filename") + 10  # Get index after filename="
             f_e = cd.find("\"", f_s)
             return cd[f_s:f_e]
         except KeyError:
-            path = urlparser.parse_url(self.request.url).path
+            path = urlparser.parse_url(self.response.url).path
             return path.split("/")[-1]
 
-class HTMLRequest:
-    def __init__(self, request, config):
-        self.request = request
+class HTMLresponse:
+    def __init__(self, response, config):
+        self.response = response
         self.config = config
 
     def extract(self):
         data = dict()
-        page_contents = Scraper(self.request.text, "html.parser")
+        page_contents = Scraper(self.response.text, "html.parser")
         if (self.config.scrape_email):
             data["email"] = page_contents.find_all_emails()
         if (self.config.scrape_phone_number):
@@ -55,6 +55,6 @@ class HTMLRequest:
                 data["custom_string_occurances"] = page_contents.string_occurances(self.config.custom_str, case_sensitive=False)
         if (self.config.custom_regex):
             data["custom_regex"] = page_contents.find_all_regex(self.config.custom_regex)
-        data["code"] = self.request.status_code
+        data["code"] = self.response.status_code
         return data
 
