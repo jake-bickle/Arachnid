@@ -65,7 +65,7 @@ parser.add_argument("-f", "--find",
                     help="Find various information from a page. See man page for more details")
 
 parser.add_argument("-T", "--delay", 
-                    dest="crawler_delay", 
+                    dest="delay", 
                     choices=["none", "low", "medium", "high"],
                     action=DelayAction, 
                     help="TODO: timing help")

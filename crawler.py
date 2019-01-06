@@ -27,18 +27,18 @@ class CrawlerConfig:
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.crawler_delay = crawler_enums.Delay.NONE.value
+        self.delay = crawler_enums.Delay.NONE.value
         self.fuzz_level = crawler_enums.Amount.LOW
 
     def set_stealth(self):
         self.obey_robots = True
         self.agent = crawler_enums.Agent.GOOGLE.value
-        self.crawler_delay = crawler_enums.Delay.HIGH.value
+        self.delay = crawler_enums.Delay.HIGH.value
         self.fuzz_level = crawler_enums.Amount.NONE
 
     def set_aggressive(self):
         self.obey_robots = False 
-        self.crawler_delay = crawler_enums.Delay.NONE.value
+        self.delay = crawler_enums.Delay.NONE.value
         self.fuzz_level = crawler_enums.Amount.HIGH
     
     def set_layout_only(self):
