@@ -3,24 +3,18 @@ import requestparser
 import urlparser
 import timewidgets
 import json
+import crawler_enums
 
 from scheduler import Scheduler
 from scraper import Scraper
-from enum import Enum
 
 import pdb
 
-class Amount(Enum):
-    NONE = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
 class CrawlerConfig:
     def __init__(self):
-        self.set_default_options()
+        self.set_default()
 
-    def set_default_options(self):
+    def set_default(self):
         self.scrape_links = True
         self.scrape_subdomains = True
         self.scrape_phone_number = True
@@ -28,48 +22,33 @@ class CrawlerConfig:
         self.scrape_social_media = True
         self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
                           "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
-        self.scrape_robots = False
-        self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+        self.obey_robots = True
+        self.agent = crawler_enums.Agent.FIREFOX.value
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.find_custom_regex_occurances = False # TODO Does this need to be here? Or does custom_regexdo the trick?
-        self.crawler_delay = Amount.NONE
-        self.fuzz_level = Amount.LOW
+        self.crawler_delay = crawler_enums.Delay.NONE.value
+        self.fuzz_level = crawler_enums.Amount.LOW
 
     def set_stealth(self):
-        self.scrape_links = True
-        self.scrape_subdomains = False
-        self.scrape_phone_number = True
-        self.scrape_email = True
-        self.scrape_social_media = True
-        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
-                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
-        self.scrape_robots = False
-        self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-        self.custom_str = None
-        self.custom_str_case_sensitive = False
-        self.custom_regex = None
-        self.find_custom_regex_occurances = False # TODO Does this need to be here? Or does custom_regexdo the trick?
-        self.crawler_delay = Amount.HIGH
-        self.fuzz_level = Amount.NONE
+        self.obey_robots = True
+        self.agent = crawler_enums.Agent.GOOGLE.value
+        self.crawler_delay = crawler_enums.Delay.HIGH
+        self.fuzz_level = crawler_enums.Amount.NONE
 
     def set_aggressive(self):
-        self.scrape_links = True
-        self.scrape_subdomains = True
-        self.scrape_phone_number = True
-        self.scrape_email = True
-        self.scrape_social_media = True
-        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
-                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
-        self.scrape_robots = False
-        self.agent = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+        self.obey_robots = False 
+        self.crawler_delay = crawler_enums.Delay.none 
+        self.fuzz_level = crawler_enums.Amount.HIGH
+    
+    def set_layout_only(self):
+        self.scrape_subdomains = False
+        self.scrape_phone_number = False 
+        self.scrape_email = False
+        self.scrape_social_media = False
+        self.documents = {}
         self.custom_str = None
-        self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.find_custom_regex_occurances = False # TODO Does this need to be here? Or does custom_regexdo the trick?
-        self.crawler_delay = Amount.none 
-        self.fuzz_level = Amount.HIGH
 
 # TODO: Fix: New subdomains won't have fuzz or robots added 
 class Crawler:
