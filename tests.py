@@ -348,9 +348,32 @@ class test_scheduler(unittest.TestCase):
         schedule.next_url()
         self.assertFalse(schedule.schedule_url(url))
 
-    def test_constructor(self):
-        schedule = Scheduler("https://www.example.com/path/to/location")
+import requests
+import requestparser
+from crawler import CrawlerConfig
+class test_requestparser(unittest.TestCase):
+    pass
+
+
+
+
+from arachnid import generate_crawler
+class test_generate_crawler(unittest.TestCase):
+    def test_default(self):
         pass
+
+    def test_aggressive(self):
+        pass
+
+    def test_stealth(self):
+        pass
+
+    def test_delay(self):
+        pass
+
+    def test_agent(self):
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()
