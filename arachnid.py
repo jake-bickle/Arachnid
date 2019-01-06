@@ -1,6 +1,8 @@
 import argparse
+import re
 import crawler_enums
 
+from scraper import RegexPatterns
 from crawler import Crawler, CrawlerConfig
 
 class AgentAction(argparse.Action):
@@ -27,10 +29,17 @@ class AmountAction(argparse.Action):
         amount = crawler_enums.Amount[value.upper()]
         setattr(namespace, self.dest, amount)
 
+def is_url(url):
+    if not re.match(RegexPatterns.LINK, url):
+        msg = url + " is not a valid URL"
+        raise argparse.ArgumentTypeError(msg)
+    return url
+
 parser = argparse.ArgumentParser(description="TODO: Create help description",
                                  argument_default=argparse.SUPPRESS)
 
 parser.add_argument("seed", 
+                    type=is_url,
                     help="The URL for the Crawler to begin its search from")
 
 parser.add_argument("-s", "--string",  # TODO Could this use nargs?
