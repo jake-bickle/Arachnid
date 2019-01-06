@@ -164,8 +164,7 @@ def generate_crawler():
 
 def main():
     c = generate_crawler()
-    for k, v in vars(c.config).items():
-        print(k, ": ", v)
+    c.crawl()
 
 if __name__ == "__main__":
     main()
