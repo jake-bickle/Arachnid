@@ -9,7 +9,7 @@ def _get_matching_element(a, b):
                 return x
     return None
 
-class Documentresponse:
+class DocumentResponse:
     def __init__(self, response, applicable_types):
         self.response = response
         self.applicable_types = applicable_types
@@ -34,7 +34,7 @@ class Documentresponse:
             path = urlparser.parse_url(self.response.url).path
             return path.split("/")[-1]
 
-class HTMLresponse:
+class HTMLResponse:
     def __init__(self, response, config):
         self.response = response
         self.config = config
