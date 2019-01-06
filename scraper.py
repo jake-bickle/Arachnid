@@ -2,13 +2,13 @@ import re
 import urlparser
 from bs4 import BeautifulSoup
 
-class regex_patterns:
+class RegexPatterns:
     LINK = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
     # TODO This does NOT include German phone numbers. Possible fix in future patch
     PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
 
-class Scraper(BeautifulSoup, regex_patterns):
+class Scraper(BeautifulSoup, RegexPatterns):
     def find_all_hrefs(self):
         anchors = self.find_all("a")
         hrefs = []
