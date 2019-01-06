@@ -1,5 +1,6 @@
 import requests
 import requestparser
+import random
 import urlparser
 import timewidgets
 import json
@@ -59,11 +60,11 @@ class Crawler:
 
     def crawl(self):
         self.schedule = Scheduler(self.seed)
-        sw = timewidgets.Stopwatch(0) # TODO: make work with enum self.config.crawler_delay
         timer = timewidgets.Timer()
         timer.start()
         next_url = self.schedule.next_url()
         while (next_url):
+            sw = timewidgets.Stopwatch(random.choice(self.config.delay))
             sw.start()
             if timer.elapsed() > 30:  
                 self.output_to_file("arachnid_data.json")
