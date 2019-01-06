@@ -33,12 +33,12 @@ class CrawlerConfig:
     def set_stealth(self):
         self.obey_robots = True
         self.agent = crawler_enums.Agent.GOOGLE.value
-        self.crawler_delay = crawler_enums.Delay.HIGH
+        self.crawler_delay = crawler_enums.Delay.HIGH.value
         self.fuzz_level = crawler_enums.Amount.NONE
 
     def set_aggressive(self):
         self.obey_robots = False 
-        self.crawler_delay = crawler_enums.Delay.none 
+        self.crawler_delay = crawler_enums.Delay.NONE.value
         self.fuzz_level = crawler_enums.Amount.HIGH
     
     def set_layout_only(self):
