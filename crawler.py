@@ -9,8 +9,6 @@ import crawler_enums
 from scheduler import Scheduler
 from scraper import Scraper
 
-import pdb
-
 class CrawlerConfig:
     def __init__(self):
         self.set_default()
