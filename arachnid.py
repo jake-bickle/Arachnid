@@ -2,8 +2,6 @@ import argparse
 import re
 import crawler_enums
 
-import pdb
-
 from scraper import RegexPatterns
 from crawler import Crawler, CrawlerConfig
 
@@ -175,7 +173,6 @@ def generate_crawler():
 
 def main():
     c = generate_crawler()
-    pdb.set_trace()
     c.crawl()
 
 if __name__ == "__main__":
