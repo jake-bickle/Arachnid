@@ -155,7 +155,7 @@ def generate_crawler_config(namespace):
         config.scrape_email = has_occurred["email"]
         config.scrape_social_media = has_occurred["social"]
         if not has_occurred["docs"]:
-            config.documents = {}
+            config.documents = set()
 
     config.documents.update(namespace.custom_doc)
     
