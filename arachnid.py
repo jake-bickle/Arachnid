@@ -2,6 +2,8 @@ import argparse
 import re
 import crawler_enums
 
+import pdb
+
 from scraper import RegexPatterns
 from crawler import Crawler, CrawlerConfig
 
@@ -140,11 +142,11 @@ def generate_crawler_config(namespace):
                     "docs": False,
                      }
         if "all" in supplied_options:
-            for v in has_occurred.values():
-                v = True
+            for k in has_occurred:
+                has_occurred[k] = True
         elif "none" in supplied_options:
-            for v in has_occurred.values():
-                v = False
+            for k in has_occurred:
+                has_occurred[k] = False
         else:
             for k in has_occurred:
                 if k in supplied_options:
@@ -173,6 +175,7 @@ def generate_crawler():
 
 def main():
     c = generate_crawler()
+    pdb.set_trace()
     c.crawl()
 
 if __name__ == "__main__":
