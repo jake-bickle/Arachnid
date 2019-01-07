@@ -360,28 +360,149 @@ from crawler import CrawlerConfig
 class test_responseparser(unittest.TestCase):
     pass
 
-from arachnid import generate_crawler
-class test_generate_crawler(unittest.TestCase):
+import argparse
+from arachnid import generate_crawler_config, parser
+import crawler_enums
+class test_generate_config(unittest.TestCase):
+    def get_namespace(self, cli):
+        return parser.parse_args(cli.split())
+
     def test_default(self):
-        pass
+        cli = "https://www.example.com"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        self.assertEqual(vars(c), vars(CrawlerConfig()))
 
     def test_aggressive(self):
-        pass
+        cli = "https://www.example.com --aggressive"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.set_aggressive()
+        self.assertEqual(vars(c), vars(correct_output))
 
     def test_stealth(self):
-        pass
+        cli = "https://www.example.com --stealth"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.set_stealth()
+        self.assertEqual(vars(c), vars(correct_output))
 
     def test_delay(self):
-        pass
+        cli = "https://www.example.com -T high"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.delay = crawler_enums.Delay.HIGH.value
+
+    def test_stealth_modified(self):
+        cli = "https://www.example.com -T none --stealth"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.set_stealth()
+        correct_output.delay = crawler_enums.Delay.NONE.value
+        self.assertEqual(vars(c), vars(correct_output))
 
     def test_agent(self):
-        pass
+        cli = "https://www.example.com -a g"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.agent = crawler_enums.Agent.GOOGLE.value
+        self.assertEqual(vars(c), vars(correct_output))
     
     def test_doc(self):
-        pass
+        cli = "https://www.example.com --doc zip"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.documents.add("zip")
+        self.assertEqual(vars(c), vars(correct_output))
 
-    def test_find(self):
-        pass
+    def test_doc_and_no_docs(self):
+        cli = "https://www.example.com --find phone email social --doc zip"
+        namespace = self.get_namespace(cli)
+        c = generate_crawler_config(namespace)
+        correct_output = CrawlerConfig()
+        correct_output.documents = {"zip"}
+        self.assertEqual(vars(c), vars(correct_output))
+
+    class test_find(unittest.TestCase):
+        def get_namespace(self, cli):
+            return parser.parse_args(cli.split())
+
+        def test_none(self):
+            cli = "https://www.example.com --find none"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            correct_output.scrape_phone_number  = False
+            correct_output.scrape_email = False
+            correct_output.scrape_social_media  = False
+            correct_output.documents = {}
+            self.assertEqual(vars(c), vars(correct_output))
+
+        def test_all(self):
+            cli = "https://www.example.com --find all"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            self.assertEqual(vars(c), vars(correct_output))
+
+        def test_docs(self):
+            cli = "https://www.example.com --find docs"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            correct_output.scrape_phone_number = False
+            correct_output.scrape_email = False
+            correct_output.scrape_social_media  = False
+            self.assertEqual(vars(c), vars(correct_output))
+
+        def test_social_media(self):
+            cli = "https://www.example.com --find social"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            correct_output.scrape_phone_number = False
+            correct_output.scrape_email = False
+            correct_output.scrape_social_media  = True
+            correct_output.documents = {}
+            self.assertEqual(vars(c), vars(correct_output))
+
+        def test_phone_number(self):
+            cli = "https://www.example.com --find phone"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            correct_output.scrape_phone_number = True
+            correct_output.scrape_email = False
+            correct_output.scrape_social_media  = False
+            correct_output.documents = {}
+            self.assertEqual(vars(c), vars(correct_output))
+
+        def test_email(self):
+            cli = "https://www.example.com --find email"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            correct_output.scrape_phone_number = False
+            correct_output.scrape_email = True
+            correct_output.scrape_social_media  = False
+            correct_output.documents = {}
+            self.assertEqual(vars(c), vars(correct_output))
+
+        def test_multiple(self):
+            cli = "https://www.example.com --find email phone social docs"
+            namespace = self.get_namespace(cli)
+            c = generate_crawler_config(namespace)
+            correct_output = CrawlerConfig()
+            correct_output.scrape_phone_number = True
+            correct_output.scrape_email = True
+            correct_output.scrape_social_media  = True
+            self.assertEqual(vars(c), vars(correct_output))
 
 
 if __name__ == "__main__":
