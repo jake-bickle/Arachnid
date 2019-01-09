@@ -1,18 +1,13 @@
 [
-    {
+     {
         "netloc": "www.example.org",
-        "path": [
+        "pages": [
             {
-                "name": "/index.html",
-                "accessible": true,
+                "path": "/index.html",
+                "title": "Homepage",
                 "email": [
                     "example@gmail.com",
                     "example2@gmail.com"
-                ],
-                "document": [
-                        "name": "my_personal_files.txt",
-                        "name": "boring_normal_file.docx",
-                        "name": "special_document.xyz"
                 ],
                 "social": [
                     {
@@ -26,48 +21,28 @@
                 ],
                 "custom_string_occurances": 5,
                 "custom_regex": [
-                        "1234",
-                        "Hello, world!"
+                    "1234",
+                    "qwertyuoi"
                 ],
                 "phone": [
                     "1-800-123-4567",
                     "123-345-6789"
                 ]
+            }
+        ],
+        "documents": [
+            {
+                "name": "my_presenation.pptx",
+                "type": "pptx",
+                "path": "/path/to/my_presenation.pptx"
+
             },
             {
-                "name": "/help.html",
-                "accessible": true,
-                "email": [
-                ],
-                "document": [
-                ],
-                "social": [
-                ],
-                "custom_string_occurances": 0,
-                "custom_regex": [
-                ],
-                "phone": [
-                ]
+                "name": "my_document.docx",
+                "type": "docx",
+                "path": "/path/to/my_document.docx"
+
             }
-        ]
-    },
-    {
-        "netloc": "www.example.com",
-        "path":[
-            {
-                "name": "/broken/page.html",
-                "accessible": false 
-            }
-        ]
-    },
-    {
-        "netloc": "my.example.com",
-        "path":[
-        ]
-    },
-    {
-        "netloc": "www.example.io",
-        "path":[
         ]
     }
 ]
