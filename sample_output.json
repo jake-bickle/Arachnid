@@ -5,29 +5,17 @@
             {
                 "path": "/index.html",
                 "title": "Homepage",
-                "email": [
-                    "example@gmail.com",
-                    "example2@gmail.com"
-                ],
-                "social": [
-                    {
-                        "link": "https://www.facebook.com/BillGates/",
-                        "site": "facebook"
-                    },
-                    {
-                        "link": "https://www.linkedin.com/in/jacob-bickle",
-                        "site": "linkedin"
-                    }
-                ],
-                "custom_string_occurances": 5,
-                "custom_regex": [
-                    "1234",
-                    "qwertyuoi"
-                ],
-                "phone": [
-                    "1-800-123-4567",
-                    "123-345-6789"
-                ]
+                "custom_string_occurances": 5
+            },
+            {
+                "path": "/",
+                "title": "Welcome to our example!",
+                "custom_string_occurances": 2
+            },
+            {
+                "path": "/blog/post-without-title",
+                "title": "post-without-title",
+                "custom_string_occurances": 0
             }
         ],
         "documents": [
@@ -43,6 +31,27 @@
                 "path": "/path/to/my_document.docx"
 
             }
+        ],
+        "phone_numbers": [
+            "1-800-123-4567",
+            "123-345-6789"
+        ],
+        "social_media": [
+            {
+                "link": "https://www.facebook.com/BillGates/",
+                "site": "facebook"
+            },
+            {
+                "link": "https://www.linkedin.com/in/jacob-bickle",
+                "site": "linkedin"
+            }
+        ],
+        "emails": [
+            "example@gmail.com",
+            "example2@gmail.com"
+        ],
+        "custom_regex":[
+            "1234",
+            "qwertyuoi"
         ]
-    }
 ]
