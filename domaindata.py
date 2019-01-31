@@ -6,7 +6,7 @@ class SetToList:
 
 class DomainData:
     """The output of the crawler. Data is contained in sets, and converted to lists
-       for json.dumps(). The purpose is to have unique data only. """
+       for json.dumps(). The purpose is to have unique data only."""
 
     def __init__(self, netloc):
         p_n = tldextract.extract(netloc)
@@ -20,7 +20,7 @@ class DomainData:
 
     def add_page(self, netloc, page):
         sub = self._ensure_subdomain(netloc)
-        sub["pages"].add(page)
+        sub["pages"].append(page)
 
     def add_phone(self, netloc, phone_number):
         sub = self._ensure_subdomain(netloc)
@@ -36,17 +36,18 @@ class DomainData:
 
     def add_document(self, netloc, document):
         sub = self._ensure_subdomain(netloc)
-        sub["documents"].add(document)
+        sub["documents"].append(document)
 
     def add_custom_regex(self, netloc, regex):
         sub = self._ensure_subdomain(netloc)
         sub["regex"].add(regex)
 
     def _new_subdomain(self, netloc):
+        # The majority of the data is held within sets to prevent duplicate data.
         self.throw_if_wrong_domain(netloc)
         sub = {"netloc": netloc,
-                "pages": set(),
-                "documents": set(),
+                "pages": list(),        # pages and documents will never get duplicate data, as the crawler will
+                "documents": list(),    # never crawl the same link twice
                 "phone_numbers": set(),
                 "social_media": set(),
                 "custom_regex": set(),
