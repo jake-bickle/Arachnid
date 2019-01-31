@@ -2,6 +2,18 @@ import re
 import urlparser
 from bs4 import BeautifulSoup
 
+class HashableDict(dict):
+    """Solution to adding dicts to sets so that DomainData has unique data.
+       It is important that once a hashabledict has been hashed, that you
+       may NOT change its data."""
+
+    def __key(self):
+        return tuple((k,self[k]) for k in sorted(self))
+    def __hash__(self):
+        return hash(self.__key())
+    def __eq__(self, other):
+        return self.__key() == other.__key()
+
 class RegexPatterns:
     LINK = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
@@ -50,7 +62,9 @@ class Scraper(BeautifulSoup):
         if links is not None:
             for link in links:
                 if urlparser.is_social_media_profile(link):
-                    media = {"link": link, "domain": urlparser.parse_url(link).domain}
+                    media = HashableDict()
+                    media["link"] = link
+                    media["domain"] = urlparser.parse_url(link).domain
                     found_social.append(media)
         return found_social
 
