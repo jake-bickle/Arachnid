@@ -1,8 +1,11 @@
 import json
 import tldextract
 
-class SetToList:
-    pass
+class SetToList(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)
 
 class DomainData:
     """The output of the crawler. Data is contained in sets, and converted to lists
@@ -16,7 +19,7 @@ class DomainData:
         self._new_subdomain(netloc)
         
     def dumps(self, **kwargs):
-        pass
+        return json.dumps(self.subdomain_data, cls=SetToList, **kwargs)
 
     def add_page(self, netloc, page):
         sub = self._ensure_subdomain(netloc)
@@ -48,6 +51,7 @@ class DomainData:
         sub = {"netloc": netloc,
                 "pages": list(),        # pages and documents will never get duplicate data, as the crawler will
                 "documents": list(),    # never crawl the same link twice
+                "emails": set(),
                 "phone_numbers": set(),
                 "social_media": set(),
                 "custom_regex": set(),
