@@ -83,17 +83,13 @@ class Crawler:
             self._parse_page(r, p_url)
             for href in Scraper(r.text, "html.parser").find_all_hrefs():
                 self.schedule.schedule_url(urlparser.join_url(url, href, allow_fragments=True))
+            page_info = {"path": p_url.get_extension(), "title": "placeholdertitle","custom_string_occurances": -1, "code": r.status_code }
+            self.output.add_page(p_url.get_netloc(), page_info)
         else:
             parser = responseparser.DocumentResponse(r, self.config.documents)
             data = parser.extract()
             if data:
                 self.output.add_document(p_url.get_netloc(), data)
-
-    def _get_netloc_from_output(self, netloc):
-        for dictionary in self.output:
-            if dictionary["netloc"] == netloc:
-                return dictionary
-        return None
 
     # TODO Find all string occurances
     def _parse_page(self, response, parsed_url):
