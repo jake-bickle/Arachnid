@@ -4,17 +4,20 @@
             "pages": [{
                     "path": "/index.html",
                     "title": "Homepage",
-                    "custom_string_occurances": 5
+                    "custom_string_occurances": 5,
+                    "code": 202
                 },
                 {
                     "path": "/",
                     "title": "Welcome to our example!",
-                    "custom_string_occurances": 2
+                    "custom_string_occurances": 2,
+                    "code": 202
                 },
                 {
                     "path": "/blog/post-without-title",
                     "title": "post-without-title",
-                    "custom_string_occurances": 0
+                    "custom_string_occurances": 0,
+                    "code": 202
                 }
             ],
             "documents": [{
