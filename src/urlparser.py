@@ -2,6 +2,7 @@ import tldextract
 import urllib.parse
 from collections import namedtuple
 
+
 class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])):
     def get_url(self):
         url = self.get_base()
@@ -39,13 +40,19 @@ class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "s
             url += '#' + self.fragment
         return url
 
-def parse_url(url=""):
+
+def parse_url(url="", allow_fragments=True):
+    if not allow_fragments:
+        url = urllib.parse.urldefrag(url)[0]
     u_rslt = urllib.parse.urlparse(url)
     e_rslt = tldextract.extract(u_rslt.netloc)
-    return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path, u_rslt.params, u_rslt.query, u_rslt.fragment)
+    return ParseResult(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path,
+                       u_rslt.params, u_rslt.query, u_rslt.fragment)
+
 
 def join_url(base="", path="", allow_fragments=True):
     return urllib.parse.urljoin(base, path, allow_fragments)
+
 
 def same_domain(url1, url2):
     if not isinstance(url1, ParseResult):
