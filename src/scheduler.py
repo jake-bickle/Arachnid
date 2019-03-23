@@ -25,13 +25,14 @@ class DomainBlock:
     def next_url(self):
         try:
             ext = self.extensions_to_crawl.pop()
-        except(IndexError):
+        except IndexError:
             return None
         url = urlparser.join_url(self.base, ext) 
         return url
 
     def extension_already_added(self, extension):
         return extension in self.extensions_to_crawl
+
 
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
@@ -51,13 +52,11 @@ class Scheduler:
         parsed_url = urlparser.parse_url(url)
         if not urlparser.same_domain(parsed_url, self.seed_url) or self.has_been_crawled(url):
             return False
-        block = self._get_domain_block(parsed_url)
-        if block is None:
-            block = DomainBlock(parsed_url)
-            self.blocks_to_crawl.append(block)
-            return True
-        else:
-            return block.add_extension(parsed_url.get_extension())
+        for filter in self.filters:
+            if filter.is_filtered(url):
+                return False
+        block = self._ensure_domain_block(parsed_url)
+        return block.add_extension(parsed_url.get_extension())
 
     def next_url(self):
         if not self.blocks_to_crawl: 
@@ -78,3 +77,9 @@ class Scheduler:
                 return block
         return None
 
+    def _ensure_domain_block(self, parsed_url):
+        block = self._get_domain_block(parsed_url)
+        if block is None:
+            block = DomainBlock(parsed_url)
+            self.blocks_to_crawl.append(block)
+        return block
