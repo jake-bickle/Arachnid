@@ -49,8 +49,8 @@ class Scheduler:
             - It has already been crawled
             - It has already been scheduled
         """
-        parsed_url = urlparser.parse_url(url)
-        if not urlparser.same_domain(parsed_url, self.seed_url) or self.has_been_crawled(url):
+        parsed_url = urlparser.parse_url(url, allow_fragments=False)
+        if not urlparser.same_domain(parsed_url, self.seed_url) or self.has_been_crawled(parsed_url.get_url()):
             return False
         for filter in self.filters:
             if filter.is_filtered(url):
