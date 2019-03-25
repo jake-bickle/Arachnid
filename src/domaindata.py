@@ -1,11 +1,13 @@
 import json
 import tldextract
 
+
 class SetToList(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
             return list(obj)
         return json.JSONEncoder.default(self, obj)
+
 
 class DomainData:
     """The output of the crawler. Data is contained in sets, and converted to lists
@@ -44,7 +46,7 @@ class DomainData:
         sub["documents"].append(document)
 
     def add_custom_regex(self, netloc, regex):
-        self.data["regex"].add(regex)
+        self.data["custom_regex"].add(regex)
 
     def _new_subdomain(self, netloc):
         self.throw_if_wrong_domain(netloc)
