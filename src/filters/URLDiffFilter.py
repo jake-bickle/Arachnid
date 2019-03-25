@@ -12,7 +12,7 @@ class URLDiffFilter:
         self.previous_url = ""
 
     def is_filtered(self, p_url):
-        url = p_url.get_url(trim_extras=True)
+        url = p_url.get_url(trim_parameters=True)
         if self.diff(url, self.previous_url) <= self.acceptable_diff:
             self.flags += 1
         else:
