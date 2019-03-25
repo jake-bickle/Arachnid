@@ -4,9 +4,10 @@ from collections import namedtuple
 
 
 class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])):
-    def get_url(self, trim_parameters=False):
+
+    def get_url(self, trim_extension=False):
         url = self.get_base()
-        if trim_parameters:
+        if trim_extension:
             url += self.path
         else:
             url += self.get_extension()

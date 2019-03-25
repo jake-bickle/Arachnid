@@ -5,6 +5,7 @@ import crawler_enums
 from scraper import RegexPatterns
 from crawler import Crawler, CrawlerConfig
 
+
 class AgentAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
         aliases = { 'g': "google",

@@ -3,9 +3,9 @@ import responseparser
 import random
 import urlparser
 import timewidgets
-import json
 import crawler_enums
 
+from URL import URL
 from scheduler import Scheduler
 from scraper import Scraper
 from domaindata import DomainData
@@ -55,15 +55,15 @@ class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         self.config = config
         self.seed = seed
+        self.schedule = Scheduler(seed)
         p_seed = urlparser.parse_url(seed)
         self.output = DomainData(p_seed.get_netloc());
 
     def crawl(self):
-        self.schedule = Scheduler(self.seed)
         timer = timewidgets.Timer()
         timer.start()
         next_url = self.schedule.next_url()
-        while (next_url):
+        while next_url:
             sw = timewidgets.Stopwatch(random.choice(self.config.delay))
             sw.start()
             if timer.elapsed() > 30:  
@@ -76,15 +76,19 @@ class Crawler:
 
     def _crawl_page(self, url):
         print(url)
-        p_url = urlparser.parse_url(url)
         r = requests.get(url, headers={"User-Agent": self.config.agent})
-        # TODO Add page to output
+        credits = url.relinquish_credits()
         if "text/html" in r.headers["content-type"]:
-            self._parse_page(r, p_url)
-            for href in Scraper(r.text, "html.parser").find_all_hrefs():
-                self.schedule.schedule_url(urlparser.join_url(url, href, allow_fragments=True))
-            page_info = {"path": p_url.get_extension(), "title": "placeholdertitle","custom_string_occurances": -1, "code": r.status_code }
-            self.output.add_page(p_url.get_netloc(), page_info)
+            self._parse_page(r, url)
+            hrefs = Scraper(r.text, "html.parser").find_all_hrefs()
+            for href in hrefs:
+                url_to_add = URL(urlparser.join_url(url.get_url(), href, allow_fragments=False), credits[1])
+                """ TODO The number of hrefs doesn't necessarily mean they are "correct" hrefs
+                 (some could be tels, for example)"""
+                self.schedule.schedule_url(url_to_add, len(hrefs))
+            page_info = {"path": url.get_extension(), "title": "placeholdertitle",
+                         "custom_string_occurances": -1, "code": r.status_code}
+            self.output.add_page(url.get_netloc(), page_info)
         else:
             parser = responseparser.DocumentResponse(r, self.config.documents)
             data = parser.extract()

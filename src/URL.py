@@ -5,12 +5,15 @@ _cnt = namedtuple("Credits", ["Lambda", "Per_page"])
 
 
 class URL:
+    """ A URL class that holds the the urlparser's ParseResult namedtuple as well as amount of credits,
+        used for the AOPIC algorithm
+    """
     def __init__(self, url="", credits=0, allow_fragments=True):
         self.parsed_url = urlparser.parse_url(url, allow_fragments)
         self.credits = credits
 
     def get_url(self, trim_extension=False):
-        return self.parsed_url.get_url(self, trim_extension)
+        return self.parsed_url.get_url(trim_extension)
 
     def get_base(self):
         return self.parsed_url.get_base()
@@ -36,3 +39,9 @@ class URL:
 
     def _calc_page_credits(self, num_of_pages):
         return (self.credits - self._calc_lambda_credits()) / num_of_pages
+
+    def __repr__(self):
+        return self.parsed_url + ": " + str(self.credits) + " credits"
+
+    def __str__(self):
+        return self.get_url()
