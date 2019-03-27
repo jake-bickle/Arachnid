@@ -5,12 +5,10 @@ from collections import namedtuple
 
 class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])):
 
-    def get_url(self, trim_extension=False):
+    def get_url(self):
         url = self.get_base()
-        if trim_extension:
-            url += self.path
-        else:
-            url += self.get_extension()
+        url += self.path
+        url += self.get_extension()
         return url
 
     def get_base(self):
@@ -59,6 +57,15 @@ def join_url(base="", path="", allow_fragments=True):
 
 
 def same_domain(url1, url2):
+    """
+        url1 and url2 are concidered to be the same domain if
+        - The "domain" string match
+        - The "suffix" string match
+        Ex:
+            xyz.example.com
+            www.example.com
+        Would return true
+    """
     if not isinstance(url1, ParseResult):
         url1 = parse_url(url1)
     if not isinstance(url2, ParseResult):
@@ -67,6 +74,18 @@ def same_domain(url1, url2):
 
 
 def is_subdomain(url1, url2):
+    """
+        url1 and url2 are concidered to be a subdomain of each other if
+        - They are in the same domain
+        - Their "subdomain" strings do not match
+        Ex:
+            xyz.example.com
+            www.example.com
+        Would return true whereas
+            www.example.com
+            www.example.com
+        WOuld return false
+    """
     if not isinstance(url1, ParseResult):
         url1 = parse_url(url1)
     if not isinstance(url2, ParseResult):
