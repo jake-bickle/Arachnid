@@ -1,5 +1,5 @@
 import urlparser
-from filters import URLDiffFilter
+from filters import KeywordFilter
 from collections import deque
 
 
@@ -43,7 +43,9 @@ class Scheduler:
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
         self.seed_url = urlparser.parse_url(url)
-        self.filters = [URLDiffFilter.URLDiffFilter()]
+        self.filters = []
+        self.filters = [KeywordFilter.KeywordFilter("calendar", 25),
+                        KeywordFilter.KeywordFilter("events", 25)]
         self.schedule_url(url)
 
     def schedule_url(self, url=""):
@@ -51,7 +53,7 @@ class Scheduler:
             - It is not a subdomain of the domain the Scheduler object has been created for
             - It has already been crawled
             - It has already been scheduled
-            - It has not passed the URLDiffFilter
+            - It has not passed any of other filters
         """
         parsed_url = urlparser.parse_url(url, allow_fragments=False)
         if not urlparser.same_domain(parsed_url, self.seed_url) or self.has_been_crawled(parsed_url.get_url()):
