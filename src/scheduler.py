@@ -6,7 +6,7 @@ class DomainBlock:
     def __init__(self, url, starter_credits=100000):
         self.netloc = url.get_netloc()
         self.virtual_credits = 0
-        self.history = {url: starter_credits}
+        self.history = {url: starter_credits}  # URL ParseResult with their associated credits
 
     def do_aopic(self, urls, crawled_url):
         credits = self.history[crawled_url]
@@ -18,7 +18,7 @@ class DomainBlock:
             per_page = (credits - tax) / len(urls)
             for url in urls:
                 try:
-                    self.history[url.get_url()] += per_page
+                    self.history[url] += per_page
                 except KeyError:
                     self.history[url] = per_page
         if self._greatest_url()[1] < self.virtual_credits:
