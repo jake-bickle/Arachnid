@@ -9,7 +9,6 @@ class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "s
     @lru_cache(maxsize=1)
     def get_url(self):
         url = self.get_base()
-        url += self.path
         url += self.get_extension()
         return url
 
