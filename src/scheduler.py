@@ -12,7 +12,6 @@ class DomainBlock:
         credits = self.history[crawled_url]
         tax = credits / 10
         self.virtual_credits += tax
-        print("Virtual credits at: " + str(self.virtual_credits))
         self.history[crawled_url] = 0
         if len(urls) > 0:
             per_page = (credits - tax) / len(urls)
@@ -26,12 +25,9 @@ class DomainBlock:
             self.virtual_credits = 0
             self.history = {key: value + bonus for key, value in self.history.items()}
 
-    # TODO This will never return None when domain block is ready
     def next_url(self):
-        # Debugging purposes
         greatest = self._greatest_url()
         print(greatest[0].get_url() + "\n   Credits: " + str(greatest[1]))
-        # Done debugging
         return self._greatest_url()[0]
 
     def _greatest_url(self):
