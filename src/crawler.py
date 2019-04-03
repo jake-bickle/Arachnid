@@ -3,7 +3,6 @@ import responseparser
 import random
 import urlparser
 import timewidgets
-import json
 import crawler_enums
 
 from scheduler import Scheduler
@@ -50,16 +49,17 @@ class CrawlerConfig:
         self.custom_str = None
         self.custom_regex = None
 
-# TODO: Fix: New subdomains won't have fuzz or robots added 
+
+# TODO: Fix: New subdomains won't have fuzz or robots added
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         self.config = config
         self.seed = seed
+        self.schedule = Scheduler(self.seed)
         p_seed = urlparser.parse_url(seed)
         self.output = DomainData(p_seed.get_netloc());
 
     def crawl(self):
-        self.schedule = Scheduler(self.seed)
         timer = timewidgets.Timer()
         timer.start()
         next_url = self.schedule.next_url()
@@ -78,7 +78,6 @@ class Crawler:
         print(url)
         p_url = urlparser.parse_url(url)
         r = requests.get(url, headers={"User-Agent": self.config.agent})
-        # TODO Add page to output
         if "text/html" in r.headers["content-type"]:
             self._parse_page(r, p_url)
             for href in Scraper(r.text, "html.parser").find_all_hrefs():
@@ -95,21 +94,18 @@ class Crawler:
     def _parse_page(self, response, parsed_url):
         scraper = Scraper(response.text, "html.parser")
         netloc = parsed_url.get_netloc()
-        if (self.config.scrape_email):
+        if self.config.scrape_email:
             for email in scraper.find_all_emails():
                 self.output.add_email(netloc, email)
-        if (self.config.scrape_phone_number):
+        if self.config.scrape_phone_number:
             for number in scraper.find_all_phones():
                 self.output.add_phone(netloc, number)
-        if (self.config.scrape_social_media):
+        if self.config.scrape_social_media:
             for social in scraper.find_all_social():
                 self.output.add_social(netloc, social)
-        if (self.config.custom_regex):
+        if self.config.custom_regex:
             for regex in scraper.find_all_regex(self.config.custom_regex):
                 self.output.add_custom_regex(netloc, regex)
-
-    # def _parse_document(self, response):
-        # pass
 
     def output_to_file(self, filename):
         with open(filename, "w") as f:
