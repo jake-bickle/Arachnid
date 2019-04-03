@@ -57,7 +57,7 @@ class Crawler:
         self.seed = seed
         self.schedule = Scheduler(self.seed)
         p_seed = urlparser.parse_url(seed)
-        self.output = DomainData(p_seed.get_netloc());
+        self.output = DomainData(p_seed.get_netloc())
 
     def crawl(self):
         timer = timewidgets.Timer()
@@ -80,17 +80,9 @@ class Crawler:
         r = requests.get(url, headers={"User-Agent": self.config.agent})
         if "text/html" in r.headers["content-type"]:
             self._parse_page(r, p_url)
-            for href in Scraper(r.text, "html.parser").find_all_hrefs():
-                self.schedule.schedule_url(urlparser.join_url(url, href, allow_fragments=True))
-            page_info = {"path": p_url.get_extension(), "title": "placeholdertitle","custom_string_occurances": -1, "code": r.status_code }
-            self.output.add_page(p_url.get_netloc(), page_info)
         else:
-            parser = responseparser.DocumentResponse(r, self.config.documents)
-            data = parser.extract()
-            if data:
-                self.output.add_document(p_url.get_netloc(), data)
+            self._parse_document(r, p_url)
 
-    # TODO Find all string occurances
     def _parse_page(self, response, parsed_url):
         scraper = Scraper(response.text, "html.parser")
         netloc = parsed_url.get_netloc()
@@ -106,6 +98,21 @@ class Crawler:
         if self.config.custom_regex:
             for regex in scraper.find_all_regex(self.config.custom_regex):
                 self.output.add_custom_regex(netloc, regex)
+
+        for href in Scraper(response.text, "html.parser").find_all_hrefs():
+            self.schedule.schedule_url(urlparser.join_url(parsed_url.get_url(), href, allow_fragments=True))
+        page_info = {"path": parsed_url.get_extension(),
+                     "title": scraper.title.string if scraper.title.string else parsed_url.path.split("/")[-1],
+                     "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
+                     "code": response.status_code}
+        self.output.add_page(parsed_url.get_netloc(), page_info)
+
+    def _parse_document(self, response, parsed_url):
+        parser = responseparser.DocumentResponse(response, self.config.documents)
+        data = parser.extract()
+        if data:
+            data["path"] = parsed_url.path
+            self.output.add_document(parsed_url.get_netloc(), data)
 
     def output_to_file(self, filename):
         with open(filename, "w") as f:
