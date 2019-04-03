@@ -2,13 +2,25 @@ import re
 import urlparser
 from bs4 import BeautifulSoup
 
+class HashableDict(dict):
+    """Solution to adding dicts to sets so that DomainData has unique data.
+       It is important that once a hashabledict has been hashed, that you
+       may NOT change its data."""
+
+    def __key(self):
+        return tuple((k,self[k]) for k in sorted(self))
+    def __hash__(self):
+        return hash(self.__key())
+    def __eq__(self, other):
+        return self.__key() == other.__key()
+
 class RegexPatterns:
     LINK = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
     # TODO This does NOT include German phone numbers. Possible fix in future patch
     PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
 
-class Scraper(BeautifulSoup, RegexPatterns):
+class Scraper(BeautifulSoup):
     def find_all_hrefs(self):
         anchors = self.find_all("a")
         hrefs = []
@@ -20,11 +32,11 @@ class Scraper(BeautifulSoup, RegexPatterns):
         return hrefs
 
     def find_all_emails(self):
-        string_emails = [email for email in self.find_all(string=self.EMAIL)]
+        string_emails = [email for email in self.find_all(string=RegexPatterns.EMAIL)]
         href_emails = [email.get("href") for email in self.find_all(href=re.compile(r"mailto:"))]
         sanitised_emails = []
         for email in string_emails:
-            emails = re.findall(self.EMAIL, email)
+            emails = re.findall(RegexPatterns.EMAIL, email)
             for email in emails:
                 sanitised_emails.append(email)
         for email in href_emails:
@@ -32,11 +44,11 @@ class Scraper(BeautifulSoup, RegexPatterns):
         return sanitised_emails
 
     def find_all_phones(self):
-        string_phones = [phone for phone in self.find_all(string=self.PHONE)]
+        string_phones = [phone for phone in self.find_all(string=RegexPatterns.PHONE)]
         href_phones = [anchor.get("href") for anchor in self.find_all(href=re.compile(r"tel:"))]
         sanitised_phones = []
         for phone in string_phones:
-            phones = re.findall(self.PHONE, phone)
+            phones = re.findall(RegexPatterns.PHONE, phone)
             for phone in phones:
                 sanitised_phones.append(phone.strip())
         for phone in href_phones:
@@ -46,16 +58,18 @@ class Scraper(BeautifulSoup, RegexPatterns):
     def find_all_social(self):
         found_social = list()
         html_doc = str(self)
-        links = self.LINK.findall(html_doc) 
+        links = RegexPatterns.LINK.findall(html_doc) 
         if links is not None:
             for link in links:
                 if urlparser.is_social_media_profile(link):
-                    media = {"link": link, "domain": urlparser.parse_url(link).domain}
+                    media = HashableDict()
+                    media["link"] = link
+                    media["domain"] = urlparser.parse_url(link).domain
                     found_social.append(media)
         return found_social
 
-    def find_all_regex(self, string=""):
-        regex = re.compile(string)
+    def find_all_regex(self, pattern=""):
+        regex = re.compile(pattern)
         sanitized_strings = []
         strings_with_patterns = [string for string in self.find_all(string=re.compile(regex))]
         for string in strings_with_patterns:

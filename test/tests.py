@@ -149,8 +149,8 @@ class test_scraper(unittest.TestCase):
         social = self.scraper.find_all_social()
         correct_output = [{"link": "https://www.linkedin.com/in/jacob-bickle", "domain": "linkedin"},
                           {"link": "https://www.facebook.com/BillGates/", "domain": "facebook"},
-                          {"link": "https://www.github.com/TobinShields", "domain": "github"},
-                          {"link": "https://some-person.tumblr.com/", "domain": "tumblr"}]
+                          {"link": "https://some-person.tumblr.com/", "domain": "tumblr"},
+                          {"link": "https://www.github.com/TobinShields", "domain": "github"}]
         self.assertEqual(social, correct_output)
 
     def test_find_all_regex(self):
@@ -217,53 +217,53 @@ class test_scraper(unittest.TestCase):
 from scheduler import DomainBlock
 from collections import deque
 class test_domain_block(unittest.TestCase):
-    def test_constructor_paths_to_crawl_base_directory(self):
+    def test_constructor_extensions_to_crawl_base_directory(self):
         parsed_url = urlparser.parse_url("https://www.example.com/")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/"])
-        self.assertEqual(block.paths_to_crawl, correct_output)
+        self.assertEqual(block.extensions_to_crawl, correct_output)
 
-    def test_constructor_paths_to_crawl_no_path(self):
+    def test_constructor_extensions_to_crawl_no_path(self):
         parsed_url = urlparser.parse_url("https://www.example.com")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/"])
-        self.assertEqual(block.paths_to_crawl, correct_output)
+        self.assertEqual(block.extensions_to_crawl, correct_output)
 
-    def test_constructor_paths_to_crawl_with_path(self):
+    def test_constructor_extensions_to_crawl_with_path(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/path/to/location"])
-        self.assertEqual(block.paths_to_crawl, correct_output)
+        self.assertEqual(block.extensions_to_crawl, correct_output)
 
-    def test_add_path(self):
+    def test_add_extension(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
-        block.add_path("/other/path")
+        block.add_extension("/other/path")
         correct_output = deque(["/path/to/location", "/other/path"])
-        self.assertEqual(sorted(block.paths_to_crawl), sorted(correct_output))
+        self.assertEqual(sorted(block.extensions_to_crawl), sorted(correct_output))
 
-    def test_add_path_already_added(self):
+    def test_add_extension_already_added(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
-        block.add_path("/other/path")
+        block.add_extension("/other/path")
         correct_output = deque(["/path/to/location", "/other/path"])
-        self.assertFalse(block.add_path("/other/path"))
+        self.assertFalse(block.add_extension("/other/path"))
 
-    def test_next_path(self):
+    def test_next_url(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         correct_output = "https://www.example.com/path/to/location"
         self.assertEqual(block.next_url(), correct_output)
 
-    def test_next_path_multiple_adds(self):
+    def test_next_next_url_multiple_adds(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
-        block.add_path("/other/page")
-        block.add_path("/other")
+        block.add_extension("/other/page")
+        block.add_extension("/other")
         correct_output = "https://www.example.com/other"
         self.assertEqual(block.next_url(), correct_output)
 
-    def test_next_path_empty(self):
+    def test_next_url_empty(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         block.next_url()
