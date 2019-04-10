@@ -1,9 +1,10 @@
 import argparse
 import re
-import crawler_enums
 
-from scraper import RegexPatterns
-from crawler import Crawler, CrawlerConfig
+from .crawler_enums import Agent, Delay, Amount
+from .scraper import RegexPatterns
+from .crawler import Crawler, CrawlerConfig
+
 
 class AgentAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
@@ -16,24 +17,28 @@ class AgentAction(argparse.Action):
                     'f': "firefox",
                     'm': "android" }
         agent = aliases[value]
-        full_user_agent = crawler_enums.Agent[agent.upper()].value
+        full_user_agent = Agent[agent.upper()].value
         setattr(namespace, self.dest, full_user_agent)
+
 
 class DelayAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        delay_range = crawler_enums.Delay[value.upper()].value
+        delay_range = Delay[value.upper()].value
         setattr(namespace, self.dest, delay_range)
+
 
 class AmountAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        amount = crawler_enums.Amount[value.upper()]
+        amount = Amount[value.upper()]
         setattr(namespace, self.dest, amount)
+
 
 def is_url(url):
     if not re.match(RegexPatterns.LINK, url):
         msg = url + " is not a valid URL"
         raise argparse.ArgumentTypeError(msg)
     return url
+
 
 parser = argparse.ArgumentParser(description="TODO: Create help description",
                                  argument_default=argparse.SUPPRESS)
@@ -119,6 +124,7 @@ aggressions.add_argument("--aggressive",
                     action="store_true", 
                     help="Use a preset of options to crawl loudly")
 
+
 def generate_crawler_config(namespace):
     config = CrawlerConfig()
     # Apply pre-configs
@@ -164,6 +170,7 @@ def generate_crawler_config(namespace):
 
     return config
 
+
 def generate_crawler():
     args = parser.parse_args()
     c = Crawler(args.seed)
@@ -171,10 +178,11 @@ def generate_crawler():
     c.config = config
     return c
 
+
 def main():
     c = generate_crawler()
     c.crawl()
 
+
 if __name__ == "__main__":
     main()
-

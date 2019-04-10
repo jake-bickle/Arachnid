@@ -1,2 +1,3 @@
-from arachnid import main
+from .arachnid import main
+
 main()

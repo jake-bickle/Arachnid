@@ -1,6 +1,6 @@
-import urlparser
 from collections import deque
 
+from . import urlparser
 
 class DomainBlock:
     """ Holds a stack of extensions to be crawled for an arbitrary net location 
