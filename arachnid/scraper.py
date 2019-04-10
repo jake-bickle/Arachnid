@@ -1,6 +1,8 @@
 import re
-import urlparser
 from bs4 import BeautifulSoup
+
+from . import urlparser
+
 
 class HashableDict(dict):
     """Solution to adding dicts to sets so that DomainData has unique data.
@@ -9,16 +11,20 @@ class HashableDict(dict):
 
     def __key(self):
         return tuple((k,self[k]) for k in sorted(self))
+
     def __hash__(self):
         return hash(self.__key())
+
     def __eq__(self, other):
         return self.__key() == other.__key()
+
 
 class RegexPatterns:
     LINK = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     EMAIL = re.compile(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
     # TODO This does NOT include German phone numbers. Possible fix in future patch
     PHONE = re.compile(r"[+]?[0-9]{0,3}[-\s]?[(]?[0-9]{3}[\s.)-]*?[0-9]{3}[\s.-]*?[0-9]{4}")
+
 
 class Scraper(BeautifulSoup):
     def find_all_hrefs(self):

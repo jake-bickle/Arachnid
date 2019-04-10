@@ -1,5 +1,6 @@
 import mimetypes
-import urlparser
+
+from . import urlparser
 
 
 def _get_matching_element(a, b):

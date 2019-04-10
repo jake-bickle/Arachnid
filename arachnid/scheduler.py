@@ -1,7 +1,6 @@
-import urlparser
-from filters import KeywordFilter
 from collections import deque
 
+from . import urlparser
 
 class DomainBlock:
     """ Holds a stack of extensions to be crawled for an arbitrary net location 
@@ -44,8 +43,6 @@ class Scheduler:
         self.crawled_urls = set()
         self.seed_url = urlparser.parse_url(url)
         self.filters = []
-        self.filters = [KeywordFilter.KeywordFilter("calendar", 25),
-                        KeywordFilter.KeywordFilter("events", 25)]
         self.schedule_url(url)
 
     def schedule_url(self, url=""):

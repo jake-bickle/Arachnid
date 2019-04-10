@@ -1,13 +1,13 @@
 import requests
-import responseparser
 import random
-import urlparser
-import timewidgets
-import crawler_enums
 
-from scheduler import Scheduler
-from scraper import Scraper
-from domaindata import DomainData
+from .scheduler import Scheduler
+from . import timewidgets
+from . import urlparser
+from . import responseparser
+from . import crawler_enums
+from .scraper import Scraper
+from .domaindata import DomainData
 
 class CrawlerConfig:
     def __init__(self):
