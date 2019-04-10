@@ -15,7 +15,7 @@ In addition, users can supply their own custom regular expressions, strings, or 
 
 ### Defualt Scan
 The default usage for Arachnid is as follows:
->python3 arachnid.py https://example.com
+> python3 -m arachnid https://example.com
 
 This will scan using the default configuration which includes:
 * Scrape for the following things:
@@ -33,29 +33,29 @@ This will scan using the default configuration which includes:
 To help make this tool more useful, there are also two other preconfigured scan types that you can make use of: stealth and aggressive scans.
 
 **Stealth scan**
-> python3 arachnid.py https://example.com --stealth
+> python3 -m arachnid https://example.com --stealth
 
 See documentation for the full config of this scan--however, the general difference is that it uses no fuzzing, adds a delay, and uses a SearchBot agent header. This is supposed to help avoid detection from an IDS/IPS.  
 
 **Aggressive Scan**
-> python3 arachnid.py https://example.com --aggressive
+> python3 -m arachnid https://example.com --aggressive
 
 The aggressive scan adds a much higher degree of fuzzing (over 30,000 tries), includes no delay.
 
 ### Custom Scans
 Arachnid also allows users very granular control over how they want to scan to run. Here is a sample custom scan:
-> python3 arachnid.py -d https://example.com -find docs phone -A y -T 2 -file ".psd" -S "John Doe" -R "^\d{3}\s?\d{3}$" -F high
+> python3 -m arachnid.py https://example.com --find docs phone --agent y --delay medium --doc ".psd" --string "John Doe" --regex "^\d{3}\s?\d{3}$" --fuzz high
 
 Here is that scan broken down into its parts:
 ```
-    -d https://example.com  : Specifies the domain to target
-    -find docs phone        : Only scrapes for common documents and phone numbers
-    -A y                    : Uses the Yahoo SearchBot header sting
-    -T 2                    : Sets the timing delay to 2 (ranges from 0-4)
-    -file ".psd"            : In addition to common docs, the crawler will also look for .psd file
-    -S "John Doe"           : Searches for the string (case sensitive) of "Jon Doe".
-    -R  "^\d{3}\s?\d{3}$"   : Searches (and returns) any values that matches the provided regular expression
-    -F high                 : Sets the fuzzing level to fuzz for 'interesting' 10,000 pages
+    https://example.com           : Required argument, specifies the domain to target
+    --find docs phone             : Only scrapes for common documents and phone numbers
+    --agent y                     : Uses the Yahoo SearchBot header sting
+    --delay medium                : Sets the timing delay to medium, which is between 4 to 11 seconds
+    --doc ".psd"                  : In addition to common docs, the crawler will also look for .psd file
+    --string "John Doe"           : Searches for amount of occurances of "John Doe" on each page
+    --regex  "^\d{3}\s?\d{3}$"    : Searches for any values that matches the provided regular expression
+    --fuzz high                   : Sets the fuzzing level to fuzz for 'interesting' 10,000 pages
 ```
 This does not represent all of the custom scan options available, but should give a snapshot of what Arachnid can do. For a full breakdown on each option please refer to the full documentation.
 
