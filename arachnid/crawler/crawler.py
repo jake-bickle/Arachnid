@@ -1,11 +1,7 @@
 import requests
-import random
 
 from .scheduler import Scheduler
-from . import timewidgets
-from . import urlparser
-from . import responseparser
-from . import crawler_enums
+from crawler import crawler_enums, responseparser, urlparser
 from .scraper import Scraper
 from .domaindata import DomainData
 
@@ -59,29 +55,17 @@ class Crawler:
         p_seed = urlparser.parse_url(seed)
         self.output = DomainData(p_seed.get_netloc())
 
-    def crawl(self):
-        timer = timewidgets.Timer()
-        timer.start()
-        next_url = self.schedule.next_url()
-        while (next_url):
-            sw = timewidgets.Stopwatch(random.choice(self.config.delay))
-            sw.start()
-            if timer.elapsed() > 30:  
-                self.output_to_file("arachnid_data.json")
-                timer.restart()
-            self._crawl_page(next_url)
-            next_url = self.schedule.next_url()
-            sw.wait()  # Delay the crawler to throw off automated systems
-        self.output_to_file("arachnid_data.json")
-
-    def _crawl_page(self, url):
-        print(url)
-        p_url = urlparser.parse_url(url)
-        r = requests.get(url, headers={"User-Agent": self.config.agent})
+    def crawl_next(self):
+        p_url = self.schedule.next_url()
+        if p_url is None:
+            return False
+        print(p_url)
+        r = requests.get(p_url.get_url(), headers={"User-Agent": self.config.agent})
         if "text/html" in r.headers["content-type"]:
             self._parse_page(r, p_url)
         else:
             self._parse_document(r, p_url)
+        return True
 
     def _parse_page(self, response, parsed_url):
         scraper = Scraper(response.text, "html.parser")
@@ -114,8 +98,6 @@ class Crawler:
             data["path"] = parsed_url.path
             self.output.add_document(parsed_url.get_netloc(), data)
 
-    def output_to_file(self, filename):
-        with open(filename, "w") as f:
-            data = self.output.dumps(indent=4)
-            f.write(data)
-            
+    def dumps(self, **kwargs):
+        return self.output.dumps(**kwargs)
+

@@ -1,7 +1,7 @@
 import re
 from bs4 import BeautifulSoup
 
-from . import urlparser
+from crawler import urlparser
 
 
 class HashableDict(dict):

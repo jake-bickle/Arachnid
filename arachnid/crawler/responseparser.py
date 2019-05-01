@@ -1,6 +1,6 @@
 import mimetypes
 
-from . import urlparser
+from crawler import urlparser
 
 
 def _get_matching_element(a, b):

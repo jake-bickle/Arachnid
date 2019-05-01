@@ -2,6 +2,7 @@ from collections import deque
 
 from . import urlparser
 
+
 class DomainBlock:
     """ Holds a stack of extensions to be crawled for an arbitrary net location 
         An extension is the portion of the URL that occurs after the suffix

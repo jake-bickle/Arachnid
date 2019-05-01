@@ -1,9 +1,11 @@
 import argparse
 import re
+import random
 
-from .crawler_enums import Agent, Delay, Amount
-from .scraper import RegexPatterns
-from .crawler import Crawler, CrawlerConfig
+from . import crawler
+from .timewidgets import Stopwatch, Timer
+from crawler.crawler_enums import Agent, Delay, Amount
+from crawler.scraper import RegexPatterns
 
 
 class AgentAction(argparse.Action):
@@ -125,63 +127,35 @@ aggressions.add_argument("--aggressive",
                     help="Use a preset of options to crawl loudly")
 
 
-def generate_crawler_config(namespace):
-    config = CrawlerConfig()
-    # Apply pre-configs
-    if "stealth" in namespace:
-        config.set_stealth()
-    elif "aggressive" in namespace:
-        config.set_aggressive()
-
-    # Parse --find options given by user
-    if "find" in namespace:
-        supplied_options = [opt.lower() for opt in namespace.find]
-        if "all" in supplied_options and "none" in supplied_options:
-            print("\"all\" and \"none\" options are mutually exclusive in --find")
-            raise SystemExit
-        has_occurred = {
-                    "phone": False,
-                    "email": False,
-                    "social": False,
-                    "docs": False,
-                     }
-        if "all" in supplied_options:
-            for k in has_occurred:
-                has_occurred[k] = True
-        elif "none" in supplied_options:
-            for k in has_occurred:
-                has_occurred[k] = False
-        else:
-            for k in has_occurred:
-                if k in supplied_options:
-                    has_occurred[k] = True
-        config.scrape_phone_number = has_occurred["phone"]
-        config.scrape_email = has_occurred["email"]
-        config.scrape_social_media = has_occurred["social"]
-        if not has_occurred["docs"]:
-            config.documents = set()
-
-    config.documents.update(namespace.custom_doc)
-    
-    # Apply all argparse arguments that are can be directly translated
-    for k, v in vars(namespace).items():
-        if hasattr(config, k):
-            setattr(config, k, v)
-
-    return config
-
-
+"""
 def generate_crawler():
     args = parser.parse_args()
     c = Crawler(args.seed)
     config = generate_crawler_config(args)
     c.config = config
     return c
+"""
+
+
+def crawl():
+    args = parser.parse_args()
+    c = crawler.get_crawler(args)
+    delay_sw = Stopwatch(random.choice(args.delay))
+    timer = Timer()
+    timer.start()
+    while c.crawl_next():
+        delay_sw.start()
+        if timer.elapsed() > 30:
+            with open("arachnid_data.json") as f:
+                f.write(c.dumps(indent=4))
+            timer.restart()
+        delay_sw.wait()  # Delay the crawler to throw off automated systems
+    with open("arachnid_data.json") as f:
+        f.write(c.dumps(indent=4))
 
 
 def main():
-    c = generate_crawler()
-    c.crawl()
+    crawl()
 
 
 if __name__ == "__main__":
