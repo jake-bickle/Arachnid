@@ -4,8 +4,6 @@ import random
 
 from . import crawler
 from .timewidgets import Stopwatch, Timer
-from crawler.crawler_enums import Agent, Delay, Amount
-from crawler.scraper import RegexPatterns
 
 
 class AgentAction(argparse.Action):
@@ -17,21 +15,21 @@ class AgentAction(argparse.Action):
                     'bd': "baidu",
                     'yd': "yandex",
                     'f': "firefox",
-                    'm': "android" }
+                    'm': "android"}
         agent = aliases[value]
-        full_user_agent = Agent[agent.upper()].value
+        full_user_agent = crawler.AgentTypes[agent.upper()].value
         setattr(namespace, self.dest, full_user_agent)
 
 
 class DelayAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        delay_range = Delay[value.upper()].value
+        delay_range = crawler.DelayTypes[value.upper()].value
         setattr(namespace, self.dest, delay_range)
 
 
 class AmountAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        amount = Amount[value.upper()]
+        amount = crawler.AmountTypes[value.upper()]
         setattr(namespace, self.dest, amount)
 
 
@@ -45,45 +43,45 @@ def is_url(url):
 parser = argparse.ArgumentParser(description="TODO: Create help description",
                                  argument_default=argparse.SUPPRESS)
 
-parser.add_argument("seed", 
+parser.add_argument("seed",
                     type=is_url,
                     help="The URL for the Crawler to begin its search from")
 
 parser.add_argument("-s", "--string",  # TODO Could this use nargs?
-                    dest="custom_str", 
+                    dest="custom_str",
                     help="TODO: string help")
 
-parser.add_argument("--case-sensitive", 
+parser.add_argument("--case-sensitive",
                     dest="custom_str_case_sensitive",
                     action="store_true",
-                    help="TODO") 
+                    help="TODO")
 
-parser.add_argument("-d", "--doc", 
-                    dest="custom_doc", 
-                    nargs='+', 
+parser.add_argument("-d", "--doc",
+                    dest="custom_doc",
+                    nargs='+',
                     default=[],
                     help="TODO: doc help")
 
 # TODO: Feature not in place yet
-# parser.add_argument("--doc-grab", 
+# parser.add_argument("--doc-grab",
                     # dest="download_doc",
-                    # action="store_true", 
+                    # action="store_true",
                     # help="Download documents found by the -d option")
 
-parser.add_argument("-r", "--regex", 
-                    dest="custom_regex", 
+parser.add_argument("-r", "--regex",
+                    dest="custom_regex",
                     help="A regular expression to be searched")
 
-parser.add_argument("-f", "--find", 
+parser.add_argument("-f", "--find",
                     dest="find",
-                    nargs='+', 
-                    choices=['phone', 'email', 'social', 'docs', 'all', 'none'], 
+                    nargs='+',
+                    choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
                     help="Find various information from a page. See man page for more details")
 
-parser.add_argument("-T", "--delay", 
-                    dest="delay", 
+parser.add_argument("-T", "--delay",
+                    dest="delay",
                     choices=["none", "low", "medium", "high"],
-                    action=DelayAction, 
+                    action=DelayAction,
                     help="TODO: timing help")
 
 parser.add_argument("--robots",
@@ -92,38 +90,38 @@ parser.add_argument("--robots",
                     help="Crawl the links gathered by robots.txt")
 
 # TODO: Feature not in place yet
-# parser.add_argument("-F", "--fuzz", 
-                    # dest="fuzz",  
-                    # choices=["none","low","medium","high","insane"], 
+# parser.add_argument("-F", "--fuzz",
+                    # dest="fuzz",
+                    # choices=["none","low","medium","high","insane"],
                     # action=AmountAction
                     # help="TODO: Fuzz help")
 
-parser.add_argument("-a", "--agent", 
-                    dest="agent", 
-                    choices=['g', 'b', 'y', 'd', 'bd', 'yd', 'f', 'm'], 
+parser.add_argument("-a", "--agent",
+                    dest="agent",
+                    choices=['g', 'b', 'y', 'd', 'bd', 'yd', 'f', 'm'],
                     action=AgentAction,
                     help="TODO: agent help")
 
 # TODO: Feature not in place yet
-# parser.add_argument("--page-only", 
-                    # dest="scrape_links", 
-                    # action="store_false", 
+# parser.add_argument("--page-only",
+                    # dest="scrape_links",
+                    # action="store_false",
                     # help="Find information about the given URL only")
 
-parser.add_argument("--no-subdomain", 
-                    dest="scrape_subdomains", 
-                    action="store_false", 
+parser.add_argument("--no-subdomain",
+                    dest="scrape_subdomains",
+                    action="store_false",
                     help="Don't crawl subdomains of the seed URL")
 
 aggressions = parser.add_mutually_exclusive_group()
-aggressions.add_argument("--stealth", 
-                    dest="stealth", 
-                    action="store_true", 
+aggressions.add_argument("--stealth",
+                    dest="stealth",
+                    action="store_true",
                     help="Use a preset of options to crawl quietly")
 
-aggressions.add_argument("--aggressive", 
-                    dest="aggressive", 
-                    action="store_true", 
+aggressions.add_argument("--aggressive",
+                    dest="aggressive",
+                    action="store_true",
                     help="Use a preset of options to crawl loudly")
 
 

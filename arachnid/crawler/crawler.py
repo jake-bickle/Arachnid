@@ -1,9 +1,10 @@
 import requests
 
+from . import crawler_enums, responseparser, urlparser
 from .scheduler import Scheduler
-from crawler import crawler_enums, responseparser, urlparser
 from .scraper import Scraper
 from .domaindata import DomainData
+
 
 class CrawlerConfig:
     def __init__(self):
