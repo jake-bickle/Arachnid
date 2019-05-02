@@ -34,7 +34,8 @@ class AmountAction(argparse.Action):
 
 
 def is_url(url):
-    if not re.match(RegexPatterns.LINK, url):
+    link = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
+    if not re.match(link, url):
         msg = url + " is not a valid URL"
         raise argparse.ArgumentTypeError(msg)
     return url
