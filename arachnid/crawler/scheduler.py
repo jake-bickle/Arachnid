@@ -39,22 +39,21 @@ class DomainBlock:
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
 
-    def __init__(self, url=""):
+    def __init__(self, parsed_url):
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
-        self.seed_url = urlparser.parse_url(url)
+        self.seed = parsed_url
         self.filters = []
-        self.schedule_url(url)
+        self.schedule_url(self.seed)
 
-    def schedule_url(self, url=""):
+    def schedule_url(self, parsed_url):
         """ Schedule a URL to be crawled at a later time. A URL will not be scheduled if:
             - It is not a subdomain of the domain the Scheduler object has been created for
             - It has already been crawled
             - It has already been scheduled
             - It has not passed any of other filters
         """
-        parsed_url = urlparser.parse_url(url, allow_fragments=False)
-        if not urlparser.same_domain(parsed_url, self.seed_url) or self.has_been_crawled(parsed_url.get_url()):
+        if not urlparser.same_domain(parsed_url, self.seed) or self.has_been_crawled(parsed_url.get_url()):
             return False
         for filter in self.filters:
             if filter.is_filtered(parsed_url):

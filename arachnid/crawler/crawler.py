@@ -50,11 +50,10 @@ class CrawlerConfig:
 # TODO: Fix: New subdomains won't have fuzz or robots added
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
+        seed = urlparser.parse_url(seed, allow_fragments=False)
         self.config = config
-        self.seed = seed
-        self.schedule = Scheduler(self.seed)
-        p_seed = urlparser.parse_url(seed)
-        self.output = DomainData(p_seed.get_netloc())
+        self.schedule = Scheduler(seed)
+        self.output = DomainData(seed.get_netloc())
 
     def crawl_next(self):
         p_url = self.schedule.next_url()
@@ -85,7 +84,8 @@ class Crawler:
                 self.output.add_custom_regex(netloc, regex)
 
         for href in Scraper(response.text, "html.parser").find_all_hrefs():
-            self.schedule.schedule_url(urlparser.join_url(parsed_url.get_url(), href, allow_fragments=True))
+            url = urlparser.join_url(parsed_url.get_url(), href, allow_fragments=False)
+            self.schedule.schedule_url(urlparser.parse_url(url))
         page_info = {"path": parsed_url.get_extension(),
                      "title": scraper.title.string if scraper.title.string else parsed_url.path.split("/")[-1],
                      "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
