@@ -82,6 +82,7 @@ parser.add_argument("-f", "--find",
 parser.add_argument("-T", "--delay",
                     dest="delay",
                     choices=["none", "low", "medium", "high"],
+                    default=crawler.DelayTypes.NONE.value,
                     action=DelayAction,
                     help="TODO: timing help")
 
