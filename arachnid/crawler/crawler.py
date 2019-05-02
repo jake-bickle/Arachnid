@@ -84,8 +84,8 @@ class Crawler:
                 self.output.add_custom_regex(netloc, regex)
 
         for href in Scraper(response.text, "html.parser").find_all_hrefs():
-            url = urlparser.join_url(parsed_url.get_url(), href, allow_fragments=False)
-            self.schedule.schedule_url(urlparser.parse_url(url))
+            url = urlparser.join_url(parsed_url.get_url(), href)
+            self.schedule.schedule_url(urlparser.parse_url(url, allow_fragments=False))
         page_info = {"path": parsed_url.get_extension(),
                      "title": scraper.title.string if scraper.title.string else parsed_url.path.split("/")[-1],
                      "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,

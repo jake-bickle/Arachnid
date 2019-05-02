@@ -4,36 +4,30 @@ from . import urlparser
 
 
 class DomainBlock:
-    """ Holds a stack of extensions to be crawled for an arbitrary net location 
-        An extension is the portion of the URL that occurs after the suffix
-
-        https://www.example.com/path/to/location;key1=value1?key2=value2#content
-                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    """
+    """ Holds a stack of parsed URLs to be crawled for a specific netloc """
     def __init__(self, parsed_url):
-        self.base = parsed_url.get_base()
-        self.extensions_to_crawl = deque()  # To be used as a stack
-        if parsed_url.get_extension():
-            self.add_extension(parsed_url.get_extension())
-        else:
-            self.add_extension("/")
+        self.netloc = parsed_url.get_netloc()
+        self.pages_to_crawl = deque()  # To be used as a stack
+        self.add_page(parsed_url)
 
-    def add_extension(self, ext):
-        if self.extension_already_added(ext):
+    def add_page(self, parsed_url):
+        if parsed_url in self.pages_to_crawl:
             return False
-        self.extensions_to_crawl.append(ext)
+        self.pages_to_crawl.append(parsed_url)
         return True
 
     def next_url(self):
         try:
-            ext = self.extensions_to_crawl.pop()
+            p_url = self.pages_to_crawl.pop()
         except IndexError:
             return None
-        url = urlparser.join_url(self.base, ext) 
-        return url
+        return p_url
 
-    def extension_already_added(self, extension):
-        return extension in self.extensions_to_crawl
+    def has_pages_to_crawl(self):
+        return not not self.pages_to_crawl  # "not not" to return the deque's implicit truth if it has items
+
+    def same_netloc(self, parsed_url):
+        return self.netloc == parsed_url.get_netloc()
 
 
 class Scheduler:
@@ -53,30 +47,27 @@ class Scheduler:
             - It has already been scheduled
             - It has not passed any of other filters
         """
-        if not urlparser.same_domain(parsed_url, self.seed) or self.has_been_crawled(parsed_url.get_url()):
+        if not urlparser.same_domain(parsed_url, self.seed) or parsed_url in self.crawled_urls:
             return False
         for filter in self.filters:
             if filter.is_filtered(parsed_url):
                 return False
         block = self._ensure_domain_block(parsed_url)
-        return block.add_extension(parsed_url.get_extension())
+        return block.add_page(parsed_url)
 
     def next_url(self):
         if not self.blocks_to_crawl: 
             return None
         block_to_crawl = self.blocks_to_crawl[0]
-        url = block_to_crawl.next_url()
-        if not block_to_crawl.extensions_to_crawl:
+        p_url = block_to_crawl.next_url()
+        if not block_to_crawl.has_pages_to_crawl():
             self.blocks_to_crawl.popleft()
-        self.crawled_urls.add(url)
-        return url
-
-    def has_been_crawled(self, url):
-        return url in self.crawled_urls
+        self.crawled_urls.add(p_url)
+        return p_url
 
     def _get_domain_block(self, parsed_url):
         for block in self.blocks_to_crawl:
-            if block.base == parsed_url.get_base():
+            if block.same_netloc(parsed_url):
                 return block
         return None
 
@@ -86,3 +77,4 @@ class Scheduler:
             block = DomainBlock(parsed_url)
             self.blocks_to_crawl.append(block)
         return block
+
