@@ -43,6 +43,9 @@ class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "s
             url += '#' + self.fragment
         return url
 
+    def __str__(self):
+        return self.get_url()
+
 
 def parse_url(url="", allow_fragments=True):
     if not allow_fragments:
