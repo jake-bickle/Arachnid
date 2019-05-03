@@ -48,7 +48,7 @@ parser.add_argument("seed",
                     type=is_url,
                     help="The URL for the Crawler to begin its search from")
 
-parser.add_argument("-s", "--string",  # TODO Could this use nargs?
+parser.add_argument("-s", "--string",
                     dest="custom_str",
                     help="TODO: string help")
 
@@ -146,11 +146,11 @@ def crawl():
     while c.crawl_next():
         delay_sw.start()
         if timer.elapsed() > 30:
-            with open("arachnid_data.json") as f:
+            with open("arachnid_data.json", "w") as f:
                 f.write(c.dumps(indent=4))
             timer.restart()
         delay_sw.wait()  # Delay the crawler to throw off automated systems
-    with open("arachnid_data.json") as f:
+    with open("arachnid_data.json", "w") as f:
         f.write(c.dumps(indent=4))
 
 
