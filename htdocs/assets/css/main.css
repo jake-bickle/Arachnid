@@ -1,0 +1,60 @@
+/* Loading animation */
+.scanning {
+    animation: rotation 2s infinite
+}
+@keyframes rotation {
+	from {
+			-webkit-transform: rotate(0deg);
+	}
+	to {
+			-webkit-transform: rotate(359deg);
+	}
+}
+#scan-status {
+    font-size: 20px;
+    color: orange;
+}
+#dashboardTitle {
+    font-size: 2em !important;
+}
+#dashboardTitle span {
+        font-weight: bold;
+}
+#summaryBlocks #pagesSummary .card-footer a {
+    float: right;
+}
+#pages_graph,
+#pages_table {
+    max-height: 500px;
+    overflow: scroll;
+}
+#pages_table td:nth-child(odd){
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+#interesting .card-body{
+    max-height: 300px;
+    overflow: scroll;
+}
+#crawl-errors tr td:first-child{
+    color: red;
+}
+#fullscreen-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#scraped-data-blocks .card-body{
+    height: 300px;
+    overflow: scroll;
+
+}
+.card-title i {
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: middle;
+}
