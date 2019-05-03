@@ -1,6 +1,7 @@
 import requests
 
-from . import crawler_enums, responseparser, urlparser
+from . import responseparser, urlparser
+import arachnid_enums
 from .scheduler import Scheduler
 from .scraper import Scraper
 from .domaindata import DomainData
@@ -19,23 +20,23 @@ class CrawlerConfig:
         self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
                           "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
         self.obey_robots = True
-        self.agent = crawler_enums.Agent.FIREFOX.value
+        self.agent = arachnid_enums.Agent.FIREFOX.value
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.delay = crawler_enums.Delay.NONE.value
-        self.fuzz_level = crawler_enums.Amount.LOW
+        self.delay = arachnid_enums.Delay.NONE.value
+        self.fuzz_level = arachnid_enums.Amount.LOW
 
     def set_stealth(self):
         self.obey_robots = True
-        self.agent = crawler_enums.Agent.GOOGLE.value
-        self.delay = crawler_enums.Delay.HIGH.value
-        self.fuzz_level = crawler_enums.Amount.NONE
+        self.agent = arachnid_enums.Agent.GOOGLE.value
+        self.delay = arachnid_enums.Delay.HIGH.value
+        self.fuzz_level = arachnid_enums.Amount.NONE
 
     def set_aggressive(self):
         self.obey_robots = False 
-        self.delay = crawler_enums.Delay.NONE.value
-        self.fuzz_level = crawler_enums.Amount.HIGH
+        self.delay = arachnid_enums.Delay.NONE.value
+        self.fuzz_level = arachnid_enums.Amount.HIGH
     
     def set_layout_only(self):
         self.scrape_subdomains = False

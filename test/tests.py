@@ -217,33 +217,33 @@ class test_domain_block(unittest.TestCase):
         parsed_url = urlparser.parse_url("https://www.example.com/")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/"])
-        self.assertEqual(block.extensions_to_crawl, correct_output)
+        self.assertEqual(block.pages_to_crawl, correct_output)
 
     def test_constructor_extensions_to_crawl_no_path(self):
         parsed_url = urlparser.parse_url("https://www.example.com")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/"])
-        self.assertEqual(block.extensions_to_crawl, correct_output)
+        self.assertEqual(block.pages_to_crawl, correct_output)
 
     def test_constructor_extensions_to_crawl_with_path(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
         correct_output = deque(["/path/to/location"])
-        self.assertEqual(block.extensions_to_crawl, correct_output)
+        self.assertEqual(block.pages_to_crawl, correct_output)
 
     def test_add_extension(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
-        block.add_extension("/other/path")
+        block.add_page("/other/path")
         correct_output = deque(["/path/to/location", "/other/path"])
-        self.assertEqual(sorted(block.extensions_to_crawl), sorted(correct_output))
+        self.assertEqual(sorted(block.pages_to_crawl), sorted(correct_output))
 
     def test_add_extension_already_added(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
-        block.add_extension("/other/path")
+        block.add_page("/other/path")
         correct_output = deque(["/path/to/location", "/other/path"])
-        self.assertFalse(block.add_extension("/other/path"))
+        self.assertFalse(block.add_page("/other/path"))
 
     def test_next_url(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
@@ -254,8 +254,8 @@ class test_domain_block(unittest.TestCase):
     def test_next_next_url_multiple_adds(self):
         parsed_url = urlparser.parse_url("https://www.example.com/path/to/location")
         block = DomainBlock(parsed_url)
-        block.add_extension("/other/page")
-        block.add_extension("/other")
+        block.add_page("/other/page")
+        block.add_page("/other")
         correct_output = "https://www.example.com/other"
         self.assertEqual(block.next_url(), correct_output)
 
@@ -351,7 +351,8 @@ class test_scheduler(unittest.TestCase):
         self.assertFalse(schedule.schedule_url(url))
 
 
-from crawler import CrawlerConfig, crawler_enums, urlparser
+from crawler import CrawlerConfig, urlparser
+import arachnid_enums
 
 
 class test_responseparser(unittest.TestCase):
@@ -392,7 +393,7 @@ class test_generate_config(unittest.TestCase):
         namespace = self.get_namespace(cli)
         c = generate_crawler_config(namespace)
         correct_output = CrawlerConfig()
-        correct_output.delay = crawler_enums.Delay.HIGH.value
+        correct_output.delay = arachnid_enums.Delay.HIGH.value
 
     def test_stealth_modified(self):
         cli = "https://www.example.com -T none --stealth"
@@ -400,7 +401,7 @@ class test_generate_config(unittest.TestCase):
         c = generate_crawler_config(namespace)
         correct_output = CrawlerConfig()
         correct_output.set_stealth()
-        correct_output.delay = crawler_enums.Delay.NONE.value
+        correct_output.delay = arachnid_enums.Delay.NONE.value
         self.assertEqual(vars(c), vars(correct_output))
 
     def test_agent(self):
@@ -408,7 +409,7 @@ class test_generate_config(unittest.TestCase):
         namespace = self.get_namespace(cli)
         c = generate_crawler_config(namespace)
         correct_output = CrawlerConfig()
-        correct_output.agent = crawler_enums.Agent.GOOGLE.value
+        correct_output.agent = arachnid_enums.Agent.GOOGLE.value
         self.assertEqual(vars(c), vars(correct_output))
     
     def test_doc(self):

@@ -4,6 +4,7 @@ import random
 
 from . import crawler
 from .timewidgets import Stopwatch, Timer
+from .arachnid_enums import Delay, Amount, Agent
 
 
 class AgentAction(argparse.Action):
@@ -17,19 +18,19 @@ class AgentAction(argparse.Action):
                     'f': "firefox",
                     'm': "android"}
         agent = aliases[value]
-        full_user_agent = crawler.AgentTypes[agent.upper()].value
+        full_user_agent = Agent[agent.upper()].value
         setattr(namespace, self.dest, full_user_agent)
 
 
 class DelayAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        delay_range = crawler.DelayTypes[value.upper()].value
+        delay_range = Delay[value.upper()].value
         setattr(namespace, self.dest, delay_range)
 
 
 class AmountAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        amount = crawler.AmountTypes[value.upper()]
+        amount = Amount[value.upper()]
         setattr(namespace, self.dest, amount)
 
 
@@ -82,7 +83,7 @@ parser.add_argument("-f", "--find",
 parser.add_argument("-T", "--delay",
                     dest="delay",
                     choices=["none", "low", "medium", "high"],
-                    default=crawler.DelayTypes.NONE.value,
+                    default=Delay.NONE.value,
                     action=DelayAction,
                     help="TODO: timing help")
 
