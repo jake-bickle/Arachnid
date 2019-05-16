@@ -1,7 +1,7 @@
 import requests
+import arachnid_enums
 
 from . import responseparser, urlparser
-import arachnid_enums
 from .scheduler import Scheduler
 from .scraper import Scraper
 from .domaindata import DomainData
@@ -25,7 +25,7 @@ class CrawlerConfig:
         self.custom_str_case_sensitive = False
         self.custom_regex = None
         self.delay = arachnid_enums.Delay.NONE.value
-        self.fuzz_level = arachnid_enums.Amount.LOW
+        self.fuzz_level = arachnid_enums.Amount.LOW.value
 
     def set_stealth(self):
         self.obey_robots = True

@@ -1,10 +1,19 @@
 import argparse
 import re
 import random
+import threading
+import os
+import sys
+import webbrowser
 
 from . import crawler
 from .timewidgets import Stopwatch, Timer
 from .arachnid_enums import Delay, Amount, Agent
+
+base_dir = os.path.dirname(sys.modules["__main__"].__file__)
+output_file = os.path.join(base_dir, "output/scraped_data/arachnid_data.json")
+php_ip = "127.0.0.1:8080"
+php_cmd = f"php -S {php_ip} -t {base_dir}/output -q >& /dev/null"
 
 
 class AgentAction(argparse.Action):
@@ -128,34 +137,29 @@ aggressions.add_argument("--aggressive",
                     help="Use a preset of options to crawl loudly")
 
 
-"""
-def generate_crawler():
-    args = parser.parse_args()
-    c = Crawler(args.seed)
-    config = generate_crawler_config(args)
-    c.config = config
-    return c
-"""
-
-
 def crawl():
     args = parser.parse_args()
     c = crawler.get_crawler(args)
+
     delay_sw = Stopwatch(random.choice(args.delay))
     timer = Timer()
     timer.start()
     while c.crawl_next():
         delay_sw.start()
         if timer.elapsed() > 30:
-            with open("arachnid_data.json", "w") as f:
+            with open(output_file, "w") as f:
                 f.write(c.dumps(indent=4))
             timer.restart()
         delay_sw.wait()  # Delay the crawler to throw off automated systems
-    with open("arachnid_data.json", "w") as f:
+    with open(output_file, "w") as f:
         f.write(c.dumps(indent=4))
+    input("Crawl complete. Press ENTER to exit.")
 
 
 def main():
+    php_server = threading.Thread(target=lambda: os.system(php_cmd), args=(), daemon=True)
+    php_server.start()
+    webbrowser.open_new_tab(f"{php_ip}")
     crawl()
 
 
