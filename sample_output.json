@@ -4,33 +4,37 @@
             "pages": [{
                     "path": "/index.html",
                     "title": "Homepage",
+                    "code": 202,
                     "custom_string_occurances": 5,
-                    "code": 202
+                    "on_fuzz_list": true,
+                    "on_robots": false
                 },
                 {
                     "path": "/",
                     "title": "Welcome to our example!",
+                    "code": 202,
                     "custom_string_occurances": 2,
-                    "code": 202
+                    "on_fuzz_list": true,
+                    "on_robots": false
                 },
                 {
                     "path": "/blog/post-without-title",
                     "title": "post-without-title",
+                    "code": 202,
                     "custom_string_occurances": 0,
-                    "code": 202
+                    "on_fuzz_list": true,
+                    "on_robots": false
                 }
             ],
             "documents": [{
                     "name": "my_presenation.pptx",
                     "type": "pptx",
                     "path": "/path/to/my_presenation.pptx"
-
                 },
                 {
                     "name": "my_document.docx",
                     "type": "docx",
                     "path": "/path/to/my_document.docx"
-
                 }
             ]
         },
@@ -39,17 +43,26 @@
             "pages": [{
                     "path": "/index.html",
                     "title": "Homepage",
-                    "custom_string_occurances": 5
+                    "code": 202,
+                    "custom_string_occurances": 5,
+                    "on_fuzz_list": true,
+                    "on_robots": false
                 },
                 {
                     "path": "/",
                     "title": "Welcome to our example!",
-                    "custom_string_occurances": 2
+                    "code": 202,
+                    "custom_string_occurances": 2,
+                    "on_fuzz_list": true,
+                    "on_robots": false
                 },
                 {
                     "path": "/blog/post-without-title",
                     "title": "post-without-title",
-                    "custom_string_occurances": 0
+                    "code": 202,
+                    "custom_string_occurances": 0,
+                    "on_fuzz_list": true,
+                    "on_robots": false
                 }
             ],
             "documents": [{
@@ -80,5 +93,11 @@
     "custom_regex": [
         "1234",
         "qwertyuoi"
-    ]
+    ],
+    "metadata": {
+        "start_date": "2019-05-15",
+        "start_time": "19:07:31",
+        "end_date": null,
+        "end_time": null
+    }
 }
