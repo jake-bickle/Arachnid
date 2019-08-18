@@ -101,12 +101,11 @@ parser.add_argument("--robots",
                     action="store_false",
                     help="Crawl the links gathered by robots.txt")
 
-# TODO: Feature not in place yet
-# parser.add_argument("-F", "--fuzz",
-                    # dest="fuzz",
-                    # choices=["none","low","medium","high","insane"],
-                    # action=AmountAction
-                    # help="TODO: Fuzz help")
+parser.add_argument("-F", "--fuzz",
+                    dest="fuzz",
+                    nargs='?',
+                    default='crawler/fuzz_list.txt',
+                    help="TODO: Fuzz help")
 
 parser.add_argument("-a", "--agent",
                     dest="agent",
