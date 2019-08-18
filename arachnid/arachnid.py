@@ -37,12 +37,6 @@ class DelayAction(argparse.Action):
         setattr(namespace, self.dest, delay_range)
 
 
-class AmountAction(argparse.Action):
-    def __call__(self, parser, namespace, value, arg):
-        amount = Amount[value.upper()]
-        setattr(namespace, self.dest, amount)
-
-
 def is_url(url):
     link = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     if not re.match(link, url):
