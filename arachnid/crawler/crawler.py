@@ -25,19 +25,19 @@ class CrawlerConfig:
         self.custom_str_case_sensitive = False
         self.custom_regex = None
         self.delay = arachnid_enums.Delay.NONE.value
-        self.fuzz_level = arachnid_enums.Amount.LOW.value
+        self.fuzz_list = None
 
     def set_stealth(self):
         self.obey_robots = True
         self.agent = arachnid_enums.Agent.GOOGLE.value
         self.delay = arachnid_enums.Delay.HIGH.value
-        self.fuzz_level = arachnid_enums.Amount.NONE
+        self.fuzz_list = None
 
     def set_aggressive(self):
         self.obey_robots = False 
         self.delay = arachnid_enums.Delay.NONE.value
-        self.fuzz_level = arachnid_enums.Amount.HIGH
-    
+        self.fuzz_list = None
+
     def set_layout_only(self):
         self.scrape_subdomains = False
         self.scrape_phone_number = False 
@@ -53,7 +53,7 @@ class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = urlparser.parse_url(seed, allow_fragments=False)
         self.config = config
-        self.schedule = Scheduler(seed)
+        self.schedule = Scheduler(seed, fuzz_list=self.config.fuzz_list)
         self.output = DomainData(seed.get_netloc())
 
     def crawl_next(self):

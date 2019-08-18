@@ -37,6 +37,20 @@ class DelayAction(argparse.Action):
         setattr(namespace, self.dest, delay_range)
 
 
+class FuzzAction(argparse.Action):
+    def __call__(self, parser, namespace, value, arg):
+        if value:
+            file_path = os.path.expanduser(value)
+            file_path = os.path.abspath(file_path)
+            if os.path.exists(file_path):
+                setattr(namespace, self.dest, file_path)
+            else:
+                msg = file_path + " does not exist"
+                raise argparse.ArgumentTypeError(msg)
+        else:
+            setattr(namespace, self.dest, os.path.join(base_dir, 'crawler/fuzz_list.txt'))
+
+
 def is_url(url):
     link = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     if not re.match(link, url):
@@ -96,9 +110,9 @@ parser.add_argument("--robots",
                     help="Crawl the links gathered by robots.txt")
 
 parser.add_argument("-F", "--fuzz",
-                    dest="fuzz",
+                    dest="fuzz_list",
                     nargs='?',
-                    default='crawler/fuzz_list.txt',
+                    action=FuzzAction,
                     help="TODO: Fuzz help")
 
 parser.add_argument("-a", "--agent",
