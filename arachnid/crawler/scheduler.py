@@ -33,12 +33,15 @@ class DomainBlock:
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
 
-    def __init__(self, parsed_url):
+    def __init__(self, parsed_url, fuzz_list=None):
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
         self.seed = parsed_url
         self.filters = []
         self.schedule_url(self.seed)
+        if fuzz_list:
+            with open(fuzz_list) as f:
+                self.fuzz_list = [line for line in f]
 
     def schedule_url(self, parsed_url):
         """ Schedule a URL to be crawled at a later time. A URL will not be scheduled if:
