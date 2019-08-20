@@ -1,6 +1,6 @@
 from collections import deque
 
-from . import urlparser
+from . import url_functions
 
 
 class DomainBlock:
@@ -50,7 +50,7 @@ class Scheduler:
             - It has already been scheduled
             - It has not passed any of other filters
         """
-        if not urlparser.same_domain(parsed_url, self.seed) or parsed_url in self.crawled_urls:
+        if not url_functions.is_subdomain(parsed_url, self.seed) or parsed_url in self.crawled_urls:
             return False
         for filter in self.filters:
             if filter.is_filtered(parsed_url):

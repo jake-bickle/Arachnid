@@ -1,10 +1,11 @@
 import requests
 import arachnid_enums
 
-from . import responseparser, urlparser
+from . import responseparser, crawler_url
 from .scheduler import Scheduler
 from .scraper import Scraper
 from .domaindata import DomainData
+from . import url_functions
 
 
 class CrawlerConfig:
@@ -51,7 +52,7 @@ class CrawlerConfig:
 # TODO: Fix: New subdomains won't have fuzz or robots added
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
-        seed = urlparser.parse_url(seed, allow_fragments=False)
+        seed = crawler_url.CrawlerURL(seed, allow_fragments=False)
         self.config = config
         self.schedule = Scheduler(seed, fuzz_list=self.config.fuzz_list)
         self.output = DomainData(seed.get_netloc())
@@ -85,8 +86,8 @@ class Crawler:
                 self.output.add_custom_regex(netloc, regex)
 
         for href in Scraper(response.text, "html.parser").find_all_hrefs():
-            url = urlparser.join_url(parsed_url.get_url(), href)
-            self.schedule.schedule_url(urlparser.parse_url(url, allow_fragments=False))
+            url = url_functions.join_url(parsed_url.get_url(), href)
+            self.schedule.schedule_url(url.parse_url(url, allow_fragments=False))
         page_info = {"path": parsed_url.get_extension(),
                      "title": scraper.title.string if scraper.title.string else parsed_url.path.split("/")[-1],
                      "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
