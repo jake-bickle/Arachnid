@@ -3,45 +3,63 @@ import urllib.parse
 from collections import namedtuple
 
 
-class ParseResult(namedtuple("ParseResult", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])):
+_url_parts_nt = namedtuple("Url_parts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
+
+
+class CrawlerURL:
+    def __init__(self, url="", allow_fragments=True, is_fuzzed=False):
+        if not allow_fragments:
+            url = urllib.parse.urldefrag(url)[0]
+        u_rslt = urllib.parse.urlparse(url)
+        e_rslt = tldextract.extract(u_rslt.netloc)
+        self.url_parts = _url_parts_nt(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path,
+                                      u_rslt.params, u_rslt.query, u_rslt.fragment)
+        self.is_fuzzed = is_fuzzed
+
     def get_url(self, trim_parameters=False):
         url = self.get_base()
         if trim_parameters:
-            url += self.path
+            url += self.url_parts.path
         else:
             url += self.get_extension()
         return url
 
     def get_base(self):
         url = ""
-        if self.scheme:
-            url += self.scheme + "://"
+        if self.url_parts.scheme:
+            url += self.url_parts.scheme + "://"
         url += self.get_netloc()
         return url
 
     def get_netloc(self):
         url = ""
-        url += self.subdomain
-        if self.domain:
-            if self.subdomain:
-                url += '.' 
-            url += self.domain
-        if self.suffix:
-            if self.subdomain or self.domain:
-                url += '.' 
-            url += self.suffix
+        url += self.url_parts.subdomain
+        if self.url_parts.domain:
+            if self.url_parts:
+                url += '.'
+            url += self.url_parts.domain
+        if self.url_parts.suffix:
+            if self.url_parts.subdomain or self.url_parts.domain:
+                url += '.'
+            url += self.url_parts.suffix
         return url
 
     def get_extension(self):
         url = ""
-        url += self.path
-        if self.params:
-            url += ';' + self.params
-        if self.query:
-            url += '?' + self.query
-        if self.fragment:
-            url += '#' + self.fragment
+        url += self.url_parts.path
+        if self.url_parts.params:
+            url += ';' + self.url_parts.params
+        if self.url_parts.query:
+            url += '?' + self.url_parts.query
+        if self.url_parts.fragment:
+            url += '#' + self.url_parts.fragment
         return url
+
+    def is_fuzzed(self):
+        return self.is_fuzzed
+
+    def get_url_parts(self):
+        return self.url_parts
 
     def __str__(self):
         return self.get_url()
