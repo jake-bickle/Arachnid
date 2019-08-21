@@ -35,7 +35,7 @@ class CrawlerURL:
         url = ""
         url += self.url_parts.subdomain
         if self.url_parts.domain:
-            if self.url_parts:
+            if self.url_parts.subdomain:
                 url += '.'
             url += self.url_parts.domain
         if self.url_parts.suffix:
