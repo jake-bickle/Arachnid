@@ -33,6 +33,6 @@ class DocumentResponse:
             f_e = cd.find("\"", f_s)
             return cd[f_s:f_e]
         except KeyError:
-            path = crawler_url.parse_url(self.response.url).path
+            path = crawler_url.CrawlerURL(self.response.url).get_url_parts().path
             return path.split("/")[-1]
 
