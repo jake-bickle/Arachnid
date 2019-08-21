@@ -52,14 +52,14 @@ class Scheduler:
         self.headers = {}
         self.paths_to_fuzz = []
         self.subs_to_fuzz = []
-        self.activate_fuzz = False
+        self.activate_sub_fuzz = False
         if fuzzing_options:
-            self.activate_fuzz = True
             self.headers = fuzzing_options[0]
             if fuzzing_options[1]:
                 with open(fuzzing_options[1]) as f:
                     self.paths_to_fuzz = [line for line in f]
             if fuzzing_options[2]:
+                self.activate_sub_fuzz = True
                 with open(fuzzing_options[2]) as f:
                     self.subs_to_fuzz = [line for line in f]
         self.schedule_url(self.seed)
@@ -77,7 +77,7 @@ class Scheduler:
         return block.add_page(c_url)
 
     def next_url(self):
-        if not self.blocks_to_crawl and self.activate_fuzz:
+        if not self.blocks_to_crawl and self.activate_sub_fuzz:
             self._fuzz_for_domainblocks()
         if not self.blocks_to_crawl:
             return None
@@ -102,7 +102,7 @@ class Scheduler:
         return block
 
     def _fuzz_for_domainblocks(self):
-        self.activate_fuzz = False
+        self.activate_sub_fuzz = False
         for prefix in self.subs_to_fuzz:
             sub_to_check = crawler_url.CrawlerURL(url_functions.change_subdomain(prefix, self.seed.get_url()),
                                                   is_fuzzed=True, allow_fragments=False)
