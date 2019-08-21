@@ -12,6 +12,8 @@ from .arachnid_enums import Delay, Amount, Agent
 
 base_dir = os.path.dirname(sys.modules["__main__"].__file__)
 output_file = os.path.join(base_dir, "output/scraped_data/arachnid_data.json")
+default_fuzz_list_file_loc = os.path.join(base_dir, "crawler/fuzz_list.txt")
+default_sub_list_file_loc = os.path.join(base_dir, "crawler/subdomain_fuzz_list.txt")
 php_ip = "127.0.0.1:8080"
 php_cmd = f"php -S {php_ip} -t {base_dir}/output -q >& /dev/null"
 
@@ -48,7 +50,7 @@ class FuzzAction(argparse.Action):
                 msg = file_path + " does not exist"
                 raise argparse.ArgumentTypeError(msg)
         else:
-            setattr(namespace, self.dest, os.path.join(base_dir, 'crawler/fuzz_list.txt'))
+            setattr(namespace, self.dest, default_fuzz_list_file_loc)
 
 
 def is_url(url):
@@ -110,7 +112,7 @@ parser.add_argument("--robots",
                     help="Crawl the links gathered by robots.txt")
 
 parser.add_argument("-F", "--fuzz",
-                    dest="fuzz_list",
+                    dest="paths_list_file_loc",
                     nargs='?',
                     action=FuzzAction,
                     help="TODO: Fuzz help")
