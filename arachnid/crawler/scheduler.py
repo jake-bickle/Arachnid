@@ -8,29 +8,33 @@ from . import url_functions
 
 class DomainBlock:
     """ Holds a stack of parsed URLs to be crawled for a specific netloc """
-    def __init__(self, parsed_url, fuzz_list=[]):
-        self.netloc = parsed_url.get_netloc()
+    def __init__(self, c_url, fuzz_list=[]):
+        self.netloc = c_url.get_netloc()
         self.pages_to_crawl = deque()  # To be used as a stack
-        self.add_page(parsed_url)
+        for path in fuzz_list:
+            fuzzed_page = crawler_url.CrawlerURL(url_functions.join_url(c_url.get_url(), path),
+                                                 is_fuzzed=True, allow_fragments=False)
+            self.add_page(fuzzed_page)
+        self.add_page(c_url)
 
-    def add_page(self, parsed_url):
-        if parsed_url in self.pages_to_crawl:
+    def add_page(self, c_url):
+        if c_url in self.pages_to_crawl:
             return False
-        self.pages_to_crawl.append(parsed_url)
+        self.pages_to_crawl.append(c_url)
         return True
 
     def next_url(self):
         try:
-            p_url = self.pages_to_crawl.pop()
+            c_url = self.pages_to_crawl.pop()
         except IndexError:
             return None
-        return p_url
+        return c_url
 
     def has_pages_to_crawl(self):
         return not not self.pages_to_crawl  # "not not" to return the deque's implicit truth if it has items
 
-    def same_netloc(self, parsed_url):
-        return self.netloc == parsed_url.get_netloc()
+    def same_netloc(self, c_url):
+        return self.netloc == c_url.get_netloc()
 
 
 class Scheduler:
@@ -69,7 +73,6 @@ class Scheduler:
             - It is not a subdomain of the domain the Scheduler object has been created for
             - It has already been crawled
             - It has already been scheduled
-            - It has not passed any of other filters
         """
         if not url_functions.is_subdomain(c_url, self.seed) or c_url in self.crawled_urls:
             return False
@@ -97,7 +100,7 @@ class Scheduler:
     def _ensure_domain_block(self, parsed_url):
         block = self._get_domain_block(parsed_url)
         if block is None:
-            block = DomainBlock(parsed_url)
+            block = DomainBlock(parsed_url, fuzz_list=self.paths_to_fuzz)
             self.blocks_to_crawl.append(block)
         return block
 
