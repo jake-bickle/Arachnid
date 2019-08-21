@@ -1,5 +1,8 @@
+import requests
+
 from collections import deque
 
+from . import crawler_url
 from . import url_functions
 
 
@@ -45,12 +48,21 @@ class Scheduler:
         """
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
-        self.seed = parsed_url
-        self.filters = []
+        self.seed = c_url
+        self.headers = {}
+        self.paths_to_fuzz = []
+        self.subs_to_fuzz = []
+        self.activate_fuzz = False
+        if fuzzing_options:
+            self.activate_fuzz = True
+            self.headers = fuzzing_options[0]
+            if fuzzing_options[1]:
+                with open(fuzzing_options[1]) as f:
+                    self.paths_to_fuzz = [line for line in f]
+            if fuzzing_options[2]:
+                with open(fuzzing_options[2]) as f:
+                    self.subs_to_fuzz = [line for line in f]
         self.schedule_url(self.seed)
-        if fuzz_list:
-            with open(fuzz_list) as f:
-                self.fuzz_list = [line for line in f]
 
     def schedule_url(self, c_url):
         """ Schedule a URL to be crawled at a later time. A URL will not be scheduled if:
@@ -61,14 +73,13 @@ class Scheduler:
         """
         if not url_functions.is_subdomain(c_url, self.seed) or c_url in self.crawled_urls:
             return False
-        for filter in self.filters:
-            if filter.is_filtered(c_url):
-                return False
         block = self._ensure_domain_block(c_url)
         return block.add_page(c_url)
 
     def next_url(self):
-        if not self.blocks_to_crawl: 
+        if not self.blocks_to_crawl and self.activate_fuzz:
+            self._fuzz_for_domainblocks()
+        if not self.blocks_to_crawl:
             return None
         block_to_crawl = self.blocks_to_crawl[0]
         p_url = block_to_crawl.next_url()
@@ -90,3 +101,11 @@ class Scheduler:
             self.blocks_to_crawl.append(block)
         return block
 
+    def _fuzz_for_domainblocks(self):
+        self.activate_fuzz = False
+        for prefix in self.subs_to_fuzz:
+            sub_to_check = crawler_url.CrawlerURL(url_functions.change_subdomain(prefix, self.seed.get_url()),
+                                                  is_fuzzed=True, allow_fragments=False)
+            r = requests.head(sub_to_check.get_url(), headers=self.headers)
+            if r.status_code != '404':
+                self.schedule_url(sub_to_check)
