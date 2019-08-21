@@ -5,7 +5,7 @@ from . import url_functions
 
 class DomainBlock:
     """ Holds a stack of parsed URLs to be crawled for a specific netloc """
-    def __init__(self, parsed_url):
+    def __init__(self, parsed_url, fuzz_list=[]):
         self.netloc = parsed_url.get_netloc()
         self.pages_to_crawl = deque()  # To be used as a stack
         self.add_page(parsed_url)
@@ -33,7 +33,16 @@ class DomainBlock:
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
 
-    def __init__(self, parsed_url, fuzz_list=None):
+    def __init__(self, c_url, fuzzing_options=None):
+        """ Sets up the scheduler to send out by a queue of domainblocks (aka a subdomain).
+            Each domainblock will send out all of its available c_urls before being removed from queue.
+
+            c_url is a CrawlerURL object
+            fuzzing_options is an optional tuple that decides which aspects of the crawl to fuzz.
+            fuzzing_options[0] must be a dict of header information to test whether a given c_url exists.
+            fuzzing_options[1] Is a file location that holds a list of URL paths to try on each sub domain. It may be None type as well.
+            fuzzing_options[2] Is a file location that holds a list of subdomain prefixes (IE. 'www', 'en', etc.) to test if they exist. It may be None type as well.
+        """
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
         self.seed = parsed_url
