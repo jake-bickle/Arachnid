@@ -1,4 +1,5 @@
 import urllib.parse
+import tldextract
 
 from . import crawler_url
 
@@ -26,6 +27,17 @@ def same_netloc(url1="", url2=""):
     url1_netloc = urllib.parse.urlparse(url1).netloc
     url2_netloc = urllib.parse.urlparse(url2).netloc
     return url1_netloc == url2_netloc
+
+
+def change_subdomain(new_subdomain="", dest=""):
+    """ Converts the subdomain in dest.
+        IE. change_subdomain('en', 'https://www.google.com') would return 'https://en.google.com'
+    """
+    parsed_dest = urllib.parse.urlparse(dest)
+    dest_netloc_parts = tldextract.extract(parsed_dest.netloc)
+    new_netloc = '.'.join([new_subdomain, dest_netloc_parts[1], dest_netloc_parts[2]])
+    return urllib.parse.urlunparse((parsed_dest[0], new_netloc, parsed_dest[2],
+                                    parsed_dest[3], parsed_dest[4], parsed_dest[5]))
 
 
 # https://www.media.com/profile-page
