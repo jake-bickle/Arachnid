@@ -3,7 +3,7 @@ import urllib.parse
 from collections import namedtuple
 
 
-_url_parts_nt = namedtuple("Url_parts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
+_url_parts_nt = namedtuple("URL_parts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
 
 
 class CrawlerURL:
@@ -63,6 +63,14 @@ class CrawlerURL:
 
     def __str__(self):
         return self.get_url()
+
+    def __eq__(self, other):
+        return other.url_parts == self.url_parts
+
+    def __hash__(self):
+        return hash(self.get_url())
+
+
 
 
 
