@@ -14,7 +14,7 @@ class CrawlerURL:
         e_rslt = tldextract.extract(u_rslt.netloc)
         self.url_parts = _url_parts_nt(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path,
                                       u_rslt.params, u_rslt.query, u_rslt.fragment)
-        self.is_fuzzed = is_fuzzed
+        self.on_fuzz_list = is_fuzzed
 
     def get_url(self, trim_parameters=False):
         url = self.get_base()
@@ -56,7 +56,7 @@ class CrawlerURL:
         return url
 
     def is_fuzzed(self):
-        return self.is_fuzzed
+        return self.on_fuzz_list
 
     def get_url_parts(self):
         return self.url_parts
