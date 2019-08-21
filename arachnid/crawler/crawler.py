@@ -59,15 +59,15 @@ class Crawler:
         self.output = DomainData(seed.get_netloc())
 
     def crawl_next(self):
-        p_url = self.schedule.next_url()
-        if p_url is None:
+        c_url = self.schedule.next_url()
+        if c_url is None:
             return False
-        print(p_url)
-        r = requests.get(p_url.get_url(), headers={"User-Agent": self.config.agent})
+        print(c_url)
+        r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent})
         if "text/html" in r.headers["content-type"]:
-            self._parse_page(r, p_url)
+            self._parse_page(r, c_url)
         else:
-            self._parse_document(r, p_url)
+            self._parse_document(r, c_url)
         return True
 
     def _parse_page(self, response, c_url):
@@ -103,12 +103,12 @@ class Crawler:
                      "code": response.status_code}
         self.output.add_page(c_url.get_netloc(), page_info)
 
-    def _parse_document(self, response, parsed_url):
+    def _parse_document(self, response, c_url):
         parser = responseparser.DocumentResponse(response, self.config.documents)
         data = parser.extract()
         if data:
-            data["path"] = parsed_url.path
-            self.output.add_document(parsed_url.get_netloc(), data)
+            data["path"] = c_url.get_url_parts().path
+            self.output.add_document(c_url.get_netloc(), data)
 
     def dumps(self, **kwargs):
         return self.output.dumps(**kwargs)

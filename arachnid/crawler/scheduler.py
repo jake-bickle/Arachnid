@@ -43,20 +43,20 @@ class Scheduler:
             with open(fuzz_list) as f:
                 self.fuzz_list = [line for line in f]
 
-    def schedule_url(self, parsed_url):
+    def schedule_url(self, c_url):
         """ Schedule a URL to be crawled at a later time. A URL will not be scheduled if:
             - It is not a subdomain of the domain the Scheduler object has been created for
             - It has already been crawled
             - It has already been scheduled
             - It has not passed any of other filters
         """
-        if not url_functions.is_subdomain(parsed_url, self.seed) or parsed_url in self.crawled_urls:
+        if not url_functions.is_subdomain(c_url, self.seed) or c_url in self.crawled_urls:
             return False
         for filter in self.filters:
-            if filter.is_filtered(parsed_url):
+            if filter.is_filtered(c_url):
                 return False
-        block = self._ensure_domain_block(parsed_url)
-        return block.add_page(parsed_url)
+        block = self._ensure_domain_block(c_url)
+        return block.add_page(c_url)
 
     def next_url(self):
         if not self.blocks_to_crawl: 
