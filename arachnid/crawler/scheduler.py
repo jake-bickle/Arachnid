@@ -58,14 +58,15 @@ class Scheduler:
         self.subs_to_fuzz = []
         self.activate_sub_fuzz = False
         if fuzzing_options:
+            print("Loading list data for fuzzing operations. Some lists are quite large and may take some time.")
             self.headers = fuzzing_options[0]
             if fuzzing_options[1]:
                 with open(fuzzing_options[1]) as f:
-                    self.paths_to_fuzz = [line for line in f]
+                    self.paths_to_fuzz = [line.strip() for line in f]
             if fuzzing_options[2]:
                 self.activate_sub_fuzz = True
                 with open(fuzzing_options[2]) as f:
-                    self.subs_to_fuzz = [line for line in f]
+                    self.subs_to_fuzz = [line.strip() for line in f]
         self.schedule_url(self.seed)
 
     def schedule_url(self, c_url):
