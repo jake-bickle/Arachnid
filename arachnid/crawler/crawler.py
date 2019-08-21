@@ -27,18 +27,21 @@ class CrawlerConfig:
         self.custom_str_case_sensitive = False
         self.custom_regex = None
         self.delay = arachnid_enums.Delay.NONE.value
-        self.fuzz_list = None
+        self.paths_list_file_loc = None
+        self.subs_list_file_loc = None
 
     def set_stealth(self):
         self.obey_robots = True
         self.agent = arachnid_enums.Agent.GOOGLE.value
         self.delay = arachnid_enums.Delay.HIGH.value
-        self.fuzz_list = None
+        self.paths_list_file_loc = None
+        self.paths_list_file_loc = None
 
     def set_aggressive(self):
         self.obey_robots = False 
         self.delay = arachnid_enums.Delay.NONE.value
-        self.fuzz_list = None
+        self.paths_list_file_loc = None
+        self.subs_list_file_loc = None
 
     def set_layout_only(self):
         self.scrape_subdomains = False
@@ -50,12 +53,13 @@ class CrawlerConfig:
         self.custom_regex = None
 
 
-# TODO: Fix: New subdomains won't have fuzz or robots added
+# TODO: Fix: New subdomains won't have robots added
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = CrawlerURL(seed, allow_fragments=False)
         self.config = config
-        self.schedule = Scheduler(seed, fuzz_list=self.config.fuzz_list)
+        self.schedule = Scheduler(seed, fuzzing_options=({"User-Agent": self.config.agent}, self.config.paths_list_file_loc,
+                                                          self.config.subs_list_file_loc))
         self.output = DomainData(seed.get_netloc())
 
     def crawl_next(self):
