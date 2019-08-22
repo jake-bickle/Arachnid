@@ -2,6 +2,7 @@
 An OSINT web crawling tool to find data leakage on a target websites using advanced web scraping and parsing technology.
 
 ---
+![A picture of the user interface in its early stages](/output_early_showcase.png?raw=true)
 ## What is Arachnid?
 Arachnid is a powerful web crawler that has been refined to effectively accomplish two things: aggressively find and index all of the pages of a target domains (and its subdomains) while also searching for "interesting" data on each page as it crawls. A default scan will search for the following:
 * Email addresses
