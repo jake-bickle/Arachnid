@@ -108,7 +108,7 @@ class Scheduler:
     def _fuzz_for_domainblocks(self):
         self.activate_sub_fuzz = False
         for prefix in self.subs_to_fuzz:
-            sub_to_check = crawler_url.CrawlerURL(url_functions.change_subdomain(prefix, self.seed.get_url()),
+            sub_to_check = crawler_url.CrawlerURL(url_functions.change_subdomain(prefix.strip(), self.seed.get_url()),
                                                   is_fuzzed=True, allow_fragments=False)
             r = requests.head(sub_to_check.get_url(), headers=self.headers)
             if r.status_code != '404':
