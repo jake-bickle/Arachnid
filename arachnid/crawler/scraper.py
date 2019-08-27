@@ -1,7 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 
-from . import urlparser
+from . import crawler_url
+from . import url_functions
 
 
 class HashableDict(dict):
@@ -67,10 +68,10 @@ class Scraper(BeautifulSoup):
         links = RegexPatterns.LINK.findall(html_doc) 
         if links is not None:
             for link in links:
-                if urlparser.is_social_media_profile(link):
+                if url_functions.is_social_media_profile(link):
                     media = HashableDict()
                     media["link"] = link
-                    media["domain"] = urlparser.parse_url(link).domain
+                    media["domain"] = crawler_url.CrawlerURL(link).get_url_parts().domain
                     found_social.append(media)
         return found_social
 

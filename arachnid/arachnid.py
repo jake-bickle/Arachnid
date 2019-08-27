@@ -12,6 +12,8 @@ from .arachnid_enums import Delay, Amount, Agent
 
 base_dir = os.path.dirname(sys.modules["__main__"].__file__)
 output_file = os.path.join(base_dir, "output/scraped_data/arachnid_data.json")
+default_fuzz_list_file_loc = os.path.join(base_dir, "crawler/fuzz_list.txt")
+default_sub_list_file_loc = os.path.join(base_dir, "crawler/subdomain_fuzz_list.txt")
 php_ip = "127.0.0.1:8080"
 php_cmd = f"php -S {php_ip} -t {base_dir}/output -q >& /dev/null"
 
@@ -37,11 +39,32 @@ class DelayAction(argparse.Action):
         setattr(namespace, self.dest, delay_range)
 
 
-class AmountAction(argparse.Action):
+class FuzzAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        amount = Amount[value.upper()]
-        setattr(namespace, self.dest, amount)
+        if value:
+            file_path = os.path.expanduser(value)
+            file_path = os.path.abspath(file_path)
+            if os.path.exists(file_path):
+                setattr(namespace, self.dest, file_path)
+            else:
+                msg = file_path + " does not exist"
+                raise argparse.ArgumentTypeError(msg)
+        else:
+            setattr(namespace, self.dest, default_fuzz_list_file_loc)
 
+
+class SubfuzzAction(argparse.Action):
+    def __call__(self, parser, namespace, value, arg):
+        if value:
+            file_path = os.path.expanduser(value)
+            file_path = os.path.abspath(file_path)
+            if os.path.exists(file_path):
+                setattr(namespace, self.dest, file_path)
+            else:
+                msg = file_path + " does not exist"
+                raise argparse.ArgumentTypeError(msg)
+        else:
+            setattr(namespace, self.dest, default_sub_list_file_loc)
 
 def is_url(url):
     link = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
@@ -101,12 +124,17 @@ parser.add_argument("--robots",
                     action="store_false",
                     help="Crawl the links gathered by robots.txt")
 
-# TODO: Feature not in place yet
-# parser.add_argument("-F", "--fuzz",
-                    # dest="fuzz",
-                    # choices=["none","low","medium","high","insane"],
-                    # action=AmountAction
-                    # help="TODO: Fuzz help")
+parser.add_argument("-F", "--fuzz",
+                    dest="paths_list_file_loc",
+                    nargs='?',
+                    action=FuzzAction,
+                    help="TODO: Fuzz help")
+
+parser.add_argument("-S", "--fuzz_subdomains",
+                    dest="subs_list_file_loc",
+                    nargs="?",
+                    action=SubfuzzAction,
+                    help="TODO: Subdomain fuzz help")
 
 parser.add_argument("-a", "--agent",
                     dest="agent",

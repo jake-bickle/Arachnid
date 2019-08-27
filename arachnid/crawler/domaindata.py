@@ -30,7 +30,8 @@ class DomainData:
 
     def add_page(self, netloc, page):
         sub = self._ensure_subdomain(netloc)
-        sub["pages"].append(page)
+        if not (page["code"] == 404 and page["on_fuzz_list"]):  # Failed fuzzes won't be added to reduce clutter
+            sub["pages"].append(page)
 
     def add_phone(self, netloc, phone_number):
         self.data["phone_numbers"].add(phone_number)
