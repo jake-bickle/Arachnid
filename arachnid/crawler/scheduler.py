@@ -110,6 +110,8 @@ class Scheduler:
         for prefix in self.subs_to_fuzz:
             sub_to_check = crawler_url.CrawlerURL(url_functions.change_subdomain(prefix.strip(), self.seed.get_url()),
                                                   is_fuzzed=True, allow_fragments=False)
+
+            print(sub_to_check.get_url())
             r = requests.head(sub_to_check.get_url(), headers=self.headers)
             if r.status_code != '404':
                 self.schedule_url(sub_to_check)
