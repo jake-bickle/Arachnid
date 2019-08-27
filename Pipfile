@@ -9,6 +9,9 @@ verify_ssl = true
 requests = "*"
 bs4 = "*"
 tldextract = "*"
+ndg-httpsclient = "*"
+pyopenssl = "*"
+chardet = "*"
 
 [requires]
 python_version = "3.7"
