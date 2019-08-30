@@ -66,6 +66,7 @@ class SubfuzzAction(argparse.Action):
         else:
             setattr(namespace, self.dest, default_sub_list_file_loc)
 
+
 def is_url(url):
     link = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")
     if not re.match(link, url):
