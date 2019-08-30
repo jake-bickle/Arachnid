@@ -1,0 +1,8 @@
+[
+  {
+    "SSLError": "Unable to connect securely due to unsupported cipher suites."
+  },
+  {
+    "ConnectionError": "A miscellaneous connection error has occurred."
+  }
+]
