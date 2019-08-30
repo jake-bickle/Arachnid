@@ -69,7 +69,7 @@ class Crawler:
             return False
         print(c_url)
         try:
-            r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent})
+            r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent}, timeout=30)
             if "text/html" in r.headers["content-type"]:
                 self._parse_page(r, c_url)
             else:
