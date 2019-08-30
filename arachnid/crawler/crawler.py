@@ -7,6 +7,7 @@ from .scraper import Scraper
 from .domaindata import DomainData
 from .crawler_url import CrawlerURL
 from . import url_functions
+from . import warning_issuer
 
 
 class CrawlerConfig:
@@ -67,11 +68,14 @@ class Crawler:
         if c_url is None:
             return False
         print(c_url)
-        r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent})
-        if "text/html" in r.headers["content-type"]:
-            self._parse_page(r, c_url)
-        else:
-            self._parse_document(r, c_url)
+        try:
+            r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent})
+            if "text/html" in r.headers["content-type"]:
+                self._parse_page(r, c_url)
+            else:
+                self._parse_document(r, c_url)
+        except BaseException as e:
+            warning_issuer.issue_warning_from_exception(e, c_url.get_url())
         return True
 
     def _parse_page(self, response, c_url):
