@@ -4,6 +4,7 @@ from collections import deque
 
 from . import crawler_url
 from . import url_functions
+from . import warning_issuer
 
 
 class DomainBlock:
@@ -112,6 +113,13 @@ class Scheduler:
                                                   is_fuzzed=True, allow_fragments=False)
 
             print(sub_to_check.get_url())
-            r = requests.head(sub_to_check.get_url(), headers=self.headers)
-            if r.status_code != '404':
+            try:
+                requests.head(sub_to_check.get_url(), headers=self.headers)
                 self.schedule_url(sub_to_check)
+            except BaseException as e:
+                # Ignore ConnectionError base class as that represents a subdomain that doesn't exist in this context.
+                # Written as such because we are interested in SSL errors which is inherently a ConnectionError but
+                # doesn't necessarily mean that there isn't an available subdomain.
+                if not e.__class__.__name__ == "ConnectionError":
+                    warning_issuer.issue_warning_from_exception(e, sub_to_check.get_url())
+
