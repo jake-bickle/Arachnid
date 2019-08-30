@@ -4,6 +4,7 @@ from collections import deque
 
 from . import crawler_url
 from . import url_functions
+from . import warning_issuer
 
 
 class DomainBlock:
@@ -112,6 +113,10 @@ class Scheduler:
                                                   is_fuzzed=True, allow_fragments=False)
 
             print(sub_to_check.get_url())
-            r = requests.head(sub_to_check.get_url(), headers=self.headers)
-            if r.status_code != '404':
-                self.schedule_url(sub_to_check)
+            try:
+                r = requests.head(sub_to_check.get_url(), headers=self.headers)
+                if r.status_code != '404':
+                    self.schedule_url(sub_to_check)
+            except BaseException as e:
+                warning_issuer.issue_warning_from_exception(e, sub_to_check.get_url())
+
