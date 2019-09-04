@@ -123,7 +123,8 @@ class Scheduler:
     def _ensure_domain_block(self, c_url):
         block = self._get_domain_block(c_url)
         if block is None:
-            block = DomainBlock(c_url, useragent=self.useragent, fuzz_list=self.paths_to_fuzz)
+            block = DomainBlock(c_url, useragent=self.useragent, respect_robots=self.respect_robots,
+                                fuzz_list=self.paths_to_fuzz)
             self.blocks_to_crawl.append(block)
         return block
 
