@@ -1,6 +1,5 @@
 import argparse
 import re
-import random
 import threading
 import os
 import sys
@@ -113,14 +112,14 @@ parser.add_argument("-f", "--find",
                     choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
                     help="Find various information from a page. See man page for more details")
 
-parser.add_argument("-T", "--delay",
-                    dest="delay",
+parser.add_argument("-t", "--delay",
+                    dest="default_delay",
                     choices=["none", "low", "medium", "high"],
                     default=Delay.NONE.value,
                     action=DelayAction,
                     help="TODO: timing help")
 
-parser.add_argument("--robots",
+parser.add_argument("-R", "--robots",
                     dest="obey_robots",
                     action="store_false",
                     help="Crawl the links gathered by robots.txt")
@@ -170,18 +169,15 @@ def crawl():
     args = parser.parse_args()
     c = crawler.get_crawler(args)
 
-    delay_sw = Stopwatch(random.choice(args.delay))
     timer = Timer()
     timer.start()
     while c.crawl_next():
-        delay_sw.start()
         if timer.elapsed() > 30:
             with open(output_file, "w") as f:
-                f.write(c.dumps(indent=4))
+                f.write(c.dumps())
             timer.restart()
-        delay_sw.wait()  # Delay the crawler to throw off automated systems
     with open(output_file, "w") as f:
-        f.write(c.dumps(indent=4))
+        f.write(c.dumps())
     input("Crawl complete. Press ENTER to exit.")
 
 
