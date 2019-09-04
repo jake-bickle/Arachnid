@@ -114,7 +114,7 @@ class Crawler:
             self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
 
         page_info = {"path": c_url.get_extension(),
-                     "title": scraper.title.string if scraper.title.string else url_parts.path.split("/")[-1],
+                     "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
                      "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
                      "on_fuzz_list": c_url.is_fuzzed(),
                      "code": response.status_code}
