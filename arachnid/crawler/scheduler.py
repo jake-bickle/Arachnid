@@ -2,24 +2,41 @@ import requests
 
 from collections import deque
 
-from . import crawler_url
 from . import url_functions
 from . import warning_issuer
+from .crawler_url import CrawlerURL
+from .robotparser import RobotFileParser
 
 
 class DomainBlock:
     """ Holds a stack of parsed URLs to be crawled for a specific netloc """
-    def __init__(self, c_url, fuzz_list=tuple()):
+    def __init__(self, c_url, fuzz_list=tuple(), respect_robots=True, useragent=""):
         self.netloc = c_url.get_netloc()
+        self.useragent = useragent
         self.pages_to_crawl = deque()  # To be used as a stack
         for path in fuzz_list:
-            fuzzed_page = crawler_url.CrawlerURL(url_functions.join_url(c_url.get_url(), path),
-                                                 is_fuzzed=True, allow_fragments=False)
+            fuzzed_page = CrawlerURL(url_functions.join_url(c_url.get_url(), path),
+                                     is_fuzzed=True, allow_fragments=False)
             self.add_page(fuzzed_page)
         self.add_page(c_url)
+        self.robots = RobotFileParser("{0}/robots.txt".format(c_url.get_base()))
+        self.robots.read()
+        self.respect_robots = respect_robots
+        self.crawl_delay = 0
+        if self.respect_robots:
+            if self.robots.crawl_delay(self.useragent):
+                self.crawl_delay = self.robots.crawl_delay(self.useragent)
+            else:
+                reqrate = self.robots.request_rate(self.useragent)
+                if reqrate:
+                    self.crawl_delay = reqrate.seconds // reqrate.requests
+        else:
+            for path in self.robots.all_paths():
+                new_url = url_functions.join_url(c_url.get_base(), path)
+                self.add_page(CrawlerURL(new_url, in_robots=True))
 
     def add_page(self, c_url):
-        if c_url in self.pages_to_crawl:
+        if c_url in self.pages_to_crawl or self.respect_robots and not self.robots.can_fetch(self.useragent, c_url.get_url()):
             return False
         self.pages_to_crawl.append(c_url)
         return True
@@ -109,8 +126,8 @@ class Scheduler:
     def _fuzz_for_domainblocks(self):
         self.activate_sub_fuzz = False
         for prefix in self.subs_to_fuzz:
-            sub_to_check = crawler_url.CrawlerURL(url_functions.change_subdomain(prefix.strip(), self.seed.get_url()),
-                                                  is_fuzzed=True, allow_fragments=False)
+            sub_to_check = CrawlerURL(url_functions.change_subdomain(prefix.strip(), self.seed.get_url()),
+                                      is_fuzzed=True, allow_fragments=False)
 
             print(sub_to_check.get_url())
             try:
