@@ -1,6 +1,5 @@
 import argparse
 import re
-import random
 import threading
 import os
 import sys
@@ -170,16 +169,13 @@ def crawl():
     args = parser.parse_args()
     c = crawler.get_crawler(args)
 
-    delay_sw = Stopwatch(random.choice(args.delay))
     timer = Timer()
     timer.start()
     while c.crawl_next():
-        delay_sw.start()
         if timer.elapsed() > 30:
             with open(output_file, "w") as f:
                 f.write(c.dumps(indent=4))
             timer.restart()
-        delay_sw.wait()  # Delay the crawler to throw off automated systems
     with open(output_file, "w") as f:
         f.write(c.dumps(indent=4))
     input("Crawl complete. Press ENTER to exit.")

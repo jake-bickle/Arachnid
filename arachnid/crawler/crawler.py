@@ -1,5 +1,7 @@
 import requests
 import arachnid_enums
+import random
+from timewidgets import Stopwatch
 
 from . import responseparser
 from .scheduler import Scheduler
@@ -62,8 +64,10 @@ class Crawler:
         self.schedule = Scheduler(seed, fuzzing_options=({"User-Agent": self.config.agent}, self.config.paths_list_file_loc,
                                                           self.config.subs_list_file_loc))
         self.output = DomainData(seed.get_netloc())
+        self.delay_sw = Stopwatch(random.choice(self.config.default_delay))
 
     def crawl_next(self):
+        self.delay_sw.start()
         c_url = self.schedule.next_url()
         if c_url is None:
             return False
@@ -76,6 +80,8 @@ class Crawler:
                 self._parse_document(r, c_url)
         except BaseException as e:
             warning_issuer.issue_warning_from_exception(e, c_url.get_url())
+        self.delay_sw.wait()
+        self.delay_sw = Stopwatch(random.choice(self.config.default_delay))
         return True
 
     def _parse_page(self, response, c_url):
