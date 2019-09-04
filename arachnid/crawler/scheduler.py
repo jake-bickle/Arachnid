@@ -13,16 +13,15 @@ class DomainBlock:
     def __init__(self, c_url, fuzz_list=tuple(), respect_robots=True, useragent=""):
         self.netloc = c_url.get_netloc()
         self.useragent = useragent
+        self.respect_robots = respect_robots
+        self.crawl_delay = 0
         self.pages_to_crawl = deque()  # To be used as a stack
         for path in fuzz_list:
             fuzzed_page = CrawlerURL(url_functions.join_url(c_url.get_url(), path),
                                      is_fuzzed=True, allow_fragments=False)
             self.add_page(fuzzed_page)
-        self.add_page(c_url)
         self.robots = RobotFileParser("{0}/robots.txt".format(c_url.get_base()))
         self.robots.read()
-        self.respect_robots = respect_robots
-        self.crawl_delay = 0
         if self.respect_robots:
             if self.robots.crawl_delay(self.useragent):
                 self.crawl_delay = self.robots.crawl_delay(self.useragent)
@@ -34,6 +33,7 @@ class DomainBlock:
             for path in self.robots.all_paths():
                 new_url = url_functions.join_url(c_url.get_base(), path)
                 self.add_page(CrawlerURL(new_url, in_robots=True, allow_fragments=False))
+        self.add_page(c_url)
 
     def add_page(self, c_url):
         if c_url in self.pages_to_crawl or self.respect_robots and not self.robots.can_fetch(self.useragent, c_url.get_url()):
@@ -70,23 +70,21 @@ class Scheduler:
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
         self.seed = c_url
+        self.respect_robots = respect_robots
         self.useragent = useragent
-        self.headers = {}
         self.paths_to_fuzz = ()
         self.subs_to_fuzz = ()
         self.activate_sub_fuzz = False
         if fuzzing_options:
             print("Loading list data for fuzzing operations. Some lists are quite large and may take some time.")
-            self.headers = fuzzing_options[0]
-            if fuzzing_options[1]:
+            if fuzzing_options[0]:
                 with open(fuzzing_options[1]) as f:
                     self.paths_to_fuzz = tuple(line.strip() for line in f)
-            if fuzzing_options[2]:
+            if fuzzing_options[1]:
                 self.activate_sub_fuzz = True
-                with open(fuzzing_options[2]) as f:
+                with open(fuzzing_options[1]) as f:
                     self.subs_to_fuzz = tuple(line.strip() for line in f)
         self.schedule_url(self.seed)
-        self.respect_robots = respect_robots
         self.current_delay = 0
 
     def schedule_url(self, c_url):
