@@ -113,8 +113,8 @@ parser.add_argument("-f", "--find",
                     choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
                     help="Find various information from a page. See man page for more details")
 
-parser.add_argument("-T", "--delay",
-                    dest="delay",
+parser.add_argument("-t", "--delay",
+                    dest="default_delay",
                     choices=["none", "low", "medium", "high"],
                     default=Delay.NONE.value,
                     action=DelayAction,

@@ -184,8 +184,7 @@ class RobotFileParser:
         return self.default_entry.req_rate
 
     def all_paths(self):
-        """ Return all the paths found in the robots file
-        """
+        """ Return all the paths found in the robots file """
         paths = []
         for e in self.entries:
             for r in e.rulelines:

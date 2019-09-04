@@ -27,20 +27,20 @@ class CrawlerConfig:
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.delay = arachnid_enums.Delay.NONE.value
+        self.default_delay = arachnid_enums.Delay.NONE.value
         self.paths_list_file_loc = None
         self.subs_list_file_loc = None
 
     def set_stealth(self):
         self.obey_robots = True
         self.agent = arachnid_enums.Agent.GOOGLE.value
-        self.delay = arachnid_enums.Delay.HIGH.value
+        self.default_delay = arachnid_enums.Delay.HIGH.value
         self.paths_list_file_loc = None
         self.paths_list_file_loc = None
 
     def set_aggressive(self):
         self.obey_robots = False 
-        self.delay = arachnid_enums.Delay.NONE.value
+        self.default_delay = arachnid_enums.Delay.NONE.value
         self.paths_list_file_loc = None
         self.subs_list_file_loc = None
 
