@@ -143,11 +143,10 @@ parser.add_argument("-a", "--agent",
                     action=AgentAction,
                     help="TODO: agent help")
 
-# TODO: Feature not in place yet
-# parser.add_argument("--page-only",
-                    # dest="scrape_links",
-                    # action="store_false",
-                    # help="Find information about the given URL only")
+parser.add_argument("--page-only",
+                    dest="scrape_links",
+                    action="store_false",
+                    help="Find information about the given URL only")
 
 parser.add_argument("--no-subdomain",
                     dest="scrape_subdomains",

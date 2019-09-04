@@ -101,9 +101,10 @@ class Crawler:
         if self.config.custom_regex:
             for regex in scraper.find_all_regex(self.config.custom_regex):
                 self.output.add_custom_regex(netloc, regex)
-        for href in Scraper(response.text, "html.parser").find_all_hrefs():
-            url = url_functions.join_url(c_url.get_url(), href)
-            self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
+        if self.config.scrape_links:
+            for href in Scraper(response.text, "html.parser").find_all_hrefs():
+                url = url_functions.join_url(c_url.get_url(), href)
+                self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
 
         page_info = {"path": c_url.get_extension(),
                      "title": scraper.title.string if scraper.title.string else url_parts.path.split("/")[-1],
