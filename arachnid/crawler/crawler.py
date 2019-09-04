@@ -56,15 +56,16 @@ class CrawlerConfig:
         self.custom_regex = None
 
 
-# TODO: Fix: New subdomains won't have robots added
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = CrawlerURL(seed, allow_fragments=False)
         self.config = config
-        self.schedule = Scheduler(seed, fuzzing_options=({"User-Agent": self.config.agent}, self.config.paths_list_file_loc,
-                                                          self.config.subs_list_file_loc))
+        self.schedule = Scheduler(seed, useragent=self.config.agent,
+                                  fuzzing_options=(self.config.paths_list_file_loc, self.config.subs_list_file_loc),
+                                  respect_robots=self.config.obey_robots)
         self.output = DomainData(seed.get_netloc())
-        self.delay_sw = Stopwatch(random.choice(self.config.default_delay))
+        self.delay_sw = Stopwatch()
+        self._update_crawl_delay()
         self.delay_sw.start()
 
     def crawl_next(self):
@@ -81,7 +82,7 @@ class Crawler:
                 self._parse_document(r, c_url)
         except BaseException as e:
             warning_issuer.issue_warning_from_exception(e, c_url.get_url())
-        self.delay_sw = Stopwatch(random.choice(self.config.default_delay))
+        self._update_crawl_delay()
         self.delay_sw.start()
         return True
 
@@ -125,6 +126,11 @@ class Crawler:
         if data:
             data["path"] = c_url.get_url_parts().path
             self.output.add_document(c_url.get_netloc(), data)
+
+    def _update_crawl_delay(self):
+        default_delay = random.choice(self.config.default_delay)
+        s_delay = self.schedule.get_crawl_delay()
+        self.delay_sw = Stopwatch(default_delay if default_delay > s_delay else s_delay)
 
     def dumps(self, **kwargs):
         return self.output.dumps(**kwargs)
