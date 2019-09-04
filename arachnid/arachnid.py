@@ -119,7 +119,7 @@ parser.add_argument("-t", "--delay",
                     action=DelayAction,
                     help="TODO: timing help")
 
-parser.add_argument("--robots",
+parser.add_argument("-R", "--robots",
                     dest="obey_robots",
                     action="store_false",
                     help="Crawl the links gathered by robots.txt")
