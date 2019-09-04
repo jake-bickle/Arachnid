@@ -136,7 +136,7 @@ class Scheduler:
 
             print(sub_to_check.get_url())
             try:
-                requests.head(sub_to_check.get_url(), headers=self.headers, timeout=30)
+                requests.head(sub_to_check.get_url(), headers={"User-Agent": self.useragent}, timeout=30)
                 self.schedule_url(sub_to_check)
             except BaseException as e:
                 # Ignore ConnectionError base class as that represents a subdomain that doesn't exist in this context.
