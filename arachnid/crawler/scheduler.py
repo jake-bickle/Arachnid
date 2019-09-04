@@ -33,7 +33,7 @@ class DomainBlock:
         else:
             for path in self.robots.all_paths():
                 new_url = url_functions.join_url(c_url.get_base(), path)
-                self.add_page(CrawlerURL(new_url, in_robots=True))
+                self.add_page(CrawlerURL(new_url, in_robots=True, allow_fragments=False))
 
     def add_page(self, c_url):
         if c_url in self.pages_to_crawl or self.respect_robots and not self.robots.can_fetch(self.useragent, c_url.get_url()):
@@ -58,19 +58,19 @@ class DomainBlock:
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
 
-    def __init__(self, c_url, fuzzing_options=None):
+    def __init__(self, c_url, useragent="", respect_robots=True, fuzzing_options=None):
         """ Sets up the scheduler to send out by a queue of domainblocks (aka a subdomain).
             Each domainblock will send out all of its available c_urls before being removed from queue.
 
             c_url is a CrawlerURL object
             fuzzing_options is an optional tuple that decides which aspects of the crawl to fuzz.
-            fuzzing_options[0] must be a dict of header information to test whether a given c_url exists.
-            fuzzing_options[1] Is a file location that holds a list of URL paths to try on each sub domain. It may be None type as well.
-            fuzzing_options[2] Is a file location that holds a list of subdomain prefixes (IE. 'www', 'en', etc.) to test if they exist. It may be None type as well.
+            fuzzing_options[0] Is a file location that holds a list of URL paths to try on each sub domain. It may be None type as well.
+            fuzzing_options[1] Is a file location that holds a list of subdomain prefixes (IE. 'www', 'en', etc.) to test if they exist. It may be None type as well.
         """
         self.blocks_to_crawl = deque()  # To be used as a queue
         self.crawled_urls = set()
         self.seed = c_url
+        self.useragent = useragent
         self.headers = {}
         self.paths_to_fuzz = ()
         self.subs_to_fuzz = ()
@@ -86,6 +86,8 @@ class Scheduler:
                 with open(fuzzing_options[2]) as f:
                     self.subs_to_fuzz = tuple(line.strip() for line in f)
         self.schedule_url(self.seed)
+        self.respect_robots = respect_robots
+        self.current_delay = 0
 
     def schedule_url(self, c_url):
         """ Schedule a URL to be crawled at a later time. A URL will not be scheduled if:
@@ -104,22 +106,26 @@ class Scheduler:
         if not self.blocks_to_crawl:
             return None
         block_to_crawl = self.blocks_to_crawl[0]
-        p_url = block_to_crawl.next_url()
+        c_url = block_to_crawl.next_url()
         if not block_to_crawl.has_pages_to_crawl():
             self.blocks_to_crawl.popleft()
-        self.crawled_urls.add(p_url)
-        return p_url
+        self.crawled_urls.add(c_url)
+        self.current_delay = block_to_crawl.crawl_delay
+        return c_url
 
-    def _get_domain_block(self, parsed_url):
+    def get_crawl_delay(self):
+        return self.current_delay
+
+    def _get_domain_block(self, c_url):
         for block in self.blocks_to_crawl:
-            if block.same_netloc(parsed_url):
+            if block.same_netloc(c_url):
                 return block
         return None
 
-    def _ensure_domain_block(self, parsed_url):
-        block = self._get_domain_block(parsed_url)
+    def _ensure_domain_block(self, c_url):
+        block = self._get_domain_block(c_url)
         if block is None:
-            block = DomainBlock(parsed_url, fuzz_list=self.paths_to_fuzz)
+            block = DomainBlock(c_url, useragent=self.useragent, fuzz_list=self.paths_to_fuzz)
             self.blocks_to_crawl.append(block)
         return block
 
