@@ -117,6 +117,7 @@ class Crawler:
                      "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
                      "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
                      "on_fuzz_list": c_url.is_fuzzed(),
+                     "on_robots": c_url.in_robots(),
                      "code": response.status_code}
         self.output.add_page(c_url.get_netloc(), page_info)
 
