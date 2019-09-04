@@ -1,5 +1,7 @@
 import requests
 import arachnid_enums
+import random
+from timewidgets import Stopwatch
 
 from . import responseparser
 from .scheduler import Scheduler
@@ -27,20 +29,20 @@ class CrawlerConfig:
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.delay = arachnid_enums.Delay.NONE.value
+        self.default_delay = arachnid_enums.Delay.NONE.value
         self.paths_list_file_loc = None
         self.subs_list_file_loc = None
 
     def set_stealth(self):
         self.obey_robots = True
         self.agent = arachnid_enums.Agent.GOOGLE.value
-        self.delay = arachnid_enums.Delay.HIGH.value
+        self.default_delay = arachnid_enums.Delay.HIGH.value
         self.paths_list_file_loc = None
         self.paths_list_file_loc = None
 
     def set_aggressive(self):
         self.obey_robots = False 
-        self.delay = arachnid_enums.Delay.NONE.value
+        self.default_delay = arachnid_enums.Delay.NONE.value
         self.paths_list_file_loc = None
         self.subs_list_file_loc = None
 
@@ -54,16 +56,20 @@ class CrawlerConfig:
         self.custom_regex = None
 
 
-# TODO: Fix: New subdomains won't have robots added
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = CrawlerURL(seed, allow_fragments=False)
         self.config = config
-        self.schedule = Scheduler(seed, fuzzing_options=({"User-Agent": self.config.agent}, self.config.paths_list_file_loc,
-                                                          self.config.subs_list_file_loc))
+        self.schedule = Scheduler(seed, useragent=self.config.agent,
+                                  fuzzing_options=(self.config.paths_list_file_loc, self.config.subs_list_file_loc),
+                                  respect_robots=self.config.obey_robots)
         self.output = DomainData(seed.get_netloc())
+        self.delay_sw = Stopwatch()
+        self._update_crawl_delay()
+        self.delay_sw.start()
 
     def crawl_next(self):
+        self.delay_sw.wait()
         c_url = self.schedule.next_url()
         if c_url is None:
             return False
@@ -76,6 +82,8 @@ class Crawler:
                 self._parse_document(r, c_url)
         except BaseException as e:
             warning_issuer.issue_warning_from_exception(e, c_url.get_url())
+        self._update_crawl_delay()
+        self.delay_sw.start()
         return True
 
     def _parse_page(self, response, c_url):
@@ -107,9 +115,10 @@ class Crawler:
                 self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
 
         page_info = {"path": c_url.get_extension(),
-                     "title": scraper.title.string if scraper.title.string else url_parts.path.split("/")[-1],
+                     "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
                      "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
                      "on_fuzz_list": c_url.is_fuzzed(),
+                     "on_robots": c_url.in_robots(),
                      "code": response.status_code}
         self.output.add_page(c_url.get_netloc(), page_info)
 
@@ -119,6 +128,11 @@ class Crawler:
         if data:
             data["path"] = c_url.get_url_parts().path
             self.output.add_document(c_url.get_netloc(), data)
+
+    def _update_crawl_delay(self):
+        default_delay = random.choice(self.config.default_delay)
+        s_delay = self.schedule.get_crawl_delay()
+        self.delay_sw = Stopwatch(default_delay if default_delay > s_delay else s_delay)
 
     def dumps(self, **kwargs):
         return self.output.dumps(**kwargs)

@@ -393,7 +393,7 @@ class test_generate_config(unittest.TestCase):
         namespace = self.get_namespace(cli)
         c = generate_crawler_config(namespace)
         correct_output = CrawlerConfig()
-        correct_output.delay = arachnid_enums.Delay.HIGH.value
+        correct_output.default_delay = arachnid_enums.Delay.HIGH.value
 
     def test_stealth_modified(self):
         cli = "https://www.example.com -T none --stealth"
@@ -401,7 +401,7 @@ class test_generate_config(unittest.TestCase):
         c = generate_crawler_config(namespace)
         correct_output = CrawlerConfig()
         correct_output.set_stealth()
-        correct_output.delay = arachnid_enums.Delay.NONE.value
+        correct_output.default_delay = arachnid_enums.Delay.NONE.value
         self.assertEqual(vars(c), vars(correct_output))
 
     def test_agent(self):
