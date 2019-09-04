@@ -174,10 +174,10 @@ def crawl():
     while c.crawl_next():
         if timer.elapsed() > 30:
             with open(output_file, "w") as f:
-                f.write(c.dumps(indent=4))
+                f.write(c.dumps())
             timer.restart()
     with open(output_file, "w") as f:
-        f.write(c.dumps(indent=4))
+        f.write(c.dumps())
     input("Crawl complete. Press ENTER to exit.")
 
 
