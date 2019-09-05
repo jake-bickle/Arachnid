@@ -130,12 +130,6 @@ parser.add_argument("-F", "--fuzz",
                     action=FuzzAction,
                     help="TODO: Fuzz help")
 
-parser.add_argument("-S", "--fuzz_subdomains",
-                    dest="subs_list_file_loc",
-                    nargs="?",
-                    action=SubfuzzAction,
-                    help="TODO: Subdomain fuzz help")
-
 parser.add_argument("-a", "--agent",
                     dest="agent",
                     choices=['g', 'b', 'y', 'd', 'bd', 'yd', 'f', 'm'],
@@ -147,11 +141,6 @@ parser.add_argument("--page-only",
                     action="store_false",
                     help="Find information about the given URL only")
 
-parser.add_argument("--no-subdomain",
-                    dest="scrape_subdomains",
-                    action="store_false",
-                    help="Don't crawl subdomains of the seed URL")
-
 aggressions = parser.add_mutually_exclusive_group()
 aggressions.add_argument("--stealth",
                     dest="stealth",
@@ -162,6 +151,18 @@ aggressions.add_argument("--aggressive",
                     dest="aggressive",
                     action="store_true",
                     help="Use a preset of options to crawl loudly")
+
+subdomains = parser.add_mutually_exclusive_group()
+subdomains.add_argument("-S", "--fuzz-subdomains",
+                    dest="subs_list_file_loc",
+                    nargs="?",
+                    action=SubfuzzAction,
+                    help="TODO: Subdomain fuzz help")
+
+subdomains.add_argument("--no-subdomain",
+                    dest="scrape_subdomains",
+                    action="store_false",
+                    help="Don't crawl subdomains of the seed URL")
 
 
 def crawl():
