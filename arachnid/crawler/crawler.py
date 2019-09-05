@@ -62,7 +62,8 @@ class Crawler:
         self.config = config
         self.schedule = Scheduler(seed, useragent=self.config.agent,
                                   fuzzing_options=(self.config.paths_list_file_loc, self.config.subs_list_file_loc),
-                                  respect_robots=self.config.obey_robots)
+                                  respect_robots=self.config.obey_robots,
+                                  allow_subdomains=self.config.scrape_subdomains)
         self.output = DomainData(seed.get_netloc())
         self.delay_sw = Stopwatch()
         self._update_crawl_delay()
