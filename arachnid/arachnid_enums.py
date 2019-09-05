@@ -2,10 +2,10 @@ from enum import Enum, auto
 
 
 class Delay(Enum):
-    NONE = range(0,1)
-    LOW = range(1,6)
-    MEDIUM = range(4,11)
-    HIGH = range(1,21)
+    NONE = tuple(x for x in range(0,1))
+    LOW = tuple(x for x in range(1,6))
+    MEDIUM = tuple(x for x in range(4,11))
+    HIGH = tuple(x for x in range(1,21))
 
 
 class Amount(Enum):
