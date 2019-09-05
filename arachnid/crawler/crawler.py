@@ -100,16 +100,16 @@ class Crawler:
         url_parts = c_url.get_url_parts()
         if self.config.scrape_email:
             for email in scraper.find_all_emails():
-                self.output.add_email(netloc, email)
+                self.output.add_email(email)
         if self.config.scrape_phone_number:
             for number in scraper.find_all_phones():
-                self.output.add_phone(netloc, number)
+                self.output.add_phone(number)
         if self.config.scrape_social_media:
             for social in scraper.find_all_social():
-                self.output.add_social(netloc, social)
+                self.output.add_social(social)
         if self.config.custom_regex:
             for regex in scraper.find_all_regex(self.config.custom_regex):
-                self.output.add_custom_regex(netloc, regex)
+                self.output.add_custom_regex(regex)
         if self.config.scrape_links:
             for href in Scraper(response.text, "html.parser").find_all_hrefs():
                 url = url_functions.join_url(c_url.get_url(), href)

@@ -33,20 +33,20 @@ class DomainData:
         if not (page["code"] == 404 and page["on_fuzz_list"]):  # Failed fuzzes won't be added to reduce clutter
             sub["pages"].append(page)
 
-    def add_phone(self, netloc, phone_number):
+    def add_phone(self, phone_number):
         self.data["phone_numbers"].add(phone_number)
 
-    def add_email(self, netloc, email):
+    def add_email(self, email):
         self.data["emails"].add(email)
 
-    def add_social(self, netloc, social_media):
+    def add_social(self, social_media):
         self.data["social_media"].add(social_media)
 
     def add_document(self, netloc, document):
         sub = self._ensure_subdomain(netloc)
         sub["documents"].append(document)
 
-    def add_custom_regex(self, netloc, regex):
+    def add_custom_regex(self, regex):
         self.data["custom_regex"].add(regex)
 
     def _new_subdomain(self, netloc):
