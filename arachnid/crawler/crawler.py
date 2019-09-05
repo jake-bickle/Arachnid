@@ -71,12 +71,12 @@ class Crawler:
         self.delay_sw.start()
 
     def crawl_next(self):
-        self.delay_sw.wait()
         c_url = self.schedule.next_url()
         if c_url is None:
             self.output.end()
             return False
         print(c_url)
+        self.delay_sw.wait()
         try:
             r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent}, timeout=30)
             if "text/html" in r.headers["content-type"]:
