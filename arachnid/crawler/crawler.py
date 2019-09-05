@@ -66,6 +66,7 @@ class Crawler:
                                   allow_subdomains=self.config.scrape_subdomains)
         self.output = DomainData(seed.get_netloc())
         self.output.start()
+        self.output.add_config(self.config)
         self.delay_sw = Stopwatch()
         self._update_crawl_delay()
         self.delay_sw.start()
