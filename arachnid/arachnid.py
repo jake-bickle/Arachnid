@@ -11,6 +11,7 @@ from .arachnid_enums import Delay, Amount, Agent
 
 base_dir = os.path.dirname(sys.modules["__main__"].__file__)
 output_file = os.path.join(base_dir, "output/scraped_data/arachnid_data.json")
+warning_file = os.path.join(base_dir, "output/scraped_data/warnings.json")
 default_fuzz_list_file_loc = os.path.join(base_dir, "crawler/fuzz_list.txt")
 default_sub_list_file_loc = os.path.join(base_dir, "crawler/subdomain_fuzz_list.txt")
 php_ip = "127.0.0.1:8080"
@@ -168,6 +169,7 @@ subdomains.add_argument("--no-subdomain",
 def crawl():
     args = parser.parse_args()
     c = crawler.get_crawler(args)
+    webbrowser.open_new_tab(f"{php_ip}")
 
     timer = Timer()
     timer.start()
@@ -181,10 +183,16 @@ def crawl():
     input("Crawl complete. Press ENTER to exit.")
 
 
+def clear_file(file_loc):
+    with open(file_loc, 'w') as f:
+        f.write("")
+
+
 def main():
     php_server = threading.Thread(target=lambda: os.system(php_cmd), args=(), daemon=True)
     php_server.start()
-    webbrowser.open_new_tab(f"{php_ip}")
+    clear_file(output_file)
+    clear_file(warning_file)
     crawl()
 
 
