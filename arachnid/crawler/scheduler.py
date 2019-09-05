@@ -75,7 +75,7 @@ class Scheduler:
         self.paths_to_fuzz = ()
         self.subs_to_fuzz = ()
         self.activate_sub_fuzz = False
-        if fuzzing_options[1] or fuzzing_options[2]:
+        if fuzzing_options[0] or fuzzing_options[1]:
             print("Loading list data for fuzzing operations. Some lists are quite large and may take some time.")
             if fuzzing_options[0]:
                 with open(fuzzing_options[1]) as f:
