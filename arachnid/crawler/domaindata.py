@@ -1,6 +1,8 @@
 import json
 import tldextract
+import datetime
 
+from timewidgets import Timer
 
 class SetToList(json.JSONEncoder):
     def default(self, obj):
@@ -17,13 +19,20 @@ class DomainData:
         p_n = tldextract.extract(netloc)
         self.domain = p_n.domain
         self.suffix = p_n.suffix
+        metadata = {"start_time": None,
+                    "start_date": None,
+                    "end_time": None,
+                    "end_date": None,
+                    "run_time": None}
         # The majority of the data is held within sets to prevent duplicate data.
-        self.data = { "sites" : list(),
-                      "phone_numbers" : set(),
-                      "emails" : set(),
-                      "social_media": set(),
-                      "custom_regex" : set()}
+        self.data = {"sites": list(),
+                     "phone_numbers": set(),
+                     "emails": set(),
+                     "social_media": set(),
+                     "custom_regex": set(),
+                     "metadata": metadata}
         self._new_subdomain(netloc)
+        self.run_time = Timer()
         
     def dumps(self, **kwargs):
         return json.dumps(self.data, cls=SetToList, **kwargs)
@@ -48,6 +57,18 @@ class DomainData:
 
     def add_custom_regex(self, regex):
         self.data["custom_regex"].add(regex)
+
+    def start(self):
+        self.run_time.start()
+        d = datetime.datetime.today()
+        self.data["metadata"]["start_date"] = d.strftime("%d/%m/%Y")
+        self.data["metadata"]["start_time"] = d.strftime("%H:%M:%S")
+
+    def end(self):
+        self.data["metadata"]["run_time"] = self.run_time.elapsed()
+        d = datetime.datetime.today()
+        self.data["metadata"]["end_date"] = d.strftime("%d/%m/%Y")
+        self.data["metadata"]["end_time"] = d.strftime("%H:%M:%S")
 
     def _new_subdomain(self, netloc):
         self.throw_if_wrong_domain(netloc)
