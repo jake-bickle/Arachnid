@@ -4,6 +4,7 @@ import datetime
 
 from timewidgets import Timer
 
+
 class SetToList(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
@@ -23,7 +24,8 @@ class DomainData:
                     "start_date": None,
                     "end_time": None,
                     "end_date": None,
-                    "run_time": None}
+                    "run_time": None,
+                    "config": None}
         # The majority of the data is held within sets to prevent duplicate data.
         self.data = {"sites": list(),
                      "phone_numbers": set(),
@@ -57,6 +59,9 @@ class DomainData:
 
     def add_custom_regex(self, regex):
         self.data["custom_regex"].add(regex)
+
+    def add_config(self, crawler_config):
+        self.data["metadata"]["config"] = vars(crawler_config)
 
     def start(self):
         self.run_time.start()
