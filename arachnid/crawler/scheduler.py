@@ -58,7 +58,7 @@ class DomainBlock:
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
 
-    def __init__(self, c_url, useragent="", respect_robots=True, fuzzing_options=None):
+    def __init__(self, c_url, useragent="", respect_robots=True, fuzzing_options=None, allow_subdomains=True):
         """ Sets up the scheduler to send out by a queue of domainblocks (aka a subdomain).
             Each domainblock will send out all of its available c_urls before being removed from queue.
 
@@ -72,6 +72,7 @@ class Scheduler:
         self.seed = c_url
         self.respect_robots = respect_robots
         self.useragent = useragent
+        self.allow_subdomains = allow_subdomains
         self.paths_to_fuzz = ()
         self.subs_to_fuzz = ()
         self.activate_sub_fuzz = False
@@ -94,6 +95,8 @@ class Scheduler:
             - It has already been scheduled
         """
         if not url_functions.is_subdomain(c_url, self.seed) or c_url in self.crawled_urls:
+            return False
+        if not self.allow_subdomains and c_url.get_netloc() != self.seed.get_netloc():
             return False
         block = self._ensure_domain_block(c_url)
         return block.add_page(c_url)
