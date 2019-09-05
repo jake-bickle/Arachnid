@@ -65,6 +65,7 @@ class Crawler:
                                   respect_robots=self.config.obey_robots,
                                   allow_subdomains=self.config.scrape_subdomains)
         self.output = DomainData(seed.get_netloc())
+        self.output.start()
         self.delay_sw = Stopwatch()
         self._update_crawl_delay()
         self.delay_sw.start()
@@ -73,6 +74,7 @@ class Crawler:
         self.delay_sw.wait()
         c_url = self.schedule.next_url()
         if c_url is None:
+            self.output.end()
             return False
         print(c_url)
         try:
