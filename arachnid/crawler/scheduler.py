@@ -16,12 +16,12 @@ class DomainBlock:
         self.respect_robots = respect_robots
         self.crawl_delay = 0
         self.pages_to_crawl = deque()  # To be used as a stack
+        self.robots = RobotFileParser("{0}/robots.txt".format(c_url.get_base()))
+        self.robots.read()
         for path in fuzz_list:
             fuzzed_page = CrawlerURL(url_functions.join_url(c_url.get_url(), path),
                                      is_fuzzed=True, allow_fragments=False)
             self.add_page(fuzzed_page)
-        self.robots = RobotFileParser("{0}/robots.txt".format(c_url.get_base()))
-        self.robots.read()
         if self.respect_robots:
             if self.robots.crawl_delay(self.useragent):
                 self.crawl_delay = self.robots.crawl_delay(self.useragent)
