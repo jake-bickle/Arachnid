@@ -12,6 +12,7 @@ tldextract = "*"
 ndg-httpsclient = "*"
 pyopenssl = "*"
 chardet = "*"
+pyasn1 = "*"
 
 [requires]
 python_version = "3.7"
