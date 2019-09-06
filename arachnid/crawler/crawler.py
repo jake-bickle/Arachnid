@@ -115,7 +115,7 @@ class Crawler:
                 self.output.add_custom_regex(regex)
         if self.config.scrape_links:
             for href in Scraper(response.text, "html.parser").find_all_hrefs():
-                url = url_functions.join_url(c_url.get_url(), href)
+                url = url_functions.join_url(c_url.get_url(), href.strip())
                 self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
 
         page_info = {"path": c_url.get_extension(),
