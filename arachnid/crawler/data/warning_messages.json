@@ -6,6 +6,6 @@
     "ConnectionError": "A miscellaneous connection error has occurred."
   },
   {
-    "Timeout": "Connection timeout. Server failed to respond after 30 seconds."
+    "ConnectTimeout": "Connection timeout. Server failed to respond after 30 seconds."
   }
 ]
