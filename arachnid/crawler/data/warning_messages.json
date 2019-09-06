@@ -1,6 +1,6 @@
 [
   {
-    "SSLError": "Unable to connect securely due to unsupported cipher suites."
+    "SSLError": "Unable to connect securely due to missing or unsupported cipher suites. If this is your seed URL, try again with \"HTTP\" scheme rather than \"HTTPS\""
   },
   {
     "ConnectionError": "A miscellaneous connection error has occurred."
