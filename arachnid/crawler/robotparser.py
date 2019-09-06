@@ -1,12 +1,12 @@
 """
 A slightly modified version of python's robotparser package.
-Added RobotFileParser.all_paths()
 
 """
 
 import collections
 import urllib.parse
 import urllib.request
+import urllib.error
 
 __all__ = ["RobotFileParser"]
 
@@ -58,6 +58,8 @@ class RobotFileParser:
                 self.disallow_all = True
             elif err.code >= 400 and err.code < 500:
                 self.allow_all = True
+        except urllib.error.URLError:  # If robots can't be found, assume we're allowed to access all pages
+            self.allow_all = True
         else:
             raw = f.read()
             self.parse(raw.decode("utf-8").splitlines())
