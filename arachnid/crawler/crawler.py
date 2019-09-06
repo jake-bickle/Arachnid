@@ -99,7 +99,6 @@ class Crawler:
             c_url is a CrawlerURL object
         """
         scraper = Scraper(response.text, "html.parser")
-        netloc = c_url.get_netloc()
         url_parts = c_url.get_url_parts()
         if self.config.scrape_email:
             for email in scraper.find_all_emails():
