@@ -169,6 +169,8 @@ subdomains.add_argument("--no-subdomain",
 def crawl():
     args = parser.parse_args()
     c = crawler.get_crawler(args)
+    with open(output_file, "w") as f:
+        f.write(c.dumps())
     webbrowser.open_new_tab(f"{php_ip}")
 
     timer = Timer()
