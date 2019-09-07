@@ -115,8 +115,9 @@ class Crawler:
         if self.config.scrape_links:
             for href in Scraper(response.text, "html.parser").find_all_hrefs():
                 href = href.strip().replace(" ", "%20")
-                url = url_functions.join_url(c_url.get_url(), href)
-                self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
+                if not href.startswith("tel:"):
+                    url = url_functions.join_url(c_url.get_url(), href)
+                    self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
 
         page_info = {"path": c_url.get_extension(),
                      "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
