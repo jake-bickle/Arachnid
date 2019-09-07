@@ -7,17 +7,15 @@ URLParts = namedtuple("URL_parts", ["scheme", "subdomain", "domain", "suffix", "
 
 
 class CrawlerURL:
-    def __init__(self, url="", allow_fragments=True, is_fuzzed=False, in_robots=False):
+    def __init__(self, url="", allow_fragments=True, allow_query=True, is_fuzzed=False, in_robots=False):
         if not allow_fragments:
             url = urllib.parse.urldefrag(url)[0]
         u_rslt = urllib.parse.urlparse(url)
         e_rslt = tldextract.extract(u_rslt.netloc)
-        if u_rslt.path.endswith('/'):
-            path = u_rslt.path[:-1]
-        else:
-            path = u_rslt.path
+        path = u_rslt.path[:-1] if u_rslt.path.endswith('/') else u_rslt.path
+        query = u_rslt.query if allow_query else ""
         self.url_parts = URLParts(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, path,
-                                  u_rslt.params, u_rslt.query, u_rslt.fragment)
+                                  u_rslt.params, query, u_rslt.fragment)
         self.on_fuzz_list = is_fuzzed
         self.on_robots_list = in_robots
 

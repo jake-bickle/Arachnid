@@ -142,6 +142,11 @@ parser.add_argument("--page-only",
                     action="store_false",
                     help="Find information about the given URL only")
 
+parser.add_argument("--no-query",
+                     dest="allow_query",
+                     action="store_false",
+                     help="TODO: no query")
+
 aggressions = parser.add_mutually_exclusive_group()
 aggressions.add_argument("--stealth",
                     dest="stealth",

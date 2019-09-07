@@ -25,6 +25,7 @@ class CrawlerConfig:
         self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
                           "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
         self.obey_robots = True
+        self.allow_query = True
         self.agent = arachnid_enums.Agent.FIREFOX.value
         self.custom_str = None
         self.custom_str_case_sensitive = False
@@ -117,7 +118,7 @@ class Crawler:
             for page in scraper.find_all_http_refs():
                 page = page.strip().replace(" ", "%20")
                 url = url_functions.join_url(c_url.get_url(), page)
-                self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False))
+                self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False, allow_query=self.config.allow_query))
 
         page_info = {"path": c_url.get_extension(),
                      "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
