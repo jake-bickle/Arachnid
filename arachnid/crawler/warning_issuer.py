@@ -12,12 +12,32 @@ with open(warning_messages_loc) as f:
 
 
 def issue_warning_from_exception(e, url=""):
-    e_name = e.__class__.__name__
-    for w in available_warnings:
-        if e_name in w.keys():
-            new_warning = {"url": url, "message": w[e_name]}
-            warnings.insert(0, new_warning)  # Newest warnings should be at the front
-            with open(output_file, "w") as f:
-                f.write(json.dumps(warnings))
-            return
+    """ Issue a warning from an exception if such a warning exists. Otherwise, raise exception. This is to be used as
+        a simple exception handler. """
+    code = e.__class__.__name__
+    warning = _get_warning_from_code(code)
+    if warning:
+        issue_warning(url, warning[code])
     raise e
+
+
+def issue_warning_from_status_code(c, url=""):
+    """ Issue a warning from a response's status_code if such a warning exists."""
+    code = "HTTP{}".format(c)
+    warning = _get_warning_from_code(code)
+    if warning:
+        issue_warning(url, warning[code])
+
+
+def _get_warning_from_code(code):
+    for w in available_warnings:
+        if code in w.keys():
+            return w
+    return None
+
+
+def issue_warning(url, message):
+    new_warning = {"url": url, "message": message}
+    warnings.insert(0, new_warning)  # Newest warnings should be at the front
+    with open(output_file, "w") as f:
+        f.write(json.dumps(warnings))
