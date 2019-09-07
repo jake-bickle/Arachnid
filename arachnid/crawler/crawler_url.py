@@ -3,7 +3,7 @@ import urllib.parse
 from collections import namedtuple
 
 
-_url_parts_nt = namedtuple("URL_parts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
+URLParts = namedtuple("URL_parts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
 
 
 class CrawlerURL:
@@ -12,8 +12,12 @@ class CrawlerURL:
             url = urllib.parse.urldefrag(url)[0]
         u_rslt = urllib.parse.urlparse(url)
         e_rslt = tldextract.extract(u_rslt.netloc)
-        self.url_parts = _url_parts_nt(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path,
-                                      u_rslt.params, u_rslt.query, u_rslt.fragment)
+        if u_rslt.path.endswith('/'):
+            path = u_rslt.path[:-1]
+        else:
+            path = u_rslt.path
+        self.url_parts = URLParts(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, path,
+                                  u_rslt.params, u_rslt.query, u_rslt.fragment)
         self.on_fuzz_list = is_fuzzed
         self.on_robots_list = in_robots
 
