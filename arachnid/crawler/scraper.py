@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from . import crawler_url
 from . import url_functions
 
-
 class HashableDict(dict):
     """Solution to adding dicts to sets so that DomainData has unique data.
        It is important that once a hashabledict has been hashed, that you
@@ -28,16 +27,6 @@ class RegexPatterns:
 
 
 class Scraper(BeautifulSoup):
-    def find_all_hrefs(self):
-        anchors = self.find_all("a")
-        hrefs = []
-        for a in anchors:
-            try:
-                hrefs.append(a["href"])
-            except:
-                pass  # Ignore anchors without href
-        return hrefs
-
     def find_all_emails(self):
         string_emails = [email for email in self.find_all(string=RegexPatterns.EMAIL)]
         href_emails = [email.get("href") for email in self.find_all(href=re.compile(r"mailto:"))]
@@ -85,8 +74,20 @@ class Scraper(BeautifulSoup):
                 sanitized_strings.append(pattern)
         return sanitized_strings
 
+    def find_all_http_refs(self):
+        """ Returns a list of pages or paths that follow the HTTP protocol """
+        hrefs = []
+        for a in self.find_all('a'):
+            try:
+                href = a["href"]
+                if href.startswith("http") or href.startswith("/") or href == "":
+                    hrefs.append(a["href"])
+            except:
+                pass  # Some anchors don't have href attributes
+        return hrefs
+
     def string_occurances(self, string="", case_sensitive=False):
-        if (case_sensitive):
+        if case_sensitive:
             return len([tag for tag in self.find_all(string=re.compile(string))])
         else:
             return len([tag for tag in self.find_all(string=re.compile(string, re.IGNORECASE))])
