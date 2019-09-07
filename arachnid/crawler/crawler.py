@@ -81,6 +81,7 @@ class Crawler:
         try:
             r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent}, timeout=30)
             if "text/html" in r.headers["content-type"]:
+                warning_issuer.issue_warning_from_status_code(r.status_code, c_url.get_url())
                 self._parse_page(r, c_url)
             else:
                 self._parse_document(r, c_url)
