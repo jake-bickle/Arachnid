@@ -81,11 +81,12 @@ class Crawler:
         self.delay_sw.wait()
         try:
             r = requests.get(c_url.get_url(), headers={"User-Agent": self.config.agent}, timeout=30)
-            if "text/html" in r.headers["content-type"]:
-                warning_issuer.issue_warning_from_status_code(r.status_code, c_url.get_url())
-                self._parse_page(r, c_url)
-            else:
-                self._parse_document(r, c_url)
+            warning_issuer.issue_warning_from_status_code(r.status_code, c_url.get_url())
+            if "content-type" in r.headers.keys():
+                if "text/html" in r.headers["content-type"]:
+                    self._parse_page(r, c_url)
+                else:
+                    self._parse_document(r, c_url)
         except BaseException as e:
             warning_issuer.issue_warning_from_exception(e, c_url.get_url())
         self._update_crawl_delay()
