@@ -55,7 +55,6 @@ redbussecondarydns
 mx7
 dns
 dns2
-app
 mailin1
 mailin2
 pop
@@ -68,3 +67,6 @@ admin
 ssl
 apps
 my
+lab
+es
+ses
