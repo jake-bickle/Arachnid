@@ -59,7 +59,7 @@ class CrawlerConfig:
 
 class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
-        seed = CrawlerURL(seed, allow_fragments=False)
+        seed = CrawlerURL(seed)
         self.config = config
         self.schedule = Scheduler(seed, useragent=self.config.agent,
                                   fuzzing_options=(self.config.paths_list_file_loc, self.config.subs_list_file_loc),
@@ -119,7 +119,7 @@ class Crawler:
             for page in scraper.find_all_http_refs():
                 page = page.strip().replace(" ", "%20")
                 url = url_functions.join_url(c_url.get_url(), page)
-                self.schedule.schedule_url(CrawlerURL(url, allow_fragments=False, allow_query=self.config.allow_query))
+                self.schedule.schedule_url(CrawlerURL(url, allow_query=self.config.allow_query))
 
         page_info = {"path": c_url.get_extension(),
                      "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],

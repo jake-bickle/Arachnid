@@ -1,21 +1,11 @@
-import tldextract  
-import urllib.parse
-from collections import namedtuple
-
-
-URLParts = namedtuple("URL_parts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
+from . import url_functions as uf
 
 
 class CrawlerURL:
-    def __init__(self, url="", allow_fragments=True, allow_query=True, is_fuzzed=False, in_robots=False):
-        if not allow_fragments:
-            url = urllib.parse.urldefrag(url)[0]
-        u_rslt = urllib.parse.urlparse(url)
-        e_rslt = tldextract.extract(u_rslt.netloc)
-        path = u_rslt.path[:-1] if u_rslt.path.endswith('/') else u_rslt.path
-        query = u_rslt.query if allow_query else ""
-        self.url_parts = URLParts(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, path,
-                                  u_rslt.params, query, u_rslt.fragment)
+    def __init__(self, url="", allow_query=True, is_fuzzed=False, in_robots=False):
+        non_uniform_parts = uf.parse(url, allow_query)
+        uniform_url = uf.equiv_url(non_uniform_parts)
+        self.url_parts = uf.parse(uniform_url)
         self.on_fuzz_list = is_fuzzed
         self.on_robots_list = in_robots
 
