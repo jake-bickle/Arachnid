@@ -1,7 +1,10 @@
 import urllib.parse
 import tldextract
 
+from collections import namedtuple
 from . import crawler_url
+
+URLParts = namedtuple("URLParts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
 
 
 def join_url(base="", path="", allow_fragments=True):
@@ -39,28 +42,35 @@ def change_subdomain(new_subdomain="", dest=""):
                     parsed_dest[3], parsed_dest[4], parsed_dest[5]))
 
 
-def equiv_url_s(c_url):
+def equiv_url(url_parts):
+    """ Returns an equivalent URL from given URLParts """
+    subdomain = url_parts.subdomain if url_parts.subdomain else "www"
+    path = url_parts.path[:-1] if url_parts.path.endswith('/') else url_parts.path
+    return unparse([url_parts[0], subdomain, url_parts[2], url_parts[3], path, url_parts[5], url_parts[6], ''])
+
+
+def equiv_url_s(url_parts):
     """ Like equiv_url, but forces a secure connection """
-    eq_url = equiv_url(c_url)
+    eq_url = equiv_url(url_parts)
     if eq_url.startswith("http") and eq_url[4] != 's':
         return eq_url[:4] + 's' + eq_url[5:]
     return eq_url
 
 
-def equiv_url_is(c_url):
+def equiv_url_is(url_parts):
     """ Like equiv_url, but forces an insecure connection"""
-    eq_url = equiv_url(c_url)
+    eq_url = equiv_url(url_parts)
     if eq_url.startswith("https"):
         return eq_url[:4] + eq_url[5:]
     return eq_url
 
 
-def equiv_url(c_url):
-    """ Returns an equivalent URL from a given CrawlerURL """
-    parts = c_url.get_url_parts()
-    subdomain = parts.subdomain if parts.subdomain else "www"
-    path = parts.path[:-1] if parts.path.endswith('/') else parts.path
-    return unparse([parts[0], subdomain, parts[2], parts[3], path, parts[5], parts[6], ''])
+def parse(url, allow_query=True):
+    u_rslt = urllib.parse.urlparse(url)
+    e_rslt = tldextract.extract(u_rslt.netloc)
+    query = u_rslt.query if allow_query else ""
+    return URLParts(u_rslt.scheme, e_rslt.subdomain, e_rslt.domain, e_rslt.suffix, u_rslt.path,
+                    u_rslt.params, query, u_rslt.fragment)
 
 
 def unparse(url_parts):
