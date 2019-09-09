@@ -61,10 +61,11 @@ class CrawlerURL:
         return self.get_url()
 
     def __eq__(self, other):
-        return other.url_parts == self.url_parts
+        """ CrawlerURLs are considered equivalent if they lead to the same page, ignoring SSL"""
+        return uf.equiv_url_s(other.get_url_parts()) == uf.equiv_url_s(self.get_url_parts())
 
     def __hash__(self):
-        return hash(self.get_url())
+        return hash(uf.equiv_url_s(self.get_url_parts()))
 
 
 
