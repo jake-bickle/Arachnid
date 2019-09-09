@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from . import crawler_url
 from . import url_functions
 
+
 class HashableDict(dict):
     """Solution to adding dicts to sets so that DomainData has unique data.
        It is important that once a hashabledict has been hashed, that you
