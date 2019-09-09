@@ -35,9 +35,45 @@ def change_subdomain(new_subdomain="", dest=""):
     """
     parsed_dest = urllib.parse.urlparse(dest)
     dest_netloc_parts = tldextract.extract(parsed_dest.netloc)
-    new_netloc = '.'.join([new_subdomain, dest_netloc_parts[1], dest_netloc_parts[2]])
-    return urllib.parse.urlunparse((parsed_dest[0], new_netloc, parsed_dest[2],
-                                    parsed_dest[3], parsed_dest[4], parsed_dest[5]))
+    return unparse((parsed_dest[0], new_subdomain, dest_netloc_parts[1], dest_netloc_parts[2], parsed_dest[2],
+                    parsed_dest[3], parsed_dest[4], parsed_dest[5]))
+
+
+def equiv_url_s(c_url):
+    """ Like equiv_url, but forces a secure connection """
+    eq_url = equiv_url(c_url)
+    if eq_url.startswith("http") and eq_url[4] != 's':
+        return eq_url[:4] + 's' + eq_url[5:]
+    return eq_url
+
+
+def equiv_url_is(c_url):
+    """ Like equiv_url, but forces an insecure connection"""
+    eq_url = equiv_url(c_url)
+    if eq_url.startswith("https"):
+        return eq_url[:4] + eq_url[5:]
+    return eq_url
+
+
+def equiv_url(c_url):
+    """ Returns an equivalent URL from a given CrawlerURL """
+    parts = c_url.get_url_parts()
+    subdomain = parts.subdomain if parts.subdomain else "www"
+    path = parts.path[:-1] if parts.path.endswith('/') else parts.path
+    return unparse([parts[0], subdomain, parts[2], parts[3], path, parts[5], parts[6], ''])
+
+
+def unparse(url_parts):
+    """ Similar to urllib.parse.urlunparse, except that it allows more arguments for the subdomain, domain, and suffix
+        url_parts = ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"]
+    """
+    if url_parts[1]:
+        netloc = '.'.join([url_parts[1], url_parts[2], url_parts[3]])
+    else:
+        netloc = '.'.join([url_parts[2], url_parts[3]])
+
+    return urllib.parse.urlunparse([url_parts[0], netloc, url_parts[4], url_parts[5],
+                                    url_parts[6], url_parts[7]])
 
 
 # https://www.media.com/profile-page
