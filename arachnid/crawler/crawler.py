@@ -1,15 +1,19 @@
 import requests
 import arachnid_enums
 import random
+import os
+import sys
 from timewidgets import Stopwatch
 
 from . import responseparser
-from .scheduler import Scheduler
+from .scheduler import Scheduler, FuzzingOptions
 from .scraper import Scraper
 from .domaindata import DomainData
 from .crawler_url import CrawlerURL
 from . import url_functions
 from . import warning_issuer
+
+base_dir = os.path.dirname(sys.modules["__main__"].__file__)
 
 
 class CrawlerConfig:
@@ -31,21 +35,23 @@ class CrawlerConfig:
         self.custom_str_case_sensitive = False
         self.custom_regex = None
         self.default_delay = arachnid_enums.Delay.NONE.value
-        self.paths_list_file_loc = None
-        self.subs_list_file_loc = None
+        self.paths_list_file_loc = base_dir + "/crawler/data/fuzz_list.txt"
+        self.subs_list_file_loc = base_dir + "/crawler/data/subdomain_fuzz_list.txt"
+        self.fuzz_paths = False
+        self.fuzz_subs = False
 
     def set_stealth(self):
         self.obey_robots = True
         self.agent = arachnid_enums.Agent.GOOGLE.value
         self.default_delay = arachnid_enums.Delay.HIGH.value
-        self.paths_list_file_loc = None
-        self.paths_list_file_loc = None
+        self.fuzz_paths = False
+        self.fuzz_subs = False
 
     def set_aggressive(self):
         self.obey_robots = False 
         self.default_delay = arachnid_enums.Delay.NONE.value
-        self.paths_list_file_loc = None
-        self.subs_list_file_loc = None
+        self.fuzz_paths = True
+        self.fuzz_subs = True
 
     def set_layout_only(self):
         self.scrape_subdomains = False
@@ -61,8 +67,10 @@ class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = CrawlerURL(seed)
         self.config = config
+        fuzzing_options = FuzzingOptions(config.paths_list_file_loc, config.subs_list_file_loc,
+                                         config.fuzz_paths, config.fuzz_subs)
         self.schedule = Scheduler(seed, useragent=self.config.agent,
-                                  fuzzing_options=(self.config.paths_list_file_loc, self.config.subs_list_file_loc),
+                                  fuzzing_options=fuzzing_options,
                                   respect_robots=self.config.obey_robots,
                                   allow_subdomains=self.config.scrape_subdomains)
         self.output = DomainData(seed.get_netloc())
@@ -143,4 +151,3 @@ class Crawler:
 
     def dumps(self, **kwargs):
         return self.output.dumps(**kwargs)
-

@@ -51,6 +51,9 @@ class CrawlerURL:
     def is_fuzzed(self):
         return self.on_fuzz_list
 
+    def set_on_fuzz(self, bool):
+        self.on_fuzz_list = bool
+
     def in_robots(self):
         return self.on_robots_list
 
@@ -66,8 +69,3 @@ class CrawlerURL:
 
     def __hash__(self):
         return hash(uf.equiv_url_s(self.get_url_parts()))
-
-
-
-
-
