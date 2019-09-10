@@ -18,7 +18,8 @@ def issue_warning_from_exception(e, url=""):
     warning = _get_warning_from_code(code)
     if warning:
         issue_warning(url, warning[code])
-    raise e
+    else:
+        raise e
 
 
 def issue_warning_from_status_code(c, url=""):
