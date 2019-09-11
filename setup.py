@@ -12,7 +12,7 @@ with open("README.md", "r") as f:
 
 
 setup(
-    name="arachnid",
+    name="arachnid-spider",
     packages=find_packages(exclude="test"),
     entry_points={
         "console_scripts": ["arachnid = arachnid.__main__:main"]
