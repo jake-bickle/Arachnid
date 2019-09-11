@@ -17,7 +17,9 @@ In addition, users can supply their own custom regular expressions, strings, or 
 
 ### Defualt Scan
 The default usage for Arachnid is as follows:
-> arachnid https://example.com
+```
+arachnid https://example.com
+```
 
 This will scan using the default configuration which provides the following behavior:
 * Scrape for the following information:
