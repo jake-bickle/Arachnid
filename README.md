@@ -17,47 +17,60 @@ In addition, users can supply their own custom regular expressions, strings, or 
 
 ### Defualt Scan
 The default usage for Arachnid is as follows:
-> python3 -m arachnid https://example.com
+> arachnid https://example.com
 
-This will scan using the default configuration which includes:
-* Scrape for the following things:
+This will scan using the default configuration which provides the following behavior:
+* Scrape for the following information:
   * Emails
   * Phone numbers
-  * Social media Handles
+  * Social media handles
   * Common documents and file types
 * Crawls and indexes all pages on the domain
-* It will ignore the robots.txt files
+* Crawl any additional subdomains of example.com that it finds
+* Respect the rules on robots.txt within each subdomain
 * Uses the default Firefox user agent header
-* Uses no delay when crawling
-* Fuzzes for interesting pages on LOW
+* Uses no delay when crawling unless otherwise specified in robots.txt
 
 ### Other Predefined Scan Types
 To help make this tool more useful, there are also two other preconfigured scan types that you can make use of: stealth and aggressive scans.
 
 **Stealth scan**
-> python3 -m arachnid https://example.com --stealth
-
-See documentation for the full config of this scan--however, the general difference is that it uses no fuzzing, adds a delay, and uses a SearchBot agent header. This is supposed to help avoid detection from an IDS/IPS.  
+```
+arachnid https://example.com --stealth
+```
+A stealth scan will use the Google bot user agent, masking the crawler as Google instead of a regular firefox user. It also has a substantial delay between page requests.
 
 **Aggressive Scan**
-> python3 -m arachnid https://example.com --aggressive
+```
+arachnid https://example.com --aggressive
+```
+An aggressive scan will ignore robots.txt rules and crawl all pages found on it. Aggressive also enables fuzzing for many pages and subdomains, and crawls at the fastest possible speed.
 
-The aggressive scan adds a much higher degree of fuzzing (over 30,000 tries), includes no delay.
+**Page only Scan**
+```
+arachnid https://example.com --page-only
+```
+If there is a single web page you'd like to scrape information off of, page-only will not crawl anywhere and only scrape information found at the specified URL.
+
+All predefined scan types are only a base plate of options. You may override any options they provide by supplying your own arguments.
 
 ### Custom Scans
 Arachnid also allows users very granular control over how they want to scan to run. Here is a sample custom scan:
-> python3 -m arachnid.py https://example.com --find docs phone --agent y --delay medium --doc ".psd" --string "John Doe" --regex "^\d{3}\s?\d{3}$" --fuzz high
-
+```
+python3 -m arachnid.py https://example.com --aggressive --find docs phone --agent y --delay medium --doc ".psd" --string "John Doe" --regex "^\d{3}\s?\d{3}$" --fuzz --fuzz_subdomains
+```
 Here is that scan broken down into its parts:
 ```
     https://example.com           : Required argument, specifies the domain to target
+    --aggressive                  : Causes the formerly mentioned aggressive scan
     --find docs phone             : Only scrapes for common documents and phone numbers
     --agent y                     : Uses the Yahoo SearchBot header sting
-    --delay medium                : Sets the timing delay to medium, which is between 4 to 11 seconds
-    --doc ".psd"                  : In addition to common docs, the crawler will also look for .psd file
+    --delay medium                : Overrides the timing of the aggressive scan and causes a medium delay, or about 4-11 seconds
+    --doc ".psd"                  : In addition to common docs, the crawler will also look for .psd files
     --string "John Doe"           : Searches for amount of occurances of "John Doe" on each page
     --regex  "^\d{3}\s?\d{3}$"    : Searches for any values that matches the provided regular expression
-    --fuzz high                   : Sets the fuzzing level to fuzz for 'interesting' 10,000 pages
+    --fuzz                        : Turns on page fuzzing which searchs for over 4000 common pages
+    --fuzz_subdomains             : Turns on subdomain fuzzing which searchs for various common subdomains
 ```
 This does not represent all of the custom scan options available, but should give a snapshot of what Arachnid can do. For a full breakdown on each option please refer to the full documentation.
 
@@ -68,7 +81,8 @@ Arachnid requires [pip](https://pypi.org/project/pip/) to install and [PHP](http
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python get-pip.py
 ```
-* Installing PHP varies by operating system. If you're on a Unix system your default package repository likely contains it and you'll simply need to install it there. No configuration is required. For further instructions, refer to the offical (documentation](https://www.php.net/manual/en/install.php).
+
+* Installing PHP varies by operating system. If you're on a Unix system your default package repository likely contains it and you'll simply need to install it there. No configuration is required. For further instructions, refer to the [offical documentation](https://www.php.net/manual/en/install.php).
 * Then simply install Arachnid via pip.
 ```
 pip install arachnid-crawler
