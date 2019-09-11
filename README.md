@@ -34,7 +34,7 @@ This will scan using the default configuration which provides the following beha
 * Uses no delay when crawling unless otherwise specified in robots.txt
 
 ### Other Predefined Scan Types
-To help make this tool more useful, there are also two other preconfigured scan types that you can make use of: stealth and aggressive scans.
+To help make this tool more useful, there are a few other preconfigured scan types that you can make use of.
 
 **Stealth scan**
 ```
