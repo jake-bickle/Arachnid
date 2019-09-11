@@ -9,11 +9,13 @@ from . import crawler
 from .timewidgets import Timer
 from .arachnid_enums import Delay, Agent
 
-base_dir = os.path.dirname(sys.modules["__main__"].__file__)
-output_file = os.path.join(base_dir, "output/scraped_data/arachnid_data.json")
-warning_file = os.path.join(base_dir, "output/scraped_data/warnings.json")
+__version__ = "0.9"
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
+output_file = os.path.join(this_dir, "output/scraped_data/arachnid_data")
+warning_file = os.path.join(this_dir, "output/scraped_data/warnings.json")
 php_ip = "127.0.0.1:8080"
-php_cmd = f"php -S {php_ip} -t {base_dir}/output -q >& /dev/null"
+php_cmd = f"php -S {php_ip} -t {this_dir}/output -q >& /dev/null"
 
 
 class AgentAction(argparse.Action):
