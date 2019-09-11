@@ -1,11 +1,10 @@
-import sys
 import os
 import json
 
 
-base_dir = os.path.dirname(sys.modules["__main__"].__file__)
-warning_messages_loc = base_dir + "/crawler/data/warning_messages.json"
-output_file = base_dir + "/output/scraped_data/warnings.json"
+this_dir = os.path.dirname(os.path.abspath(__file__))
+warning_messages_loc = this_dir + "/data/warning_messages.json"
+output_file = os.path.join(this_dir,  "/../output/scraped_data/warnings.json")
 warnings = []
 with open(warning_messages_loc) as f:
     available_warnings = json.load(f)

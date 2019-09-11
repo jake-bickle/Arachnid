@@ -2,7 +2,6 @@ import requests
 import arachnid_enums
 import random
 import os
-import sys
 from timewidgets import Stopwatch
 
 from . import responseparser
@@ -13,7 +12,7 @@ from .crawler_url import CrawlerURL
 from . import url_functions
 from . import warning_issuer
 
-base_dir = os.path.dirname(sys.modules["__main__"].__file__)
+this_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class CrawlerConfig:
@@ -35,8 +34,8 @@ class CrawlerConfig:
         self.custom_str_case_sensitive = False
         self.custom_regex = None
         self.default_delay = arachnid_enums.Delay.NONE.value
-        self.paths_list_file_loc = base_dir + "/crawler/data/fuzz_list.txt"
-        self.subs_list_file_loc = base_dir + "/crawler/data/subdomain_fuzz_list.txt"
+        self.paths_list_file_loc = os.path.join(this_dir, "data/fuzz_list.txt")
+        self.subs_list_file_loc = os.path.join(this_dir, "data/subdomain_fuzz_list.txt")
         self.fuzz_paths = False
         self.fuzz_subs = False
 
