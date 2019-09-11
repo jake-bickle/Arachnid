@@ -2,7 +2,6 @@ import argparse
 import re
 import threading
 import os
-import sys
 import webbrowser
 
 from . import crawler
