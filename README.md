@@ -61,6 +61,19 @@ Here is that scan broken down into its parts:
 ```
 This does not represent all of the custom scan options available, but should give a snapshot of what Arachnid can do. For a full breakdown on each option please refer to the full documentation.
 
+## Installation
+Arachnid requires [pip](https://pypi.org/project/pip/) to install and [PHP](https://www.php.net/) to run properly.
+* Install pip with the following commands
+```
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
+```
+* Installing PHP varies by operating system. If you're on a Unix system your default package repository likely contains it and you'll simply need to install it there. No configuration is required. For further instructions, refer to the offical (documentation](https://www.php.net/manual/en/install.php).
+* Then simply install Arachnid via pip.
+```
+pip install arachnid-crawler
+```
+
 ## Disclaimer 
 Arachnid is a OSINT tool build to aid penetration testers, web developers, and system admins to scan an authorized domain for data leakage. While there is nothing inherently illegal about scanning or scraping information from a website users should use caution when using this tool:
 
