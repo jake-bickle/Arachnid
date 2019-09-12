@@ -119,11 +119,6 @@ parser.add_argument("-t", "--delay",
                     action=DelayAction,
                     help="TODO: timing help")
 
-parser.add_argument("-R", "--robots",
-                    dest="obey_robots",
-                    action="store_false",
-                    help="Crawl the links gathered by robots.txt")
-
 parser.add_argument("-F", "--fuzz",
                     dest="paths_list_file_loc",
                     nargs='?',
@@ -175,6 +170,17 @@ subdomains.add_argument("--no-subdomain",
                     dest="scrape_subdomains",
                     action="store_false",
                     help="Don't crawl subdomains of the seed URL")
+
+robots = parser.add_mutually_exclusive_group()
+robots.add_argument("-R", "--disobey-robots",
+                    dest="obey_robots",
+                    action="store_false",
+                    help="Ignore robots.txt rules and crawl the links located in it")
+
+robots.add_argument("--obey-robots",
+                    dest="obey_robots",
+                    action="store_true",
+                    help="Respect robots.txt rules")
 
 
 def crawl():
