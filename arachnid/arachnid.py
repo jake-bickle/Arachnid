@@ -19,17 +19,19 @@ php_cmd = f"php -S {php_ip} -t {this_dir}/output -q >& /dev/null"
 
 class AgentAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        aliases = { 'g': "google",
-                    'b': "bing",
-                    'y': "yahoo",
-                    'd': "duckduckgo",
-                    'bd': "baidu",
-                    'yd': "yandex",
-                    'f': "firefox",
-                    'm': "android"}
-        agent = aliases[value]
-        full_user_agent = Agent[agent.upper()].value
-        setattr(namespace, self.dest, full_user_agent)
+        aliases = {('g', "google"): "google",
+                   ('b', 'bing'): "bing",
+                   ('y', "yahoo"): "yahoo",
+                   ('d', "duckduckgo"): "duckduckgo",
+                   ('bd', "baidu"): "baidu",
+                   ('yd', "yandex"): "yandex",
+                   ('f', "firefox"): "firefox",
+                   ('m', "mobile", "android"): "android"}
+        for k, v in aliases.items():
+            if value in k:
+                user_agent = Agent[v.upper()].value
+                setattr(namespace, self.dest, user_agent)
+                return
 
 
 class DelayAction(argparse.Action):
@@ -46,7 +48,7 @@ class FuzzAction(argparse.Action):
             if os.path.exists(file_path):
                 setattr(namespace, self.dest, file_path)
             else:
-                msg = file_path + " does not exist"
+                msg = "The file {} does not exist".format(file_path)
                 raise argparse.ArgumentTypeError(msg)
         namespace.fuzz_paths = True
 
@@ -59,7 +61,7 @@ class SubfuzzAction(argparse.Action):
             if os.path.exists(file_path):
                 setattr(namespace, self.dest, file_path)
             else:
-                msg = file_path + " does not exist"
+                msg = "The file {} does not exist".format(file_path)
                 raise argparse.ArgumentTypeError(msg)
         namespace.fuzz_subs = True
 
@@ -130,7 +132,14 @@ parser.add_argument("-F", "--fuzz",
 
 parser.add_argument("-a", "--agent",
                     dest="agent",
-                    choices=['g', 'b', 'y', 'd', 'bd', 'yd', 'f', 'm'],
+                    choices=['g', 'google',
+                             'b', 'bing',
+                             'y', 'yahoo',
+                             'd', 'duckduckgo',
+                             'bd', 'baidu',
+                             'yd', 'yandex',
+                             'f', 'firefox',
+                             'm', 'mobile', 'android'],
                     action=AgentAction,
                     help="TODO: agent help")
 
