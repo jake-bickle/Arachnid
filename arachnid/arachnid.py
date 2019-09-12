@@ -74,21 +74,22 @@ def is_url(url):
     return url
 
 
-parser = argparse.ArgumentParser(description="TODO: Create help description",
+parser = argparse.ArgumentParser(prog="Arachnid",
+                                 description="TODO: Create help description",
                                  argument_default=argparse.SUPPRESS)
 
 parser.add_argument("seed",
                     type=is_url,
-                    help="The URL for the Crawler to begin its search from")
+                    help="The URL for Arachnid to begin its search from.")
 
 parser.add_argument("-s", "--string",
                     dest="custom_str",
-                    help="TODO: string help")
+                    help="Find the occurrences of string on each web page.")
 
 parser.add_argument("--case-sensitive",
                     dest="custom_str_case_sensitive",
                     action="store_true",
-                    help="TODO")
+                    help="States that the --string argument is case sensitive.")
 
 parser.add_argument("-d", "--doc",
                     dest="custom_doc",
@@ -104,26 +105,26 @@ parser.add_argument("-d", "--doc",
 
 parser.add_argument("-r", "--regex",
                     dest="custom_regex",
-                    help="A regular expression to be searched")
+                    help="A regular expression to be searched throughout the crawl.")
 
 parser.add_argument("-f", "--find",
                     dest="find",
                     nargs='+',
                     choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
-                    help="Find various information from a page. See man page for more details")
+                    help="Find various information from a page. See man page for more details.")
 
 parser.add_argument("-t", "--delay",
                     dest="default_delay",
                     choices=["none", "low", "medium", "high"],
                     default=Delay.NONE.value,
                     action=DelayAction,
-                    help="TODO: timing help")
+                    help="States how much delay occurs between page requests.")
 
 parser.add_argument("-F", "--fuzz",
                     dest="paths_list_file_loc",
                     nargs='?',
                     action=FuzzAction,
-                    help="TODO: Fuzz help")
+                    help="Fuzzes for web pages on each subdomain that may be unlisted. Provide a file path to supply your own list to fuzz.")
 
 parser.add_argument("-a", "--agent",
                     dest="agent",
@@ -136,17 +137,17 @@ parser.add_argument("-a", "--agent",
                              'f', 'firefox',
                              'm', 'mobile', 'android'],
                     action=AgentAction,
-                    help="TODO: agent help")
+                    help="The useragent the crawler will use when requesting pages.")
 
 parser.add_argument("--page-only",
                     dest="scrape_links",
                     action="store_false",
-                    help="Find information about the given URL only")
+                    help="Scrape information about the given URL only.")
 
 parser.add_argument("--no-query",
                      dest="allow_query",
                      action="store_false",
-                     help="TODO: no query")
+                     help="Disables requests on the same web page with differing URL queries.")
 
 aggressions = parser.add_mutually_exclusive_group()
 aggressions.add_argument("--stealth",
@@ -164,12 +165,12 @@ subdomains.add_argument("-S", "--fuzz-subdomains",
                     dest="subs_list_file_loc",
                     nargs="?",
                     action=SubfuzzAction,
-                    help="TODO: Subdomain fuzz help")
+                    help="Fuzzes for common subdomains that may be unlisted. Provide a file path to supply your own list to fuzz.")
 
 subdomains.add_argument("--no-subdomain",
                     dest="scrape_subdomains",
                     action="store_false",
-                    help="Don't crawl subdomains of the seed URL")
+                    help="Don't crawl any subdomains.")
 
 robots = parser.add_mutually_exclusive_group()
 robots.add_argument("-R", "--disobey-robots",
