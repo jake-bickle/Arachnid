@@ -1,31 +1,24 @@
-<div style="text-align:center; width: 100%;">
- <img src="https://github.com/jake-bickle/Arachnid/blob/master/arachnid-logo.png" />
-</div>
-
 # Arachnid 
-
 Arachnid is an OSINT web crawler that targets a website, attempts to enumerate all of the pages within it, and then search for interesting or sensitive information both defined by the tool and/or the user. Arachnid is built in Python, and the data is visualized via a php web app. 
 
 ![Scan Dashboard](https://github.com/jake-bickle/Arachnid/blob/master/scan_dashboard_feature.png)
 
 ## Overview
-- - - -
 Arachnid started with a simple question: “is there a way that users could find all the emails of a supplied domain to help with OSINT efforts?” This of course could only be answered by using a web crawler to visit and search every page in a given domain. But then followup questions arose: “if we are already visiting each page and looking for emails, couldn’t we look for other interesting information as well?” And thus, the idea for a fully developed OSINT web crawler was born.  Presently, the default scan for Arachnid searches for the following information:
 
-	* Email addresses
-	* Phone numbers
-	* Common documents and files
-	* Social Media Handles
-	* User supplied strings and regex (optional)
+* Email addresses
+* Phone numbers
+* Common documents and files
+* Social Media Handles
+* User supplied strings and regex (optional)
 
 To help support scanning efforts, Arachnid also comes with some other features such as:
 
-	* The ability to choose a given user agent to make the scan requests
-	* The ability to add a delay to the scan requests as a mean to reduce scan noise
-	* The ability to fuzz for interesting files and directories as a mean to discover hidden information (similar to dirb)
+* The ability to choose a given user agent to make the scan requests
+* The ability to add a delay to the scan requests as a mean to reduce scan noise
+* The ability to fuzz for interesting files and directories as a mean to discover hidden information (similar to dirb)
 
 ## Installation
-- - - -
 [Coming Soon]
 
 ## Basic usage
@@ -39,7 +32,6 @@ arachnid https://www.example.com/
 This will launch a local php server that displays the visualized data. The output will be reloaded every 30 seconds to reflect newly found information. 
 
 ## Predefined Scan Types
-- - - -
 To help make this tool more useful, in addition to the default scan listed above, there are a few other preconfigured scan types that users can make use of.
 
 ### “Stealth” Scan
@@ -65,7 +57,6 @@ Users can scrape a ingle web page instead of imitating a full site crawl. This i
 All predefined scan types are only a base plate of options. Users may override any options they provide by supplying additional arguments. 
 
 ## Custom Scans
-- - - -
 Arachnid also allows users very granular control over how they want to scan to run. Here is a sample custom scan:
 ```
 arachnid https://example.com --aggressive --find docs phone --agent y --delay medium --doc ".psd" --string "John Doe" --regex "^\d{3}\s?\d{3}$" --fuzz --fuzz_subdomains
@@ -89,7 +80,6 @@ https://example.com           : Required argument, specifies the domain to targe
 This does not represent all of the custom scan options available, but should give a snapshot of what Arachnid can do. For a full breakdown on each option please refer to the full documentation or use **arachnid —help**.
 
 ## Disclaimer
-- - - -
 Arachnid is a OSINT tool build to aid penetration testers, web developers, and system admins to scan an authorized domain for data leakage. While there is nothing inherently illegal about scanning or scraping information from a website users should use caution when using this tool:
 **Scanning and scraping can be considered the pretext to an attack**. Some security teams consider any OSINT recon the pretext to an attack and may pursue criminal charges if they are able to identify the source of the scans.
 
