@@ -1,7 +1,0 @@
-[{
-    "url": "https://www.example.com/oops",
-    "warning": "THIS IS AN EXAMPLE WARNING MESSAGE."
-}, {
-    "url": "https://https://www.example.com/another_oops",
-    "warning": "This is also a warning message. Look out!"
-}]
