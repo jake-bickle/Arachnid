@@ -2,35 +2,36 @@ import argparse
 import re
 import threading
 import os
-import sys
 import webbrowser
 
 from . import crawler
 from .timewidgets import Timer
 from .arachnid_enums import Delay, Agent
 
-base_dir = os.path.dirname(sys.modules["__main__"].__file__)
-output_file = os.path.join(base_dir, "output/scraped_data/arachnid_data.json")
-warning_file = os.path.join(base_dir, "output/scraped_data/warnings.json")
-default_fuzz_list_file_loc = os.path.join(base_dir, "crawler/data/fuzz_list.txt")
-default_sub_list_file_loc = os.path.join(base_dir, "crawler/data/subdomain_fuzz_list.txt")
+__version__ = "0.9.1"
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
+output_file = os.path.join(this_dir, "output/scraped_data/arachnid_data.json")
+warning_file = os.path.join(this_dir, "output/scraped_data/warnings.json")
 php_ip = "127.0.0.1:8080"
-php_cmd = f"php -S {php_ip} -t {base_dir}/output -q >& /dev/null"
+php_cmd = f"php -S {php_ip} -t {this_dir}/output -q >& /dev/null"
 
 
 class AgentAction(argparse.Action):
     def __call__(self, parser, namespace, value, arg):
-        aliases = { 'g': "google",
-                    'b': "bing",
-                    'y': "yahoo",
-                    'd': "duckduckgo",
-                    'bd': "baidu",
-                    'yd': "yandex",
-                    'f': "firefox",
-                    'm': "android"}
-        agent = aliases[value]
-        full_user_agent = Agent[agent.upper()].value
-        setattr(namespace, self.dest, full_user_agent)
+        aliases = {('g', "google"): "google",
+                   ('b', 'bing'): "bing",
+                   ('y', "yahoo"): "yahoo",
+                   ('d', "duckduckgo"): "duckduckgo",
+                   ('bd', "baidu"): "baidu",
+                   ('yd', "yandex"): "yandex",
+                   ('f', "firefox"): "firefox",
+                   ('m', "mobile", "android"): "android"}
+        for k, v in aliases.items():
+            if value in k:
+                user_agent = Agent[v.upper()].value
+                setattr(namespace, self.dest, user_agent)
+                return
 
 
 class DelayAction(argparse.Action):
@@ -47,10 +48,9 @@ class FuzzAction(argparse.Action):
             if os.path.exists(file_path):
                 setattr(namespace, self.dest, file_path)
             else:
-                msg = file_path + " does not exist"
+                msg = "The file {} does not exist".format(file_path)
                 raise argparse.ArgumentTypeError(msg)
-        else:
-            setattr(namespace, self.dest, default_fuzz_list_file_loc)
+        namespace.fuzz_paths = True
 
 
 class SubfuzzAction(argparse.Action):
@@ -61,10 +61,9 @@ class SubfuzzAction(argparse.Action):
             if os.path.exists(file_path):
                 setattr(namespace, self.dest, file_path)
             else:
-                msg = file_path + " does not exist"
+                msg = "The file {} does not exist".format(file_path)
                 raise argparse.ArgumentTypeError(msg)
-        else:
-            setattr(namespace, self.dest, default_sub_list_file_loc)
+        namespace.fuzz_subs = True
 
 
 def is_url(url):
@@ -75,27 +74,28 @@ def is_url(url):
     return url
 
 
-parser = argparse.ArgumentParser(description="TODO: Create help description",
+parser = argparse.ArgumentParser(prog="Arachnid",
+                                 description="TODO: Create help description",
                                  argument_default=argparse.SUPPRESS)
 
 parser.add_argument("seed",
                     type=is_url,
-                    help="The URL for the Crawler to begin its search from")
+                    help="The URL for Arachnid to begin its search from.")
 
 parser.add_argument("-s", "--string",
                     dest="custom_str",
-                    help="TODO: string help")
+                    help="Find the occurrences of string on each web page.")
 
 parser.add_argument("--case-sensitive",
                     dest="custom_str_case_sensitive",
                     action="store_true",
-                    help="TODO")
+                    help="States that the --string argument is case sensitive.")
 
 parser.add_argument("-d", "--doc",
                     dest="custom_doc",
                     nargs='+',
                     default=[],
-                    help="TODO: doc help")
+                    help="When enabled, the user may add file extensions to also be scraped including the default")
 
 # TODO: Feature not in place yet
 # parser.add_argument("--doc-grab",
@@ -105,48 +105,55 @@ parser.add_argument("-d", "--doc",
 
 parser.add_argument("-r", "--regex",
                     dest="custom_regex",
-                    help="A regular expression to be searched")
+                    help="A regular expression to be searched throughout the crawl. Only items matching the pattern will be returned.")
 
 parser.add_argument("-f", "--find",
                     dest="find",
                     nargs='+',
                     choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
-                    help="Find various information from a page. See man page for more details")
+                    help="The default scan looks for a predefined list of interesting information. When --find is enabled, it will only search for the categories that the user supplies.")
 
 parser.add_argument("-t", "--delay",
                     dest="default_delay",
                     choices=["none", "low", "medium", "high"],
                     default=Delay.NONE.value,
                     action=DelayAction,
-                    help="TODO: timing help")
-
-parser.add_argument("-R", "--robots",
-                    dest="obey_robots",
-                    action="store_false",
-                    help="Crawl the links gathered by robots.txt")
+                    help="States how much delay occurs between page requests.")
 
 parser.add_argument("-F", "--fuzz",
                     dest="paths_list_file_loc",
                     nargs='?',
                     action=FuzzAction,
-                    help="TODO: Fuzz help")
+                    help="Fuzzes for web pages on each subdomain that may be unlisted. Users may provide a URL to their own list to override the default.")
 
 parser.add_argument("-a", "--agent",
                     dest="agent",
-                    choices=['g', 'b', 'y', 'd', 'bd', 'yd', 'f', 'm'],
+                    choices=['g', 'google',
+                             'b', 'bing',
+                             'y', 'yahoo',
+                             'd', 'duckduckgo',
+                             'bd', 'baidu',
+                             'yd', 'yandex',
+                             'f', 'firefox',
+                             'm', 'mobile', 'android'],
                     action=AgentAction,
-                    help="TODO: agent help")
+                    help="The useragent the crawler will use when requesting pages.")
 
 parser.add_argument("--page-only",
                     dest="scrape_links",
                     action="store_false",
-                    help="Find information about the given URL only")
+                    help="Scrape information about the given URL only, no additional crawling will be performed.")
+
+parser.add_argument("--no-query",
+                     dest="allow_query",
+                     action="store_false",
+                     help="Disables GET requests on the same web page with differing URL queries. Enabling this may miss some pages, but also can fix errors and/or speed up scans")
 
 aggressions = parser.add_mutually_exclusive_group()
 aggressions.add_argument("--stealth",
                     dest="stealth",
                     action="store_true",
-                    help="Use a preset of options to crawl quietly")
+                    help="Use a preset of options to crawl quietly.")
 
 aggressions.add_argument("--aggressive",
                     dest="aggressive",
@@ -158,12 +165,23 @@ subdomains.add_argument("-S", "--fuzz-subdomains",
                     dest="subs_list_file_loc",
                     nargs="?",
                     action=SubfuzzAction,
-                    help="TODO: Subdomain fuzz help")
+                    help="Fuzzes for common subdomains that may be unlisted. PUsers may provide a URL to their own list to override the default.")
 
 subdomains.add_argument("--no-subdomain",
                     dest="scrape_subdomains",
                     action="store_false",
-                    help="Don't crawl subdomains of the seed URL")
+                    help="Any subdomains found will NOT be crawled")
+
+robots = parser.add_mutually_exclusive_group()
+robots.add_argument("-R", "--disobey-robots",
+                    dest="obey_robots",
+                    action="store_false",
+                    help="Ignore robots.txt rules and crawl the links located in it. Default is to obey.")
+
+robots.add_argument("--obey-robots",
+                    dest="obey_robots",
+                    action="store_true",
+                    help="Respect robots.txt rules, and do not crawl the pages listed.")
 
 
 def crawl():
