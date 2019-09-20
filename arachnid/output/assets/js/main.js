@@ -19,19 +19,3 @@ $('.nav-item').click(function(e){
     $("#pageTitle").text(pageTitle)
 
 });
-
-// Temp status change
-var scanning = true;
-$('#scan-status').click(function(){
-    if (scanning == true) {
-        $(this).find("i:first").html("done").removeClass("scanning")
-        $(this).css("color", "green")
-        $(this).find("span").html("Scan Complete")
-        scanning = false
-    } else {
-        $(this).find("i:first").html("autorenew").addClass("scanning")
-        $(this).css("color", "orange")
-        $(this).find("span").html("Scanning")
-        scanning = true
-    }
-});
