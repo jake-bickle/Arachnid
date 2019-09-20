@@ -22,7 +22,6 @@ To help support scanning efforts, Arachnid also comes with some other features s
 [Coming Soon]
 
 ## Basic usage
-- - - -
 Arachnid can be hyper-customized to only search for information that is relevant to the user—however, it also comes preloaded with default scans that find generally useful or interesting information.  To use the default scan, users can simple issue the following command:
 
 ```
@@ -80,7 +79,7 @@ https://example.com           : Required argument, specifies the domain to targe
 This does not represent all of the custom scan options available, but should give a snapshot of what Arachnid can do. For a full breakdown on each option please refer to the full documentation or use **arachnid —help**.
 
 ## Disclaimer
-Arachnid is a OSINT tool build to aid penetration testers, web developers, and system admins to scan an authorized domain for data leakage. While there is nothing inherently illegal about scanning or scraping information from a website users should use caution when using this tool:
+Arachnid is a OSINT tool built to aid penetration testers, web developers, and system admins to scan an authorized domain for data leakage. While there is nothing inherently illegal about scanning or scraping information from a website users should use caution when using this tool:
 **Scanning and scraping can be considered the pretext to an attack**. Some security teams consider any OSINT recon the pretext to an attack and may pursue criminal charges if they are able to identify the source of the scans.
 
 **Aggressive scans might inadvertently cause a DoS**. This tool could possibly send out thousands of requests to a given server (depending on the size of the website and the fuzzing level set). If the server is not configured to handle that much bandwidth then this tool may inadvertently result in causing a denial-of-service (DoS). Even if it is unintentional, this could result in criminal charges.
