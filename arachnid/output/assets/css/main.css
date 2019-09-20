@@ -39,6 +39,10 @@
     max-height: 300px;
     overflow: scroll;
 }
+#scan-info .card-body{
+    max-height: 300px;
+    overflow: scroll;
+}
 #crawl-errors tr td:first-child{
     color: red;
 }
@@ -51,7 +55,6 @@
 #scraped-data-blocks .card-body{
     height: 300px;
     overflow: scroll;
-
 }
 .card-title i {
     display: inline-block;

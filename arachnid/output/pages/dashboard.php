@@ -1,6 +1,6 @@
 <?php include '../scraped_data.php' ?>
 
-<h1 id="dashboardTitle">Site Report for <span class="fullSiteURL" style="background-color:yellow;">SITE URL</span></h1>
+<h1 id="dashboardTitle">Site Report for <span class="fullSiteURL"><?php echo $site_title ?></span></h1>
 <hr>
 <!-- SUMMARY BLOCKS -->
 <div class="row" id="summaryBlocks">
@@ -68,15 +68,18 @@
 </div>
 
 <div class="row">
-    <!-- Interesting Pages Found -->
+    <!-- Scan Info-->
     <div class="col-md-6">
-      <div class="card">
+      <div class="card" id="scan-info">
         <div class="card-header card-header-warning">
           <h4 class="card-title">Scan Overview</h4>
           <p class="card-category">The following are the options set for the scan</p>
         </div>
-        <div class="card-body table-responsive">
-            <h3>Scan overview coming soon</h3>
+        <div class="card-body">
+            <?php
+                header('Content-type: application/json');
+                echo "<pre>" . json_encode( $scraped_data["metadata"], JSON_PRETTY_PRINT) . "</pre>" ;
+             ?>
         </div>
       </div>
     </div>
@@ -91,11 +94,22 @@
         <div class="card-body table-responsive">
             <table class="table table-hover">
               <tbody>
-                <tr>
+
+                  <?php
+
+                      foreach ($all_warnings as $single_warning) {
+                          echo "<tr>";
+                          echo "<td> <a href='" . $single_warning[0] ."'>" . $single_warning[0] . "</a></td>";
+                          echo "<td> <i class=\"material-icons\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"" . $single_warning[1] . "\">info</i></td>";
+                          echo "</tr>";
+                      }
+
+                   ?>
+                <!-- <tr>
                     <td><i class="material-icons">warning</i></td>
                     <td>This is an example error</td>
                     <td><i class="material-icons" data-toggle="tooltip" data-placement="bottom" title="Information about this error">info</i></td>
-                </tr>
+                </tr> -->
               </tbody>
             </table>
         </div>

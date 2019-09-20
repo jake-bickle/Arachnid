@@ -11,6 +11,10 @@
             <h4 class="card-title"><i class="material-icons">email</i>Emails Found</h4>
           </div>
           <div class="card-body table-responsive">
+              <form action="/pages/raw_data.php" class="text-right" method="post">
+                  <input type="text" name="data" value="emails" style="display:none;">
+                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+              </form>
               <table class="table table-hover">
                 <tbody>
                     <?php
@@ -33,6 +37,10 @@
             <h4 class="card-title"><i class="material-icons">phone</i>Phone Numbers Found</h4>
           </div>
           <div class="card-body table-responsive">
+              <form action="/pages/raw_data.php" class="text-right" method="post">
+                  <input type="text" name="data" value="phone_numbers" style="display:none;">
+                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+              </form>
               <table class="table table-hover">
                 <tbody>
                     <?php
@@ -52,9 +60,13 @@
     <div class="col-md-4" <?php if (count($social_links) < 1) {echo "style='display:none'";}?>>
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">Social Media Links</h4>
+            <h4 class="card-title"><i class="material-icons">share</i>Social Media Links</h4>
           </div>
           <div class="card-body table-responsive">
+              <form action="/pages/raw_data.php" class="text-right" method="post">
+                  <input type="text" name="data" value="social_links" style="display:none;">
+                  <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+              </form>
               <table class="table table-hover">
                 <tbody>
                     <?php
@@ -74,15 +86,78 @@
     <div class="col-md-4" <?php if (count($custom_regex) < 1) {echo "style='display:none'";}?>>
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">Custom Regex Results</h4>
+            <h4 class="card-title"><i class="material-icons">grain</i>Custom Regex Results</h4>
           </div>
           <div class="card-body table-responsive">
+              <form action="/pages/raw_data.php" class="text-right" method="post">
+                  <input type="text" name="data" value="custom_regex" style="display:none;">
+                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+              </form>
               <table class="table table-hover">
                 <tbody>
                     <?php
                         foreach ($custom_regex as $result) {
                             echo "<tr>";
                             echo "<td>".$result."</td>";
+                            echo "</tr>";
+                        }
+                     ?>
+                </tbody>
+              </table>
+          </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM SRINGS-->
+    <div class="col-md-4" <?php if (count($custom_string_occurance) < 1) {echo "style='display:none'";}?>>
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="material-icons">text_fields</i>Custom Strings Results</h4>
+          </div>
+          <div class="card-body table-responsive">
+              <form action="/pages/raw_data.php" class="text-right" method="post">
+                  <input type="text" name="data" value="custom_string_occurance" style="display:none;">
+                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+              </form>
+              <table class="table table-hover">
+                <tbody>
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <?php
+                        foreach ($custom_string_occurance as $result) {
+                            echo "<tr>";
+                            echo "<td> <a href='" . $result[0] ."'>" . $result[0] . "</a></td>";
+                            echo "<td>".$result[1]."</td>";
+                            echo "</tr>";
+                        }
+                     ?>
+                </tbody>
+              </table>
+          </div>
+        </div>
+    </div>
+
+    <!-- DOCUMENTS-->
+    <div class="col-md-4" <?php if (count($found_docs) < 1) {echo "style='display:none'";}?>>
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title"><i class="material-icons">insert_drive_file</i>Found Documents</h4>
+          </div>
+          <div class="card-body table-responsive">
+              <form action="/pages/raw_data.php" class="text-right" method="post">
+                  <input type="text" name="data" value="found_docs" style="display:none;">
+                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+              </form>
+              <table class="table table-hover">
+                <tbody>
+                    <?php
+                        foreach ($found_docs as $doc) {
+                            echo "<tr>";
+                            echo "<td> <a href='" . $doc[1] ."'>" . $doc[0] . "</a></td>";
                             echo "</tr>";
                         }
                      ?>

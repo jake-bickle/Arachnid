@@ -8,27 +8,25 @@
                 <span class="nav-tabs-title">Pages: </span>
                 <ul class="nav nav-tabs" data-tabs="tabs">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#pages_graph" data-toggle="tab">
-              <i class="material-icons">device_hub</i> Graph
-              <div class="ripple-container"></div>
-            </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#pages_table" data-toggle="tab">
+                        <a class="nav-link active" href="#pages_table" data-toggle="tab">
               <i class="material-icons">reorder</i> Table
               <div class="ripple-container"></div>
             </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="#pages_graph" data-toggle="tab">
+              <i class="material-icons">device_hub</i> Graph
+              <div class="ripple-container"></div>
+            </a>
+                    </li>
+
                 </ul>
             </div>
         </div>
     </div>
     <div class="card-body">
         <div class="tab-content">
-            <div class="tab-pane active" id="pages_graph">
-                <h3>Graph coming soon!</h3>
-            </div>
-            <div class="tab-pane" id="pages_table">
+            <div class="tab-pane active" id="pages_table">
                 <table class="table table-hover">
                     <tbody>
                         <?php
@@ -42,6 +40,10 @@
                     </tbody>
                 </table>
             </div>
+            <div class="tab-pane " id="pages_graph">
+                <h3>Graph coming soon!</h3>
+            </div>
+
         </div>
         <!-- <a href="#" id="fullscreen-btn"><i class="material-icons">fullscreen</i></a> -->
     </div>
@@ -57,7 +59,13 @@
             <div class="card-body table-responsive">
                 <table class="table table-hover">
                     <tbody>
-                        <h3>Interesting pages coming soon!</h3>
+                        <?php
+                            foreach ($interesting_pages as $page) {
+                                echo "<tr>";
+                                echo "<td> <a href='" . $page ."'>" . $page . "</a></td>";
+                                echo "</tr>";
+                            }
+                         ?>
                     </tbody>
                 </table>
             </div>
