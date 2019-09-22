@@ -6,6 +6,13 @@
     if (file_get_contents('../scraped_data/warnings.json')) {
         $warning_file = file_get_contents('../scraped_data/warnings.json');
         $warnings = json_decode($warning_file, true);
+
+        foreach ($warnings as $warning) {
+            $warning_url = $warning['url'];
+            $warning_text = $warning['warning'];
+
+            array_push($all_warnings, array($warning_url, $warning_text));
+        }
     }
 
     ///////////////////////
@@ -81,58 +88,4 @@
     foreach ($scraped_data['custom_regex'] as $regex) {
         array_push($custom_regex, $regex);
     }
-
-    ///////////////////////
-    // SCAN METADATA
-    ///////////////////////
-
-    // // TODO: Store these are an object
-
-    // $start_time = $scraped_data["metadata"]["start_time"];
-    // $end_time = $scraped_data["metadata"]["end_time"];
-    // $start_date = $scraped_data["metadata"]["start_date"];
-    // $end_date = $scraped_data["metadata"]["end_date"];
-    // $run_time = $scraped_data["metadata"]["run_time"];
-    //
-    // $sracpe_links = $scraped_data["metadata"]["config"]['scrape_links'];
-    // $scrape_subdomains = $scraped_data["metadata"]["config"]['scrape_subdomains'];
-    // $scrape_phone_number = $scraped_data["metadata"]["config"]['scrape_phone_number'];
-    // $scrape_email = $scraped_data["metadata"]["config"]['scrape_email'];
-    // $scrape_social_media = $scraped_data["metadata"]["config"]['scrape_social_media'];
-    // $scraped_documents = $scraped_data["metadata"]["config"]['documents'];
-    // $obey_robots = $scraped_data["metadata"]["config"]['obey_robots'];
-    // $allow_query = $scraped_data["metadata"]["config"]['allow_query'];
-    // $user_agent = $scraped_data["metadata"]["config"]['agent'];
-    // $scraped_string = $scraped_data["metadata"]["config"]['custom_str'];
-    // $scraped_strin_case_sensitive = $scraped_data["metadata"]["config"]['custom_str_case_sensitive'];
-    // $custom_regex = $scraped_data["metadata"]["config"]['custom_regex'];
-    // $default_delay = $scraped_data["metadata"]["config"]['default_delay'];
-    // $page_fuzz_list = $scraped_data["metadata"]["config"]['paths_list_file_loc'];
-    // $subdomain_fuzz_list = $scraped_data["metadata"]["config"]['subs_list_file_loc'];
-    // $fuzz_paths = $scraped_data["metadata"]["config"]['fuzz_paths'];
-    // $fuzz_subdomains = $scraped_data["metadata"]["config"]['fuzz_subs'];
-
-    ////////////////////
-    /// WARNINGS
-    ///////////////////
-    $all_warnings = array();
-    foreach ($warnings as $warning) {
-        $warning_url = $warning['url'];
-        $warning_text = $warning['warning'];
-
-        array_push($all_warnings, array($warning_url, $warning_text));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
  ?>
