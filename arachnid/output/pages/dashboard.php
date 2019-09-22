@@ -77,7 +77,6 @@
         </div>
         <div class="card-body">
             <?php
-                header('Content-type: application/json');
                 echo "<pre>" . json_encode( $scraped_data["metadata"], JSON_PRETTY_PRINT) . "</pre>" ;
              ?>
         </div>
