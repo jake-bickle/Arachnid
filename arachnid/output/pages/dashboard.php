@@ -97,11 +97,13 @@
 
                   <?php
 
-                      foreach ($all_warnings as $single_warning) {
-                          echo "<tr>";
-                          echo "<td> <a href='" . $single_warning[0] ."'>" . $single_warning[0] . "</a></td>";
-                          echo "<td> <i class=\"material-icons\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"" . $single_warning[1] . "\">info</i></td>";
-                          echo "</tr>";
+                      if (isset($all_warnings)){
+                          foreach ($all_warnings as $single_warning) {
+                              echo "<tr>";
+                              echo "<td> <a href='" . $single_warning[0] ."'>" . $single_warning[0] . "</a></td>";
+                              echo "<td> <i class=\"material-icons\" data-toggle=\"tooltip\" data-placement=\"bottom\" title=\"" . $single_warning[1] . "\">info</i></td>";
+                              echo "</tr>";
+                          }
                       }
 
                    ?>
