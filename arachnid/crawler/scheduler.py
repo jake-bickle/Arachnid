@@ -17,42 +17,53 @@ class Scheduler:
         """ Sets up the scheduler to send out by a queue of domainblocks (aka a subdomain).
             Each domainblock will send out all of its available c_urls before being removed from queue.
         """
-        self.blocks_to_crawl = deque()  # To be used as a queue
-        self.crawled_urls = set()
         self.seed = c_url
+        self.bank = {c_url: 100000}
+        self.virtual_cache = 0
+        self.supplemental_c_url_queue = deque()  # A URL from robots.txt or Fuzz of any kind
         self.respect_robots = respect_robots
         self.useragent = useragent
         self.allow_subdomains = allow_subdomains
         self.current_delay = 0
-        self.fuzz_paths = False
-        self.fuzz_subs = False
-        self.paths_to_fuzz = set()
-        self.subs_to_fuzz = set()
         if fuzzing_options:
             self.fuzz_paths = fuzzing_options.fuzz_for_paths
             self.fuzz_subs = fuzzing_options.fuzz_for_subs
             if fuzzing_options.paths_list_loc:
                 with open(fuzzing_options.paths_list_loc) as f:
-                    self.paths_to_fuzz = set("/" + line.strip() for line in f)
+                    self.paths_to_fuzz = set("/" + line.strip() for line in f)  # Add to supplemental on a thread
             if fuzzing_options.subs_list_loc:
                 with open(fuzzing_options.subs_list_loc) as f:
-                    self.subs_to_fuzz = set(line.strip() for line in f)
-        self.schedule_url(self.seed)
+                    self.subs_to_fuzz = set(line.strip() for line in f)  # Add to supplemental on a thread
 
-    def schedule_url(self, c_url):
-        """ Schedule a URL to be crawled at a later time. A URL will not be scheduled if:
-            - It is not a subdomain of the domain the Scheduler object has been created for
-            - It has already been crawled
-            - It has already been scheduled
-        """
-        if not url_functions.is_subdomain(c_url, self.seed) or c_url in self.crawled_urls:
-            return False
-        if not self.allow_subdomains and c_url.get_netloc() != self.seed.get_netloc():
-            return False
-        block = self._ensure_domain_block(c_url)
-        return block.add_page(c_url)
+    #TODO What about new subdomains?? Their fuzz, their robots, etc.
+    def report_found_urls(self, found_c_urls, crawled_c_url):
+        if crawled_c_url.is_fuzzed() or crawled_c_url.in_robots():
+            # Slight mod to AOPIC: Any supplemental crawled_c_url is given 1000 cache
+            cache = 1000
+        else:
+            cache = self.bank[crawled_c_url]
+            self.bank[crawled_c_url] = 0
+        cleaned_urls = [c_url for c_url in found_c_urls if self.will_schedule(c_url)]
+        tax = cache / 10
+        self.virtual_cache += tax
+        if len(cleaned_urls) > 0:
+            cache_per_page = (cache - tax) / len(cleaned_urls)
+            for c_url in cleaned_urls:
+                try:
+                    # Slight mod to AOPIC: Do not give credit to any c_url with 0 cache. This has already been crawled
+                    if self.bank[c_url] != 0:
+                        self.bank[c_url] += cache_per_page
+                except KeyError:
+                    self.bank[c_url] = cache_per_page
+        if max(self.bank, key=self.bank.get) < self.virtual_cache:
+            bonus = self.virtual_cache / len(tuple(c_url for c_url, credit in self.bank if credit != 0))
+            for c_url, credit in self.bank:
+                if credit != 0:
+                    self.bank[c_url] += bonus
+            self.virtual_cache = 0
 
     def next_url(self):
+        """
         if not self.blocks_to_crawl and self.fuzz_subs:
             self._fuzz_for_domainblocks()
         if not self.blocks_to_crawl:
@@ -66,9 +77,18 @@ class Scheduler:
         self.crawled_urls.add(c_url)
         self.current_delay = block_to_crawl.crawl_delay
         return c_url
+        """
 
     def get_crawl_delay(self):
         return self.current_delay
+
+    def will_schedule(self, c_url):
+        if not url_functions.is_subdomain(c_url, self.seed):
+            # Must always be a subdomain
+            return False
+        if not self.allow_subdomains and not self.seed.get_netloc() == c_url.get_netloc():
+            # If subdomains is not allowed, then c_url must be of the same netloc
+            return False
 
     def _get_domain_block(self, c_url):
         for block in self.blocks_to_crawl:
