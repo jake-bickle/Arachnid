@@ -42,6 +42,12 @@ def change_subdomain(new_subdomain="", dest=""):
                     parsed_dest[3], parsed_dest[4], parsed_dest[5]))
 
 
+def get_robots(url):
+    if not isinstance(url, crawler_url.CrawlerURL):
+        url = crawler_url.CrawlerURL(url)
+    return "{}/robots.txt".format(url.get_base())
+
+
 def equiv_url(url_parts):
     """ Returns an equivalent URL from given URLParts """
     subdomain = url_parts.subdomain if url_parts.subdomain else "www"
