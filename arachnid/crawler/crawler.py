@@ -66,8 +66,8 @@ class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = CrawlerURL(seed)
         self.config = config
-        fuzzing_options = FuzzingOptions(config.paths_list_file_loc, config.subs_list_file_loc,
-                                         config.fuzz_paths, config.fuzz_subs)
+        fuzzing_options = FuzzingOptions(config.paths_list_file_loc if config.fuzz_paths else None,
+                                         config.subs_list_file_loc if config.fuzz_subs else None)
         self.schedule = Scheduler(seed, useragent=self.config.agent,
                                   fuzzing_options=fuzzing_options,
                                   respect_robots=self.config.obey_robots,

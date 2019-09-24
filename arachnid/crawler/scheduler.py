@@ -7,7 +7,7 @@ from . import warning_issuer
 from .crawler_url import CrawlerURL
 from .robotparser import RobotFileParser
 
-FuzzingOptions = namedtuple("FuzzingOptions", ["paths_list_loc", "subs_list_loc", "fuzz_for_paths", "fuzz_for_subs"])
+FuzzingOptions = namedtuple("FuzzingOptions", ["paths_list_loc", "subs_list_loc"])
 
 
 class Scheduler:
