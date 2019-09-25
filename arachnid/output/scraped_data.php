@@ -3,13 +3,28 @@
     $json_file = file_get_contents('../scraped_data/arachnid_data.json');
     $scraped_data = json_decode($json_file, true);
 
+    if (file_get_contents('../scraped_data/warnings.json')) {
+        $warning_file = file_get_contents('../scraped_data/warnings.json');
+        $warnings = json_decode($warning_file, true);
+
+        foreach ($warnings as $warning) {
+            $warning_url = $warning['url'];
+            $warning_text = $warning['warning'];
+
+            array_push($all_warnings, array($warning_url, $warning_text));
+        }
+    }
+
     ///////////////////////
     // PAGES & DOMAINS & STRING OCCURANCE
-    //////////////////////zx
+    //////////////////////
+    $site_title = $scraped_data['sites'][0]['netloc']; // Get site URL
     $pages  = array(); // Page URLs and their titles
     $full_url_pages = array();
     $domains     = array(); // Domains
     $custom_string_occurance  = array(); // Page URLs + the num of times the string occured
+    $interesting_pages = array();
+    $found_docs = array();
     for ($i = 0; $i < count($scraped_data['sites']); $i++) {
         // Find all page paths
         foreach ($scraped_data['sites'][$i]['pages'] as $page) {
@@ -24,7 +39,19 @@
                 if ($page['custom_string_occurances'] > 0){
                     array_push($custom_string_occurance, array($page['path'], $page['custom_string_occurances']));
                 }
+
+                // If it's an interesting page, append it to the array
+                if ($page['on_fuzz_list'] == True) {
+                    array_push($interesting_pages, $full_url);
+                }
             }
+
+        // Find all docs in a given subdomain
+
+        foreach ($scraped_data['sites'][$i]['documents'] as $document) {
+            $full_document_url = "http://" . $scraped_data['sites'][$i]['netloc'] . $document['path'];
+            array_push($found_docs, array($document['name'], $full_document_url));
+        }
 
         // Find all domains and append them to array
         array_push($domains, $scraped_data['sites'][$i]['netloc']);
@@ -61,6 +88,4 @@
     foreach ($scraped_data['custom_regex'] as $regex) {
         array_push($custom_regex, $regex);
     }
-
-
  ?>

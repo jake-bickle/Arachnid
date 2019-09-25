@@ -38,6 +38,7 @@ class CrawlerConfig:
         self.subs_list_file_loc = os.path.join(this_dir, "data/subdomain_fuzz_list.txt")
         self.fuzz_paths = False
         self.fuzz_subs = False
+        self.blacklisted_directories = []
 
     def set_stealth(self):
         self.obey_robots = True
@@ -66,12 +67,13 @@ class Crawler:
     def __init__(self, seed, config=CrawlerConfig()):
         seed = CrawlerURL(seed)
         self.config = config
-        fuzzing_options = FuzzingOptions(config.paths_list_file_loc, config.subs_list_file_loc,
-                                         config.fuzz_paths, config.fuzz_subs)
+        fuzzing_options = FuzzingOptions(config.paths_list_file_loc if config.fuzz_paths else None,
+                                         config.subs_list_file_loc if config.fuzz_subs else None)
         self.schedule = Scheduler(seed, useragent=self.config.agent,
                                   fuzzing_options=fuzzing_options,
                                   respect_robots=self.config.obey_robots,
-                                  allow_subdomains=self.config.scrape_subdomains)
+                                  allow_subdomains=self.config.scrape_subdomains,
+                                  blacklist_dirs=self.config.blacklisted_directories)
         self.output = DomainData(seed.get_netloc())
         self.output.start()
         self.output.add_config(self.config)
@@ -82,7 +84,7 @@ class Crawler:
     def crawl_next(self):
         c_url = self.schedule.next_url()
         if c_url is None:
-            self.output.end()
+            self.finish()
             return False
         print(c_url)
         self.delay_sw.wait()
@@ -96,9 +98,13 @@ class Crawler:
                     self._parse_document(r, c_url)
         except BaseException as e:
             warning_issuer.issue_warning_from_exception(e, c_url.get_url())
+            self.schedule.report_found_urls([])
         self._update_crawl_delay()
         self.delay_sw.start()
         return True
+
+    def finish(self):
+        self.output.end()
 
     def _parse_page(self, response, c_url):
         """ Parses the page and sends information to output. Process include (according to configuration)
@@ -122,11 +128,13 @@ class Crawler:
         if self.config.custom_regex:
             for regex in scraper.find_all_regex(self.config.custom_regex):
                 self.output.add_custom_regex(regex)
+        found_c_urls = []
         if self.config.scrape_links:
             for page in scraper.find_all_http_refs():
                 page = page.strip().replace(" ", "%20")
                 url = url_functions.join_url(c_url.get_url(), page)
-                self.schedule.schedule_url(CrawlerURL(url, allow_query=self.config.allow_query))
+                found_c_urls.append(CrawlerURL(url, allow_query=self.config.allow_query))
+        self.schedule.report_found_urls(found_c_urls)
 
         page_info = {"path": c_url.get_extension(),
                      "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
@@ -139,6 +147,7 @@ class Crawler:
     def _parse_document(self, response, c_url):
         parser = responseparser.DocumentResponse(response, self.config.documents)
         data = parser.extract()
+        self.schedule.report_found_urls([])
         if data:
             data["path"] = c_url.get_url_parts().path
             self.output.add_document(c_url.get_netloc(), data)

@@ -1,8 +1,8 @@
-<div class="logo">
+<div class="logo p-5">
     <a href="#" class="simple-text logo-mini">
-    <img src="https://via.placeholder.com/300x200?text=Logo+Placeholder" alt="Placeholder logo" class="img-fluid">
+    <img src="assets/img/arachnid-logo.png" alt="Arachnid Logo" class="img-fluid">
     </a>
-    <a href="#" class="simple-text logo-normal">Arachnid</a>
+    <!-- <a href="#" class="simple-text logo-normal">Arachnid</a> -->
 </div>
 <div class="sidebar-wrapper">
     <ul class="nav">
