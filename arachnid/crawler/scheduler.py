@@ -28,6 +28,7 @@ class Scheduler:
         self.robot_db = dict()  # Key netloc string: Value RobotFileParser object
         self.useragent = useragent
         self.current_delay = 0
+        self.paths_to_fuzz = []
         self.fuzz_paths = False
         if fuzzing_options:
             if fuzzing_options.paths_list_loc:
