@@ -14,7 +14,8 @@ FuzzingOptions = namedtuple("FuzzingOptions", ["paths_list_loc", "subs_list_loc"
 class Scheduler:
     """ Holds a queue of DomainBlocks for an arbitrary domain """
 
-    def __init__(self, c_url, useragent="", fuzzing_options=None, respect_robots=True, allow_subdomains=True):
+    def __init__(self, c_url, useragent="", fuzzing_options=None, respect_robots=True, allow_subdomains=True,
+                 blacklist_dirs=[]):
         """ Sets up the scheduler to send out by a queue of domainblocks (aka a subdomain).
             Each domainblock will send out all of its available c_urls before being removed from queue.
         """
@@ -24,6 +25,7 @@ class Scheduler:
         self.supplemental_c_url_queue = deque()  # A URL from robots.txt or Fuzz of any kind
         self.virtual_cache = 0
         self.allow_subdomains = allow_subdomains
+        self.blacklist_dirs = set(blacklist_dirs)
         self.respect_robots = respect_robots
         self.robot_db = dict()  # Key netloc string: Value RobotFileParser object
         self.useragent = useragent
@@ -103,6 +105,9 @@ class Scheduler:
             # Don't crawl if robots.txt disallows it and scheduler is respecting it
             robots = self._ensure_robots(c_url)
             if not robots.can_fetch(self.useragent, c_url.get_url()):
+                return False
+        for dir in c_url.get_url_parts().path.split("/"):
+            if dir in self.blacklist_dirs:
                 return False
         return True
 

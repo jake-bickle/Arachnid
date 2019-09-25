@@ -38,6 +38,7 @@ class CrawlerConfig:
         self.subs_list_file_loc = os.path.join(this_dir, "data/subdomain_fuzz_list.txt")
         self.fuzz_paths = False
         self.fuzz_subs = False
+        self.blacklisted_directories = []
 
     def set_stealth(self):
         self.obey_robots = True
@@ -71,7 +72,8 @@ class Crawler:
         self.schedule = Scheduler(seed, useragent=self.config.agent,
                                   fuzzing_options=fuzzing_options,
                                   respect_robots=self.config.obey_robots,
-                                  allow_subdomains=self.config.scrape_subdomains)
+                                  allow_subdomains=self.config.scrape_subdomains,
+                                  blacklist_dirs=self.config.blacklisted_directories)
         self.output = DomainData(seed.get_netloc())
         self.output.start()
         self.output.add_config(self.config)
