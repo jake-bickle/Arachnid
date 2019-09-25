@@ -36,7 +36,7 @@ class Scheduler:
             if fuzzing_options.subs_list_loc:
                 with open(fuzzing_options.subs_list_loc) as f:
                     self.subs_to_fuzz = set(line.strip() for line in f)
-                threading.Thread(target=self._add_sub_fuzz_to_sq())
+                threading.Thread(target=self._add_sub_fuzz_to_sq).start()
         self._add_new_subdomain(self.seed)
 
     def report_found_urls(self, found_c_urls):
