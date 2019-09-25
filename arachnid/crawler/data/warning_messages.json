@@ -9,6 +9,9 @@
     "ConnectTimeout": "Connection timeout. Server failed to respond after 30 seconds."
   },
   {
+    "UnicodeDecodeError": "Unable to decode page to utf-8."
+  },
+  {
     "HTTP414": "URL is too long. Server refused to respond. Arachnid has likely been caught in a bot trap."
   }
 ]

@@ -8,6 +8,8 @@ import urllib.parse
 import urllib.request
 import urllib.error
 
+from . import warning_issuer
+
 __all__ = ["RobotFileParser"]
 
 RequestRate = collections.namedtuple("RequestRate", "requests seconds")
@@ -62,7 +64,12 @@ class RobotFileParser:
             self.allow_all = True
         else:
             raw = f.read()
-            self.parse(raw.decode("utf-8").splitlines())
+            try:
+                text = raw.decode("utf-8")
+                self.parse(text.splitlines())
+            except UnicodeDecodeError as e:
+                warning_issuer.issue_warning_from_exception(e, self.url)
+                self.allow_all = True
 
     def _add_entry(self, entry):
         if "*" in entry.useragents:
