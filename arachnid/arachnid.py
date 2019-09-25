@@ -74,6 +74,34 @@ def is_url(url):
     return url
 
 
+def time_format(time):
+    sections = time.split(":")
+    for n in range(len(sections)):
+        try:
+            float(sections[n])
+        except ValueError:
+            if sections[n].isspace() or sections[n] == "":
+                # Empty/Space sections are considered ZERO
+                sections[n] = 0
+            else:
+                raise argparse.ArgumentTypeError("{} is not a number".format(sections[n]))
+        if float(sections[n]) < 0:
+            raise argparse.ArgumentTypeError("Please enter only non-negative numbers")
+        sections[n] = float(sections[n])
+    if len(sections) == 1:
+        # m format
+        return sections[0]
+    elif len(sections) == 2:
+        # h:m format
+        return sections[0] * 60 + sections[1]
+    elif len(sections) == 3:
+        # h:m:s format
+        return sections[0] * 60 + sections[1] + sections[2] / 60
+    else:
+        msg = "Must follow m, h:m, or h:m:s format"
+        raise argparse.ArgumentTypeError(msg)
+
+
 parser = argparse.ArgumentParser(prog="Arachnid",
                                  description="TODO: Create help description",
                                  argument_default=argparse.SUPPRESS)
@@ -148,6 +176,21 @@ parser.add_argument("--no-query",
                      dest="allow_query",
                      action="store_false",
                      help="Disables requests on the same web page with differing URL queries.")
+
+parser.add_argument("--page-limit",
+                    dest="page_limit",
+                    type=int,
+                    help="The amount of pages Arachnid will crawl before stopping.")
+
+parser.add_argument("--time-limit",
+                    dest="time_limit",
+                    type=time_format,
+                    help="The amount of time Arachnid will crawl before stopping. Valid formats are m, h:m, or h:m:s")
+
+parser.add_argument("--blacklist-dir",
+                    dest="blacklisted_directories",
+                    nargs="+",
+                    help="The URL path directories that Arachnid is forbidden to access.")
 
 aggressions = parser.add_mutually_exclusive_group()
 aggressions.add_argument("--stealth",
