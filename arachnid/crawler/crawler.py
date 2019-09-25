@@ -82,7 +82,7 @@ class Crawler:
     def crawl_next(self):
         c_url = self.schedule.next_url()
         if c_url is None:
-            self.output.end()
+            self.finish()
             return False
         print(c_url)
         self.delay_sw.wait()
@@ -100,6 +100,9 @@ class Crawler:
         self._update_crawl_delay()
         self.delay_sw.start()
         return True
+
+    def finish(self):
+        self.output.end()
 
     def _parse_page(self, response, c_url):
         """ Parses the page and sends information to output. Process include (according to configuration)

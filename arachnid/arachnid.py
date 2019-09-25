@@ -180,11 +180,13 @@ parser.add_argument("--no-query",
 parser.add_argument("--page-limit",
                     dest="page_limit",
                     type=int,
+                    default=100000000,
                     help="The amount of pages Arachnid will crawl before stopping.")
 
 parser.add_argument("--time-limit",
                     dest="time_limit",
                     type=time_format,
+                    default=100000000,
                     help="The amount of time Arachnid will crawl before stopping. Valid formats are m, h:m, or h:m:s")
 
 parser.add_argument("--blacklist-dir",
@@ -234,13 +236,18 @@ def crawl():
         f.write(c.dumps())
     webbrowser.open_new_tab(f"{php_ip}")
 
-    timer = Timer()
-    timer.start()
-    while c.crawl_next():
-        if timer.elapsed() > 30:
+    file_write_timer = Timer()
+    crawler_limit_timer = Timer()
+    file_write_timer.start()
+    crawler_limit_timer.start()
+    pages_crawled = 0
+    while pages_crawled < args.page_limit and crawler_limit_timer.elapsed() / 60 < args.time_limit and c.crawl_next():
+        if file_write_timer.elapsed() > 15:
             with open(output_file, "w") as f:
                 f.write(c.dumps())
-            timer.restart()
+            file_write_timer.restart()
+        pages_crawled += 1
+    c.finish()
     with open(output_file, "w") as f:
         f.write(c.dumps())
     input("Crawl complete. Press ENTER to exit.")
