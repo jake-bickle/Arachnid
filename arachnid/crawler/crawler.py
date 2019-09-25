@@ -96,6 +96,7 @@ class Crawler:
                     self._parse_document(r, c_url)
         except BaseException as e:
             warning_issuer.issue_warning_from_exception(e, c_url.get_url())
+            self.schedule.report_found_urls([])
         self._update_crawl_delay()
         self.delay_sw.start()
         return True
@@ -122,11 +123,13 @@ class Crawler:
         if self.config.custom_regex:
             for regex in scraper.find_all_regex(self.config.custom_regex):
                 self.output.add_custom_regex(regex)
+        found_c_urls = []
         if self.config.scrape_links:
             for page in scraper.find_all_http_refs():
                 page = page.strip().replace(" ", "%20")
                 url = url_functions.join_url(c_url.get_url(), page)
-                self.schedule.schedule_url(CrawlerURL(url, allow_query=self.config.allow_query))
+                found_c_urls.append(CrawlerURL(url, allow_query=self.config.allow_query))
+        self.schedule.report_found_urls(found_c_urls)
 
         page_info = {"path": c_url.get_extension(),
                      "title": scraper.title.string if scraper.title and scraper.title.string else url_parts.path.split("/")[-1],
@@ -139,6 +142,7 @@ class Crawler:
     def _parse_document(self, response, c_url):
         parser = responseparser.DocumentResponse(response, self.config.documents)
         data = parser.extract()
+        self.schedule.report_found_urls([])
         if data:
             data["path"] = c_url.get_url_parts().path
             self.output.add_document(c_url.get_netloc(), data)
