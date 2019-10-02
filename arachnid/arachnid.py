@@ -6,7 +6,8 @@ from . import crawler
 from .timewidgets import Timer
 from .arachnid_arg_parser import arachnid_cl_parser
 
-__version__ = "0.9.1"
+__version__ = "0.9.2.1"
+
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 output_file = os.path.join(this_dir, "output/scraped_data/arachnid_data.json")
