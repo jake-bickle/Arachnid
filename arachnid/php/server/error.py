@@ -3,11 +3,6 @@ class PHPServerError(Exception):
     pass
 
 
-class InvalidPortError(PHPServerError):
-    def __init__(self, port):
-        self.message = f"Ports must be between 0 and 65535 but received {port}"
-
-
 class ServerAlreadyStartedError(PHPServerError):
     """ Called when PHPServer.start() is called twice without PHPServer.close() """
     pass

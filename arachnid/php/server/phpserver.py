@@ -64,8 +64,7 @@ class PHPServer:
         self.server_address = ipaddress.ip_address(ip)
 
     def set_port(self, port):
-        if port < 0 or port > 65535:
-            raise error.InvalidPortError(port)
+        self.validate_port(port)
         self.port = port
 
     def raise_appropriate_error(self, err):
@@ -95,6 +94,15 @@ class PHPServer:
         if self.server and self.is_running():
             self.server.terminate()
 
+    @staticmethod
+    def validate_port(port):
+        msg = "Port must be an a number between 0 and 65535"
+        try:
+            port = int(port)
+        except ValueError:
+            raise ValueError(msg)
+        if port < 0 or port > 65535:
+            raise ValueError(msg)
 
     def __del__(self):
         self._close_server()
