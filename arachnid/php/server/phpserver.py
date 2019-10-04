@@ -58,9 +58,11 @@ class PHPServer:
         return bool(self.server.poll() is None) if self.server else False
 
     def set_ip(self, ip):
-        if ":" in ip:
+        try:
             ip, port = ip.split(":")
-            self.set_port(port)
+        except ValueError:
+            raise ValueError("IP must be in the form addrs:port")
+        self.set_port(port)
         self.server_address = ipaddress.ip_address(ip)
 
     def set_port(self, port):
@@ -86,9 +88,9 @@ class PHPServer:
     def _open_server(self, quiet=False):
         cmd = f"{self.executable_call} -S {self.server_address}:{self.port} -t {self.dir}"
         args = shlex.split(cmd)
-        self.server = sp.Popen(args)
+        self.server = sp.Popen(args,
                                # stdout=sp.DEVNULL if quiet else None,
-                               # stderr=sp.PIPE)
+                               stderr=sp.PIPE)
 
     def _close_server(self):
         if self.server and self.is_running():
