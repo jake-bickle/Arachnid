@@ -47,6 +47,7 @@ class PHPServer:
         while self.is_running() and not self.stop_called:
             self._main_loop()
         self._close_server()
+        self._check_for_errors()
 
     def _main_loop(self):
         pass
@@ -74,11 +75,14 @@ class PHPServer:
         self.validate_port(port)
         self.port = port
 
-    def raise_appropriate_error(self, err):
+    def _check_for_errors(self):
+        out, err = self.server.communicate()
+        self.raise_if_address_in_use(err.decode('utf-8'))
+
+    @staticmethod
+    def raise_if_address_in_use(err):
         if "Address already in use" in err:
             raise error.AddressInUseError(err)
-        else:
-            raise error.PHPStdErr(err)
 
     # TODO Find a way to read server output as it is received
     def read_server_output(self):
