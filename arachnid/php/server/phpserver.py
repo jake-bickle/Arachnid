@@ -1,3 +1,4 @@
+import threading
 import subprocess as sp
 import shlex
 import ipaddress
@@ -28,17 +29,19 @@ class PHPServer:
         self.stop_called = False
         self.set_ip(server_address)
 
-    def run(self, quiet=False):
-        """ Start will begin the server. It is safe to call this function on a separate thread. It will continue to run
-            until either php close() is called or php terminates (likely in an error state).
-
-            If quiet is true, it will repress the stdout
+    def start(self):
+        """ Start up the server. It will continue to run until either stop() or kill() is called, or php terminates
+            unexpectedly.
         """
+        php_server = threading.Thread(target=self._run, args=(), daemon=True)
+        php_server.start()
+
+    def _run(self):
         if self.is_running():
             msg = f"PHP has already started on {self.server_address}:{self.port}"
             raise error.ServerAlreadyStartedError(msg)
         self.stop_called = False
-        self._open_server(quiet)
+        self._open_server()
         while self.is_running() and not self.stop_called:
             self._main_loop()
         self._close_server()
@@ -78,6 +81,7 @@ class PHPServer:
     # TODO Find a way to read server output as it is received
     def read_server_output(self):
         pass
+        # Commented out in the mean time. readline seems to make the function hang until server is killed
         # out = self.server.stdout.readline().decode("utf-8")
         # err = self.server.stderr.readline().decode("utf-8")
         # if out != "" and not quiet:
@@ -85,11 +89,11 @@ class PHPServer:
         # if err != "":
         #     self.raise_appropriate_error(err)
 
-    def _open_server(self, quiet=False):
+    def _open_server(self):
         cmd = f"{self.executable_call} -S {self.server_address}:{self.port} -t {self.dir}"
         args = shlex.split(cmd)
         self.server = sp.Popen(args,
-                               # stdout=sp.DEVNULL if quiet else None,
+                               stdout=sp.DEVNULL,
                                stderr=sp.PIPE)
 
     def _close_server(self):
