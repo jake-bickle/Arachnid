@@ -78,7 +78,7 @@ class PHPServer:
     def _check_for_errors(self):
         out, err = self.server.communicate()
         self.raise_if_address_in_use(err.decode('utf-8'))
-        if self.server.poll() != -15:
+        if self.server.poll() != 0:
             msg = f"Server closed unexpectedly. Exit code: {self.server.poll()}"
             raise error.PHPServerError(msg)
 
@@ -101,13 +101,12 @@ class PHPServer:
     def _open_server(self):
         cmd = f"{self.executable_call} -S {self.server_address}:{self.port} -t {self.dir}"
         args = shlex.split(cmd)
-        self.server = sp.Popen(args,
-                               stdout=sp.DEVNULL,
-                               stderr=sp.PIPE)
+        self.server = sp.Popen(args, stdout=sp.DEVNULL, stderr=sp.PIPE)
 
     def _close_server(self):
         if self.server and self.is_running():
-            self.server.terminate()
+            # Signal 2: SIGINT synonymous with Ctrl-c event. This is the appropriate way to close php server
+            self.server.send_signal(2)
 
     @staticmethod
     def validate_port(port):
