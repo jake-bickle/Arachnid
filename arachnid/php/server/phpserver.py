@@ -12,6 +12,8 @@ valid_ip = re.compile(r'''^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0
 class PHPServer:
     """ PHPServer, despite its similarities to http.server, does not create a server on its own. It merely
         communicates with php that has been installed on the system.
+
+        Be careful! Never call start() without coupling it with a call to stop()
     """
 
     def __init__(self, dir, server_address, install_loc=""):
@@ -30,8 +32,8 @@ class PHPServer:
         self.set_ip(server_address)
 
     def start(self):
-        """ Start up the server. It will continue to run until either stop() or kill() is called, or php terminates
-            unexpectedly.
+        """ Start up the server. It will continue to run until either stop() or kill() is called, or php server
+            terminates unexpectedly.
         """
         self.stop_called = False
         if self.is_running():
@@ -109,10 +111,3 @@ class PHPServer:
             raise ValueError(msg)
         if port < 0 or port > 65535:
             raise ValueError(msg)
-
-    def __del__(self):
-        self.stop()
-        try:
-            self.server.wait(3)
-        except TimeoutError:
-            self.kill()
