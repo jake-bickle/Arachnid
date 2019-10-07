@@ -1,19 +1,19 @@
-import threading
 import os
 import webbrowser
 
 from . import crawler
 from .timewidgets import Timer
 from .arachnid_arg_parser import arachnid_cl_parser
+from .php.server import PHPServer
 
 __version__ = "0.9.2.1"
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-output_file = os.path.join(this_dir, "output/scraped_data/arachnid_data.json")
-warning_file = os.path.join(this_dir, "output/scraped_data/warnings.json")
+output_dir = os.path.join(this_dir, "output")
+output_file = os.path.join(output_dir, "scraped_data/arachnid_data.json")
+warning_file = os.path.join(output_dir, "scraped_data/warnings.json")
 php_ip = "127.0.0.1:8080"
-php_cmd = f"php -S {php_ip} -t {this_dir}/output -q >& /dev/null"
 
 
 def crawl():
@@ -46,11 +46,12 @@ def clear_file(file_loc):
 
 
 def main():
-    php_server = threading.Thread(target=lambda: os.system(php_cmd), args=(), daemon=True)
-    php_server.start()
+    p = PHPServer(output_dir, php_ip)
+    p.start()
     clear_file(output_file)
     clear_file(warning_file)
     crawl()
+    p.stop()
 
 
 if __name__ == "__main__":
