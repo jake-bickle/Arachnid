@@ -33,14 +33,14 @@ class PHPServer:
         """ Start up the server. It will continue to run until either stop() or kill() is called, or php terminates
             unexpectedly.
         """
-        php_server = threading.Thread(target=self._run, args=(), daemon=True)
-        php_server.start()
-
-    def _run(self):
+        self.stop_called = False
         if self.is_running():
             msg = f"PHP has already started on {self.server_address}:{self.port}"
             raise error.ServerAlreadyStartedError(msg)
-        self.stop_called = False
+        php_server = threading.Thread(target=self._run, args=())
+        php_server.start()
+
+    def _run(self):
         self._open_server()
         while self.is_running() and not self.stop_called:
             self._main_loop()
