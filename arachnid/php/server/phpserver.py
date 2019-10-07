@@ -78,6 +78,9 @@ class PHPServer:
     def _check_for_errors(self):
         out, err = self.server.communicate()
         self.raise_if_address_in_use(err.decode('utf-8'))
+        if self.server.poll() != 0:
+            msg = f"Server closed unexpectedly. Exit code: {self.server.poll()}"
+            raise error.PHPServerError(msg)
 
     @staticmethod
     def raise_if_address_in_use(err):
