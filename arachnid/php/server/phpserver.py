@@ -111,4 +111,8 @@ class PHPServer:
             raise ValueError(msg)
 
     def __del__(self):
-        self._close_server()
+        self.stop()
+        try:
+            self.server.wait(3)
+        except TimeoutError:
+            self.kill()
