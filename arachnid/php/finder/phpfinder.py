@@ -28,18 +28,9 @@ def is_php_launcher(file_loc):
     """ Returns whether the file_loc is the PHP launcher.
     """
     args = f"{file_loc} -v".split()
-    try:
-        proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = proc.communicate("", 2)
-    except subprocess.TimeoutExpired:
-        return False
-    except FileNotFoundError:
-        return False
-    if err:
-        return False
-    out = out.decode('utf-8')
-    out_lines = out.split('\n')
-    return "PHP" in out_lines[0] and "The PHP Group" in out_lines[1]
+    stdout = get_subproc_output(args)
+    stdout_lines = stdout.split('\n')
+    return "PHP" in stdout_lines[0] and "The PHP Group" in stdout_lines[1]
 
 
 def prompt_for_php_path():
@@ -74,6 +65,19 @@ def check_default_path():
         if is_php_launcher(path):
             return path
     return None
+
+
+def get_subproc_output(args):
+    try:
+        proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        out, err = proc.communicate("", 2)
+    except subprocess.TimeoutExpired:
+        return None
+    except FileNotFoundError:
+        return None
+    if err:
+        return None
+    return out.decode('utf-8')
 
 
 def save_path(file_loc):
