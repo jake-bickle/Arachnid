@@ -1,3 +1,4 @@
 *.sw?
 *.pyc
 .idea/*
+arachnid/output/scraped_data/*
