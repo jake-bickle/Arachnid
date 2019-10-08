@@ -48,7 +48,9 @@ def prompt_for_php_path():
 def check_saved_path():
     with open(saved_php_path_file, "r") as f:
         path = f.read()
-    return path if is_php_launcher(path) else None
+    if path:
+        return path if is_php_launcher(path) else None
+    return None
 
 
 def check_path_environment_variable():
