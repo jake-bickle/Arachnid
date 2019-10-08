@@ -2,6 +2,7 @@ import threading
 import subprocess as sp
 import ipaddress
 import re
+import platform
 
 from . import error
 
@@ -28,6 +29,7 @@ class PHPServer:
         self.port = None
         self.server = None
         self.stop_called = False
+        self.correct_exit_code = 1 if platform.system() == "Windows" else 0
         self.set_ip(server_address)
 
     def start(self):
@@ -77,7 +79,7 @@ class PHPServer:
     def _check_for_errors(self):
         out, err = self.server.communicate()
         self.raise_if_address_in_use(err.decode('utf-8'))
-        if self.server.poll() != 0:
+        if self.server.poll() != self.correct_exit_code:
             msg = f"Server closed unexpectedly. Exit code: {self.server.poll()}"
             raise error.PHPServerError(msg)
 
@@ -104,8 +106,11 @@ class PHPServer:
 
     def _close_server(self):
         if self.server and self.is_running():
-            # Signal 2: SIGINT synonymous with Ctrl-c event. This is the appropriate way to close php server
-            self.server.send_signal(2)
+            if platform.system() == "Windows":
+                self.server.terminate()
+            else:
+                # Signal 2: SIGINT synonymous with Ctrl-c event. This is the appropriate way to close php server
+                self.server.send_signal(2)
 
     @staticmethod
     def validate_port(port):
