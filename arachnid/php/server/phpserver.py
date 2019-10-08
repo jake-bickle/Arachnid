@@ -53,6 +53,19 @@ class PHPServer:
     def _main_loop(self):
         pass
 
+    def _open_server(self):
+        cmd = f"{self.executable_call} -S {self.server_address}:{self.port} -t {self.dir}"
+        args = cmd.split()
+        self.server = sp.Popen(args, stdout=sp.DEVNULL, stderr=sp.PIPE)
+
+    def _close_server(self):
+        if self.server and self.is_running():
+            if platform.system() == "Windows":
+                self.server.terminate()
+            else:
+                # Signal 2: SIGINT synonymous with Ctrl-c event. This is the appropriate way to close php server
+                self.server.send_signal(2)
+
     def stop(self):
         """ Set a flag to safely close the server. """
         self.stop_called = True
@@ -98,19 +111,6 @@ class PHPServer:
         #     print(out)
         # if err != "":
         #     self.raise_appropriate_error(err)
-
-    def _open_server(self):
-        cmd = f"{self.executable_call} -S {self.server_address}:{self.port} -t {self.dir}"
-        args = cmd.split()
-        self.server = sp.Popen(args, stdout=sp.DEVNULL, stderr=sp.PIPE)
-
-    def _close_server(self):
-        if self.server and self.is_running():
-            if platform.system() == "Windows":
-                self.server.terminate()
-            else:
-                # Signal 2: SIGINT synonymous with Ctrl-c event. This is the appropriate way to close php server
-                self.server.send_signal(2)
 
     @staticmethod
     def validate_port(port):
