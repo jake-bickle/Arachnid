@@ -3,11 +3,14 @@
     the user once again.
 """
 import subprocess
+import platform
 import os.path
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 saved_php_path_file = os.path.join(this_dir, "saved_php_path.txt")
-linux_default = "/usr/bin/php"
+linux_defaults = ["/usr/bin/php"]
+windows_defaults = [r"c:\php\php.exe",
+                    r"c:\windows\php.exe"]
 
 
 def get_php_path():
@@ -62,9 +65,18 @@ def check_path_environment_variable():
 
 
 def check_default_path():
-    return linux_default if is_php_launcher(linux_default) else None
+    op_sys = platform.system()
+    if "windows" in op_sys.lower():
+        default_paths = windows_defaults
+    else:
+        default_paths = linux_defaults
+    for path in default_paths:
+        if is_php_launcher(path):
+            return path
+    return None
 
 
 def save_path(file_loc):
     with open(saved_php_path_file, "w") as f:
         f.write(file_loc)
+
