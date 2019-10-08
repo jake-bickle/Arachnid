@@ -1,6 +1,5 @@
 import threading
 import subprocess as sp
-import shlex
 import ipaddress
 import re
 
@@ -100,7 +99,7 @@ class PHPServer:
 
     def _open_server(self):
         cmd = f"{self.executable_call} -S {self.server_address}:{self.port} -t {self.dir}"
-        args = shlex.split(cmd)
+        args = cmd.split()
         self.server = sp.Popen(args, stdout=sp.DEVNULL, stderr=sp.PIPE)
 
     def _close_server(self):
