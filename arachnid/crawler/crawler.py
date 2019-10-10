@@ -1,9 +1,8 @@
 import requests
 import random
-import os
 from timewidgets import Timer
 
-from . import config
+from .config import CrawlerConfig, generate_crawler_config
 from . import responseparser
 from .scheduler import Scheduler, FuzzingOptions
 from .scraper import Scraper
@@ -12,11 +11,9 @@ from .crawler_url import CrawlerURL
 from . import url_functions
 from . import warning_issuer
 
-this_dir = os.path.dirname(os.path.abspath(__file__))
-
 
 class Crawler:
-    def __init__(self, seed, configuration=config.CrawlerConfig()):
+    def __init__(self, seed, configuration=CrawlerConfig()):
         seed = CrawlerURL(seed)
         self.config = configuration
         self.headers = {"User-Agent": self.config.agent}
@@ -116,3 +113,7 @@ class Crawler:
 
     def dumps(self, **kwargs):
         return self.output.dumps(**kwargs)
+
+
+def get_crawler_from_namespace(namespace):
+    return Crawler(namespace.seed, configuration=generate_crawler_config(namespace))
