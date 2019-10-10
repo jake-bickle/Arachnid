@@ -1,4 +1,7 @@
+import os
 import arachnid_enums
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class CrawlerConfig:
@@ -6,7 +9,6 @@ class CrawlerConfig:
         self.set_default()
 
     def set_default(self):
-        self.__init__()
         self.scrape_links = True
         self.scrape_subdomains = True
         self.scrape_phone_number = True
