@@ -1,10 +1,12 @@
 import os
+import socket
 import webbrowser
+import php.server
+import php.finder
 
 from . import crawler
 from .timewidgets import Timer
 from .arachnid_arg_parser import arachnid_cl_parser
-from .php.server import PHPServer
 
 __version__ = "0.9.2.1"
 
@@ -13,7 +15,18 @@ this_dir = os.path.dirname(os.path.abspath(__file__))
 output_dir = os.path.join(this_dir, "output")
 output_file = os.path.join(output_dir, "scraped_data/arachnid_data.json")
 warning_file = os.path.join(output_dir, "scraped_data/warnings.json")
-php_ip = "127.0.0.1:8080"
+default_ip = "127.0.0.1:8080"
+
+
+def main():
+    ip = get_unused_server_address()
+    p = php.server.PHPServer(output_dir, ip, install_loc=php.finder.get_php_path())
+    p.start()
+    clear_file(output_file)
+    clear_file(warning_file)
+    webbrowser.open_new_tab(f"http://{ip}")
+    crawl()
+    p.stop()
 
 
 def crawl():
@@ -45,14 +58,16 @@ def clear_file(file_loc):
         f.write("")
 
 
-def main():
-    p = PHPServer(output_dir, php_ip)
-    p.start()
-    clear_file(output_file)
-    clear_file(warning_file)
-    crawl()
-    p.stop()
-
-
-if __name__ == "__main__":
-    main()
+def get_unused_server_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ip, port = default_ip.split(":")
+    port = int(port)
+    bound = False
+    while not bound:
+        try:
+            s.bind((ip, port))
+            bound = True
+        except OSError:
+            port += 1
+    s.close()
+    return f"{ip}:{str(port)}"

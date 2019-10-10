@@ -1,3 +1,4 @@
 include output_early_showcase.png LICENSE Pipfile*
+include php/finder/saved_php_path.txt
 recursive-include arachnid/crawler/data *
 recursive-include arachnid/output *
