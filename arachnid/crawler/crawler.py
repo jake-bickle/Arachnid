@@ -2,7 +2,7 @@ import requests
 import arachnid_enums
 import random
 import os
-from timewidgets import Stopwatch
+from timewidgets import Timer
 
 from . import responseparser
 from .scheduler import Scheduler, FuzzingOptions
@@ -77,7 +77,7 @@ class Crawler:
         self.output = DomainData(seed.get_netloc())
         self.output.start()
         self.output.add_config(self.config)
-        self.delay_sw = Stopwatch()
+        self.delay_sw = Timer()
         self._update_crawl_delay()
         self.delay_sw.start()
 
@@ -155,7 +155,7 @@ class Crawler:
     def _update_crawl_delay(self):
         default_delay = random.choice(self.config.default_delay)
         s_delay = self.schedule.get_crawl_delay()
-        self.delay_sw = Stopwatch(default_delay if default_delay > s_delay else s_delay)
+        self.delay_sw = Timer(default_delay if default_delay > s_delay else s_delay)
 
     def dumps(self, **kwargs):
         return self.output.dumps(**kwargs)
