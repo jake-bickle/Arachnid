@@ -34,6 +34,7 @@ def crawl():
     c = crawler.get_crawler(args)
     with open(output_file, "w") as f:
         f.write(c.dumps())
+    webbrowser.open_new_tab(f"http://{php_ip}")
 
     file_write_timer = Timer()
     crawler_limit_timer = Timer()
