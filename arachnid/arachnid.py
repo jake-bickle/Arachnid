@@ -24,7 +24,10 @@ def main():
 
 
 class Arachnid:
-    def __init__(self, args=[]):
+    def __init__(self, args=None):
+        """ args is a list of command line arguments. If left empty, Arachnid will read sys.argv instead
+        EX. args = ["https://www.example.com", "--stealth", "--time-limit", "5"]
+        """
         if args:
             args = arachnid_cl_parser.parse_args(args)
         else:
