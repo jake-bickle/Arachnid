@@ -167,13 +167,13 @@ arachnid_cl_parser.add_argument("--no-query",
 arachnid_cl_parser.add_argument("--page-limit",
                                 dest="page_limit",
                                 type=int,
-                                default=100000000,
+                                default=-1,
                                 help="The amount of pages Arachnid will crawl before stopping.")
 
 arachnid_cl_parser.add_argument("--time-limit",
                                 dest="time_limit",
                                 type=time_format,
-                                default=100000000,
+                                default=-1,
                                 help="The amount of time Arachnid will crawl before stopping. Valid formats are m, h:m, or h:m:s")
 
 arachnid_cl_parser.add_argument("--blacklist-dir",
