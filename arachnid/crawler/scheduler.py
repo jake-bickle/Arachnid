@@ -27,16 +27,10 @@ class Scheduler:
         self.useragent = useragent
         self.current_delay = 0
         self.paths_to_fuzz = []
+        self.subs_to_fuzz = []
         self.fuzz_paths = False
         if fuzzing_options:
-            if fuzzing_options.paths_list_loc:
-                with open(fuzzing_options.paths_list_loc) as f:
-                    self.paths_to_fuzz = set("/" + line.strip() for line in f)
-                self.fuzz_paths = True
-            if fuzzing_options.subs_list_loc:
-                with open(fuzzing_options.subs_list_loc) as f:
-                    self.subs_to_fuzz = set(line.strip() for line in f)
-                threading.Thread(target=self._add_sub_fuzz_to_sq).start()
+            self.apply_fuzzing_options(fuzzing_options)
         self._add_new_subdomain(self.seed)
 
     def report_found_urls(self, found_c_urls):
@@ -51,13 +45,19 @@ class Scheduler:
             creds = self.bank[self.prev_c_url]
             self.bank[self.prev_c_url] = 0
         sanitized_urls = [c_url for c_url in found_c_urls if self.will_schedule(c_url)]
+        creds = self.tax_credits(creds)
+        self.disperse_credits(creds, sanitized_urls)
+        self.disperse_virtual_credits_if_necessary()
+
+    def tax_credits(self, creds):
         tax = creds / 10
         self.virtual_credit += tax
-        if len(sanitized_urls) > 0:
-            credits_per_page = (creds - tax) / len(sanitized_urls)
-            for c_url in sanitized_urls:
-                if c_url.get_netloc() not in self.robot_cache.keys():
-                    self._add_new_subdomain(c_url)
+        return creds - tax
+
+    def disperse_credits(self, credits, c_urls):
+        if len(c_urls) > 0:
+            credits_per_page = credits / len(c_urls)
+            for c_url in c_urls:
                 try:
                     # Slight mod to AOPIC: Do not give credit to any c_url with 0 credits. This has already been crawled
                     if self.bank[c_url] != 0:
@@ -67,13 +67,23 @@ class Scheduler:
                     if c_url.get_url_parts().path in self.paths_to_fuzz:
                         c_url.set_on_fuzz(True)
                     self.bank[c_url] = credits_per_page
-        num_uncrawled = len(tuple(c_url for c_url, credit in self.bank.items()))
-        if max(self.bank.values()) < self.virtual_credit and num_uncrawled != 0:
-            bonus = self.virtual_credit / num_uncrawled
-            for c_url, credit in self.bank.items():
-                if credit != 0:
-                    self.bank[c_url] += bonus
+                if c_url.get_netloc() not in self.robot_cache.keys():
+                    self._add_new_subdomain(c_url)
+
+    def disperse_virtual_credits_if_necessary(self):
+        pages_to_receive_bonus = self.uncrawled_pages()
+        if max(self.bank.values()) < self.virtual_credit and len(pages_to_receive_bonus) != 0:
+            bonus = self.virtual_credit / len(pages_to_receive_bonus)
+            for c_url in pages_to_receive_bonus:
+                self.bank[c_url] += bonus
             self.virtual_credit = 0
+
+    def uncrawled_pages(self):
+        uncrawled_pages = list()
+        for c_url, creds in self.bank.items():
+            if creds > 0:
+                uncrawled_pages.append(c_url)
+        return uncrawled_pages
 
     def next_url(self):
         try:
@@ -102,16 +112,19 @@ class Scheduler:
         """
         if not url_functions.is_subdomain(c_url, self.seed):
             return False
-        if not self.allow_subdomains and not self.seed.get_netloc() == c_url.get_netloc():
+        if not self.allow_subdomains and self.seed.get_netloc() != c_url.get_netloc():
             return False
-        if self.respect_robots:
-            robots = self._get_robots(c_url)
-            if not robots.can_fetch(self.useragent, c_url.get_url()):
-                return False
+        if self.blocked_by_robots(c_url):
+            return False
         for dir in c_url.get_url_parts().path.split("/"):
             if dir in self.blacklist_dirs:
                 return False
         return True
+
+    def blocked_by_robots(self, c_url):
+        if self.respect_robots:
+            robots = self._get_robots(c_url)
+            return not robots.can_fetch(self.useragent, c_url.get_url())
 
     def calculate_crawl_delay(self, c_url):
         if self.respect_robots:
@@ -174,3 +187,13 @@ class Scheduler:
             new_sub_robots.read()
             self.robot_cache[c_url.get_netloc()] = new_sub_robots
             return new_sub_robots
+
+    def apply_fuzzing_options(self, fuzzing_options):
+        if fuzzing_options.paths_list_loc:
+            with open(fuzzing_options.paths_list_loc) as f:
+                self.paths_to_fuzz = set("/" + line.strip() for line in f)
+            self.fuzz_paths = True
+        if fuzzing_options.subs_list_loc:
+            with open(fuzzing_options.subs_list_loc) as f:
+                self.subs_to_fuzz = set(line.strip() for line in f)
+            threading.Thread(target=self._add_sub_fuzz_to_sq).start()
