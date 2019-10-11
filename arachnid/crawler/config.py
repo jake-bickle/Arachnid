@@ -1,6 +1,8 @@
 import os
 import arachnid_enums
 
+from argparse import ArgumentTypeError
+
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -73,8 +75,8 @@ def apply_pre_configurations(namespace, config):
 def apply_find_options(namespace, config):
     supplied_options = [opt.lower() for opt in namespace.find]
     if "all" in supplied_options and "none" in supplied_options:
-        print("\"all\" and \"none\" options are mutually exclusive in the --find option")
-        exit(1)
+        msg = "\"all\" and \"none\" options are mutually exclusive in the --find option"
+        raise ArgumentTypeError(msg)
     has_occurred = {
         "phone": False,
         "email": False,
