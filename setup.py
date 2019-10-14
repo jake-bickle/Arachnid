@@ -15,7 +15,7 @@ setup(
     name="arachnid-spider",
     packages=find_packages(exclude="test"),
     entry_points={
-        "console_scripts": ["arachnid = arachnid.__main__:main"]
+        "console_scripts": ["arachnid = arachnid.arachnid:main"]
     },
     include_package_data=True,
     install_requires=[
