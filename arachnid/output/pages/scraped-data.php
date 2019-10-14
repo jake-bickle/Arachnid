@@ -13,7 +13,7 @@
           <div class="card-body table-responsive">
               <form action="/pages/raw_data.php" class="text-right" method="post">
                   <input type="text" name="data" value="emails" style="display:none;">
-                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+                   <button type="submit" class="btn btn-sm btn-primary" formtarget="_blank">View Raw</button>
               </form>
               <table class="table table-hover">
                 <tbody>
@@ -39,7 +39,7 @@
           <div class="card-body table-responsive">
               <form action="/pages/raw_data.php" class="text-right" method="post">
                   <input type="text" name="data" value="phone_numbers" style="display:none;">
-                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+                   <button type="submit" class="btn btn-sm btn-primary" formtarget="_blank">View Raw</button>
               </form>
               <table class="table table-hover">
                 <tbody>
@@ -65,7 +65,7 @@
           <div class="card-body table-responsive">
               <form action="/pages/raw_data.php" class="text-right" method="post">
                   <input type="text" name="data" value="social_links" style="display:none;">
-                  <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+                  <button type="submit" class="btn btn-sm btn-primary" formtarget="_blank">View Raw</button>
               </form>
               <table class="table table-hover">
                 <tbody>
@@ -91,7 +91,7 @@
           <div class="card-body table-responsive">
               <form action="/pages/raw_data.php" class="text-right" method="post">
                   <input type="text" name="data" value="custom_regex" style="display:none;">
-                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+                   <button type="submit" class="btn btn-sm btn-primary" formtarget="_blank">View Raw</button>
               </form>
               <table class="table table-hover">
                 <tbody>
@@ -117,7 +117,7 @@
           <div class="card-body table-responsive">
               <form action="/pages/raw_data.php" class="text-right" method="post">
                   <input type="text" name="data" value="custom_string_occurance" style="display:none;">
-                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+                   <button type="submit" class="btn btn-sm btn-primary" formtarget="_blank">View Raw</button>
               </form>
               <table class="table table-hover">
                 <tbody>
@@ -150,7 +150,7 @@
           <div class="card-body table-responsive">
               <form action="/pages/raw_data.php" class="text-right" method="post">
                   <input type="text" name="data" value="found_docs" style="display:none;">
-                   <button type="submit" class="btn btn-sm btn-primary">View Raw</button>
+                   <button type="submit" class="btn btn-sm btn-primary" formtarget="_blank">View Raw</button>
               </form>
               <table class="table table-hover">
                 <tbody>
