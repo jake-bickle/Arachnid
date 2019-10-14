@@ -30,8 +30,10 @@ def is_php_launcher(file_loc):
     """
     args = f"{file_loc} -v".split()
     stdout = get_subproc_output(args)
-    stdout_lines = stdout.split('\n')
-    return "PHP" in stdout_lines[0] and "The PHP Group" in stdout_lines[1]
+    if stdout:
+        stdout_lines = stdout.split('\n')
+        return "PHP" in stdout_lines[0] and "The PHP Group" in stdout_lines[1]
+    return None
 
 
 def prompt_for_php_path():
