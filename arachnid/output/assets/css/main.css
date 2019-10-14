@@ -51,6 +51,7 @@
 #scraped-data-blocks .card-body{
     height: 300px;
     overflow: scroll;
+    overflow-x:hidden;
 
 }
 .card-title i {
