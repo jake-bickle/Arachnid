@@ -10,7 +10,8 @@ this_dir = os.path.dirname(os.path.abspath(__file__))
 saved_php_path_file = os.path.join(this_dir, "saved_php_path.txt")
 linux_defaults = ["/usr/bin/php"]
 windows_defaults = [r"c:\php\php.exe",
-                    r"c:\windows\php.exe"]
+                    r"c:\windows\php.exe",
+                    r"c:\xampp\php\php.exe"]
 
 
 def get_php_path():
