@@ -8,7 +8,7 @@ from .php.server import PHPServer
 from .timewidgets import Timer
 from .arachnid_arg_parser import arachnid_cl_parser
 
-__version__ = "0.9.3.4"
+__version__ = "0.9.3.6"
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,11 +16,6 @@ output_dir = os.path.join(this_dir, "output")
 output_file = os.path.join(output_dir, "scraped_data/arachnid_data.json")
 warning_file = os.path.join(output_dir, "scraped_data/warnings.json")
 default_ip = "127.0.0.1:8080"
-
-
-def main():
-    app = Arachnid()
-    app.start()
 
 
 class Arachnid:

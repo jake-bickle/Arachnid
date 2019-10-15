@@ -1,3 +1,10 @@
-from .arachnid import main
+from arachnid import Arachnid
 
-main()
+
+def main():
+    app = Arachnid()
+    app.start()
+
+
+if __name__ == "__main__":
+    main()
