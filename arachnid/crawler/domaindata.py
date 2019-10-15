@@ -98,5 +98,6 @@ class DomainData:
     def throw_if_wrong_domain(self, netloc):
         p_n = tldextract.extract(netloc)
         if p_n.domain != self.domain or p_n.suffix != self.suffix:
-            raise ValueError("{0} is not a subdomain of {1}.{2}".format(netloc, self.domain, self.suffix))
+            msg = "{0} is not a subdomain of {1}.{2}".format(netloc, self.domain, self.suffix)
+            raise ValueError(msg)
 
