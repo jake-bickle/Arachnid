@@ -8,7 +8,7 @@ from .php.server import PHPServer
 from .timewidgets import Timer
 from .arachnid_arg_parser import arachnid_cl_parser
 
-__version__ = "0.9.3.6"
+__version__ = "0.9.4"
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
