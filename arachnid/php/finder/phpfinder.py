@@ -28,12 +28,15 @@ def get_php_path():
 def is_php_launcher(file_loc):
     """ Returns whether the file_loc is the PHP launcher.
     """
-    args = f"{file_loc} -v".split()
-    stdout = get_subproc_output(args)
-    if stdout:
-        stdout_lines = stdout.split('\n')
-        return "PHP" in stdout_lines[0] and "The PHP Group" in stdout_lines[1]
-    return None
+    if file_loc:
+        if not os.path.isfile(file_loc):
+            return False
+        args = f"{file_loc} -v".split()
+        stdout = get_subproc_output(args)
+        if stdout:
+            stdout_lines = stdout.split('\n')
+            return "PHP" in stdout_lines[0] and "The PHP Group" in stdout_lines[1]
+    return False
 
 
 def prompt_for_php_path():
@@ -41,9 +44,14 @@ def prompt_for_php_path():
     print("Arachnid was unable to automatically locate the PHP server on the system.")
     while not path:
         path = input("Please enter the location of the PHP launcher on your system: ").strip()
-        path = path if is_php_launcher(path) else None
-        if not path:
-            print("\nThe PHP server was not found at that location.")
+        path = os.path.abspath(path)
+        try:
+            path = path if is_php_launcher(path) else None
+            if not path:
+                print("\nThe PHP server was not found at that location.")
+        except PermissionError:
+            path = None
+            print("\nArachnid does not have executable access to that location.")
     save_path(path)
     return path
 
