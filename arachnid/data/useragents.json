@@ -1,0 +1,34 @@
+{
+  "googlebot": {
+    "value": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "command_line_args": ["g", "google"]
+  },
+  "firefox": {
+    "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:10.0) Gecko/20100101 Firefox/10.0",
+    "command_line_args": ["f", "firefox"]
+  },
+  "bingbot":{
+    "value": "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+    "command_line_args": ["b", "bing"]
+  },
+  "yahoobot": {
+    "value": "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)",
+    "command_line_args": ["y", "yahoo"]
+  },
+  "duckduckgobot": {
+    "value": "DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)",
+    "command_line_args": ["d", "duckduckgo"]
+  },
+  "baidubot": {
+    "value": "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)",
+    "command_line_args": ["bd", "baidu"]
+  },
+  "yandexbot": {
+    "value":"Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)",
+    "command_line_args": ["yd", "yandex"]
+  },
+  "android": {
+    "value":"Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; SCH-I535 Build/KOT49H) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30" ,
+    "command_line_args": ["m", "mobile", "android"]
+  }
+}

@@ -1,7 +1,7 @@
 import unittest
-from crawler.scraper import Scraper
+from cli.crawler.scraper import Scraper
 
-from crawler.crawler_url import ParseResult
+from cli.crawler.crawler_url import ParseResult
 class test_urlparser(unittest.TestCase):
     def test_parse_url_with_all_components(self):
         url = "https://www.example.com/path/to/location;param1=value1&param2=value2?param3=value3#frag"
@@ -210,7 +210,7 @@ class test_scraper(unittest.TestCase):
         # example_site = Path_Scheduler("https://www.example.com")
         # self.assertEqual(example_site.next_path(), None)
 
-from crawler.scheduler import DomainBlock
+from cli.crawler import DomainBlock
 from collections import deque
 class test_domain_block(unittest.TestCase):
     def test_constructor_extensions_to_crawl_base_directory(self):
@@ -265,7 +265,7 @@ class test_domain_block(unittest.TestCase):
         block.next_url()
         self.assertFalse(block.next_url())
 
-from crawler.scheduler import Scheduler
+from cli.crawler import Scheduler
 class test_scheduler(unittest.TestCase):
     def test_schedule_one_url(self):
         schedule = Scheduler("https://www.example.com/path/to/location") # Constructor calls upon schedule_url
@@ -351,8 +351,9 @@ class test_scheduler(unittest.TestCase):
         self.assertFalse(schedule.schedule_url(url))
 
 
-from crawler import CrawlerConfig, crawler_url
-import arachnid_enums
+from cli.crawler import CrawlerConfig
+from cli.crawler import crawler_url
+from cli import arachnid_enums
 
 
 class test_responseparser(unittest.TestCase):

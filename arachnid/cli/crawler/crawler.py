@@ -1,6 +1,6 @@
 import requests
 import random
-from timewidgets import Timer
+from cli.timewidgets import Timer
 
 from .config import CrawlerConfig, generate_crawler_config
 from . import responseparser
