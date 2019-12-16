@@ -1,4 +1,4 @@
 *.sw?
 *.pyc
 .idea/*
-arachnid/output/scraped_data/*
+arachnid/cli/output/scraped_data/*

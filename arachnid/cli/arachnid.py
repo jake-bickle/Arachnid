@@ -2,7 +2,7 @@ import os
 import socket
 import webbrowser
 
-from . import crawler
+from cli import crawler
 from .php.finder import get_php_path
 from .php.server import PHPServer
 from .timewidgets import Timer

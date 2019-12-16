@@ -15,6 +15,7 @@ class Amount(Enum):
     HIGH = auto()
 
 
+# TODO Make sure these values are read from data/useragents.json
 class Agent(Enum):
     GOOGLE = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
     BING = "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)"
