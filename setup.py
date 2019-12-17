@@ -1,11 +1,9 @@
 from setuptools import setup, find_packages
-import re
+import json
+import os
 
-version = re.search(
-    r'^__version__\s*=\s*"(.*)"',
-    open('arachnid/arachnid.py').read(),
-    re.M
-    ).group(1)
+with open(os.path.join(__file__, "arachnid/project-info.json")) as f:
+    proj_info = json.load(f)
 
 with open("README.md", "r") as f:
     long_desc = f.read()
@@ -27,14 +25,14 @@ setup(
         'chardet',
         'pyasn1'
     ],
-    version=version,
+    version=proj_info["version"],
     python_requires=">=3.7",
     description="An OSINT tool to find data leaks on a targeted domain",
     long_description=long_desc,
     long_description_content_type="text/markdown",
     author="Jacob Bickle, Tobin Shields",
     author_email="bickle.jake@gmail.com, tobin.shields@mhcc.edu",
-    url="https://github.com/jake-bickle/Arachnid",
+    url=proj_info["github-repo"],
     license="GPLv3",
     zip_safe=False,
     classifiers=[
