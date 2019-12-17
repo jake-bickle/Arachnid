@@ -1,4 +1,4 @@
-from arachnid import Arachnid
+from .arachnid import Arachnid
 
 
 def main():
