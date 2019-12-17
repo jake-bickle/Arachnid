@@ -1,4 +1,22 @@
+import os
+import json
 from enum import Enum, auto
+
+this_dir = os.path.dirname(os.path.abspath(__file__))
+useragents_file = os.path.normpath(f"{this_dir}/../data/useragents.json")
+with open(useragents_file) as f:
+    useragents = json.load(f)
+
+
+class Agent(Enum):
+    GOOGLE = useragents["googlebot"]["value"]
+    BING = useragents["bingbot"]["value"]
+    YAHOO = useragents["yahoobot"]["value"]
+    DUCKDUCKGO = useragents["duckduckgobot"]["value"]
+    BAIDU = useragents["baidubot"]["value"]
+    YANDEX = useragents["yandexbot"]["value"]
+    FIREFOX = useragents["firefox"]["value"]
+    ANDROID = useragents["android"]["value"]
 
 
 class Delay(Enum):
@@ -13,16 +31,3 @@ class Amount(Enum):
     LOW = auto()
     MEDIUM = auto()
     HIGH = auto()
-
-
-# TODO Make sure these values are read from data/useragents.json
-class Agent(Enum):
-    GOOGLE = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
-    BING = "Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)"
-    YAHOO = "Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"
-    DUCKDUCKGO = "DuckDuckBot/1.0; (+http://duckduckgo.com/duckduckbot.html)"
-    BAIDU = "Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)"
-    YANDEX = "Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)"
-    FIREFOX = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:10.0) Gecko/20100101 Firefox/10.0"
-    ANDROID = "Mozilla/5.0 (Linux; U; Android 4.4.2; en-us; SCH-I535 Build/KOT49H) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30"
-
