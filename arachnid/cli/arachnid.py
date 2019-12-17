@@ -5,9 +5,9 @@ from .timewidgets import Timer
 from .arachnid_arg_parser import arachnid_cl_parser
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-output_dir = os.path.join(this_dir, "output")
-output_file = os.path.join(output_dir, "scraped_data/arachnid_data.json")
-warning_file = os.path.join(output_dir, "scraped_data/warnings.json")
+output_dir = os.path.abspath(this_dir + "../scraped_data")
+output_file = os.path.join(output_dir, "arachnid_data.json")
+warning_file = os.path.join(output_dir, "warnings.json")
 default_ip = "127.0.0.1:8080"
 
 
