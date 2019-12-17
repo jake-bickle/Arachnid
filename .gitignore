@@ -1,5 +1,5 @@
 *.sw?
 *.pyc
 .idea/*
-arachnid/cli/output/scraped_data/*
+arachnid/cli/scraped_data/*
 *.DS_Store
