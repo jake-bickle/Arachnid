@@ -50,7 +50,7 @@ class CrawlerConfig:
         if settings["scrape_common_documents"]:
             with open(data_dir + "/common_documents.txt") as f:
                 for doc_extension in f:
-                    self.documents.add(doc_extension)
+                    self.documents.add(doc_extension.strip())
         for doc_extension in settings["custom_documents"]:
             self.documents.add(doc_extension)
         agent_enum = settings["useragent"].upper()
