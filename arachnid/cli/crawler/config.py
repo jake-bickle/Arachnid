@@ -1,61 +1,82 @@
 import os
-from cli import arachnid_enums
+import json
 
 from argparse import ArgumentTypeError
+from cli import arachnid_enums
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
+cli_root = os.path.abspath(this_dir + "/../../")
+data_dir = os.path.abspath(cli_root + "/data")
+predefined_scans_file_loc = os.path.abspath(cli_root + "/predefined-scans.json")
+
 
 
 class CrawlerConfig:
+    """
+    The CrawlerConfig class stores the parameters for the Crawler all in one place.
+    "Default", "Stealth", and "Aggressive" are three predefined settings defined in Arachnid/arachnid/predefined-scans.json
+    """
     def __init__(self):
         self.set_default()
 
+    @staticmethod
+    def get_predefined_settings(scan_type):
+        with open(predefined_scans_file_loc) as f:
+            data = json.load(f)
+        return data[scan_type]
+
+    def _apply_settings(self, settings):
+        """
+        The methods in CrawlerConfig simply read the data from "predefined-scans.json" and apply them to this object.
+        While most of the data is straight-forward, there are a few translations that need to take place to apply the
+        data correctly.
+        """
+        self.scrape_links = settings["scrape_links"]
+        self.scrape_subdomains = settings["scrape_subdomains"]
+        self.scrape_phone_number = settings["scrape_phone_number"]
+        self.scrape_email = settings["scrape_email"]
+        self.scrape_social_media = settings["scrape_social_media"]
+        self.obey_robots = settings["obey_robots"]
+        self.allow_query = settings["allow_query"]
+        self.custom_str = settings["custom_str"]
+        self.custom_str_case_sensitive = settings["custom_str_case_sensitive"]
+        self.custom_regex = settings["custom_regex"]
+        self.paths_list_file_loc = os.path.join(cli_root, settings["paths_list_file_loc"])
+        self.subs_list_file_loc = os.path.join(cli_root, settings["subs_list_file_loc"])
+        self.fuzz_paths = settings["fuzz_paths"]
+        self.fuzz_subs = settings["fuzz_paths"]
+        self.blacklisted_directories = settings["blacklisted_directories"]
+        self.documents = set()
+        if settings["scrape_common_documents"]:
+            with open(data_dir + "/common_documents.txt") as f:
+                for doc_extension in f:
+                    self.documents.add(doc_extension)
+        for doc_extension in settings["custom_documents"]:
+            self.documents.add(doc_extension)
+        agent_enum = settings["useragent"].upper()
+        agent_enum = agent_enum[:-3] if agent_enum.endswith("BOT") else agent_enum  # These two actions convert the
+                                                                                    # string into the Agent enum format
+        self.agent = eval(f"arachnid_enums.Agent.{agent_enum}.value")
+        delay_enum = settings["default_delay"].upper()
+        self.default_delay = eval(f"arachnid_enums.Delay.{delay_enum}.value")
+
     def set_default(self):
-        self.scrape_links = True
-        self.scrape_subdomains = True
-        self.scrape_phone_number = True
-        self.scrape_email = True
-        self.scrape_social_media = True
-        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
-                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
-        self.obey_robots = True
-        self.allow_query = True
-        self.agent = arachnid_enums.Agent.FIREFOX.value
-        self.custom_str = None
-        self.custom_str_case_sensitive = False
-        self.custom_regex = None
-        self.default_delay = arachnid_enums.Delay.NONE.value
-        self.paths_list_file_loc = os.path.join(this_dir, "data/fuzz_list.txt")
-        self.subs_list_file_loc = os.path.join(this_dir, "data/subdomain_fuzz_list.txt")
-        self.fuzz_paths = False
-        self.fuzz_subs = False
-        self.blacklisted_directories = []
+        settings = self.get_predefined_settings("default")
+        self._apply_settings(settings)
 
     def set_stealth(self):
-        self.obey_robots = True
-        self.agent = arachnid_enums.Agent.GOOGLE.value
-        self.default_delay = arachnid_enums.Delay.HIGH.value
-        self.fuzz_paths = False
-        self.fuzz_subs = False
+        settings = self.get_predefined_settings("stealth")
+        self._apply_settings(settings)
 
     def set_aggressive(self):
-        self.obey_robots = False
-        self.default_delay = arachnid_enums.Delay.NONE.value
-        self.fuzz_paths = True
-        self.fuzz_subs = True
-
-    def set_layout_only(self):
-        self.scrape_subdomains = False
-        self.scrape_phone_number = False
-        self.scrape_email = False
-        self.scrape_social_media = False
-        self.documents = {}
-        self.custom_str = None
-        self.custom_regex = None
+        settings = self.get_predefined_settings("aggressive")
+        self._apply_settings(settings)
 
 
 def generate_crawler_config(namespace):
-    """ Given a namespace provided by argparse, convert to a config the crawler can interpret """
+    """ Converts namespace given by arachnid_cl_parser to a CrawlerConfig object.
+        This is necessary as argparse does not provide enough functionality to apply a few necessary settings.
+    """
     config = CrawlerConfig()
     apply_pre_configurations(namespace, config)
     apply_direct_translation_options(namespace, config)
