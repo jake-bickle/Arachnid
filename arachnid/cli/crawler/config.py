@@ -80,7 +80,8 @@ def generate_crawler_config(namespace):
     config = CrawlerConfig()
     apply_pre_configurations(namespace, config)
     apply_direct_translation_options(namespace, config)
-    config.documents.update(namespace.custom_doc)
+    if hasattr(namespace, "custom_doc"):
+        config.documents.update(namespace.custom_doc)
     if "find" in namespace:
         apply_find_options(namespace, config)
     return config

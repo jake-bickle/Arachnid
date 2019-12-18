@@ -22,8 +22,8 @@ class Arachnid:
             ns = arachnid_cl_parser.parse_args()
         self.crawler = crawler.get_crawler_from_namespace(ns)
         self.pages_crawled = 0
-        self.page_limit = ns.page_limit if ns.page_limit >= 0 else None
-        self.time_limit = ns.time_limit if ns.time_limit >= 0 else None
+        self.page_limit = ns.page_limit if hasattr(ns, "page_limit") and ns.page_limit > 0 else None
+        self.time_limit = ns.time_limit if hasattr(ns, "time_limit") and ns.time_limit > 0 else None
         self.file_write_timer = Timer()
         self.time_limit_timer = Timer()
 

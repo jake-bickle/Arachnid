@@ -4,6 +4,16 @@ import os
 from .arachnid_enums import Delay, Agent
 from .crawler.url_functions import is_url
 
+"""
+While argparse has many capabilities, and even with argparse.Action subclasses it is still missing some capabilities. 
+It works to parse the CL input into a more usable format. The namespace that arachnid_cl_parser.parse_args() returns 
+is then used as an argument in generate_crawler_config()
+
+With that said, to change default values of any of the arguments in any predefined-scan (such as "default", "aggressive",
+or "stealth" do so in the predefined-scans.json
+Adding "default" to any of the arguments listed here will NOT work properly.
+"""
+
 arachnid_cl_parser = argparse.ArgumentParser(prog="Arachnid",
                                              description="TODO: Create help description",
                                              argument_default=argparse.SUPPRESS)
@@ -109,7 +119,6 @@ arachnid_cl_parser.add_argument("--case-sensitive",
 arachnid_cl_parser.add_argument("-d", "--doc",
                                 dest="custom_doc",
                                 nargs='+',
-                                default=[],
                                 help="TODO: doc help")
 
 # TODO: Feature not in place yet
@@ -131,7 +140,6 @@ arachnid_cl_parser.add_argument("-f", "--find",
 arachnid_cl_parser.add_argument("-t", "--delay",
                                 dest="default_delay",
                                 choices=["none", "low", "medium", "high"],
-                                default=Delay.NONE.value,
                                 action=DelayAction,
                                 help="States how much delay occurs between page requests.")
 
@@ -167,13 +175,11 @@ arachnid_cl_parser.add_argument("--no-query",
 arachnid_cl_parser.add_argument("--page-limit",
                                 dest="page_limit",
                                 type=int,
-                                default=-1,
                                 help="The amount of pages Arachnid will crawl before stopping.")
 
 arachnid_cl_parser.add_argument("--time-limit",
                                 dest="time_limit",
                                 type=time_format,
-                                default=-1,
                                 help="The amount of time Arachnid will crawl before stopping. Valid formats are m, h:m, or h:m:s")
 
 arachnid_cl_parser.add_argument("--blacklist-dir",
