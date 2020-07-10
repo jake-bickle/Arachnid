@@ -1,4 +1,5 @@
 *.sw?
 *.pyc
-.idea/*
+.idea
 arachnid/output/scraped_data/*
+*.code-workspace
