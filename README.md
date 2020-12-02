@@ -87,7 +87,7 @@ python get-pip.py
 * Installing PHP varies by operating system. If you're on a Unix system your default package repository likely contains it and you'll simply need to install it there. No configuration is required. For further instructions, refer to the [offical documentation](https://www.php.net/manual/en/install.php).
 * Then simply install Arachnid via pip.
 ```
-pip install arachnid-crawler
+pip install arachnid-spider
 ```
 
 ## Disclaimer 
