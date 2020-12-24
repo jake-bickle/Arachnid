@@ -5,7 +5,7 @@ from arachnid.arachnid_enums import Delay, Agent
 from arachnid.crawler.url_functions import is_url
 
 arachnid_cl_parser = argparse.ArgumentParser(prog="Arachnid",
-                                             description="TODO: Create help description",
+                                             description="Find data leaks on a targetted domain",
                                              argument_default=argparse.SUPPRESS)
 
 
@@ -114,7 +114,7 @@ arachnid_cl_parser.add_argument("-d", "--doc",
                                 dest="custom_doc",
                                 nargs='+',
                                 default=[],
-                                help="TODO: doc help")
+                                help="Document extensions to attempt to find.")
 
 # TODO: Feature not in place yet
 # arachnid_cl_parser.add_argument("--doc-grab",
@@ -130,7 +130,7 @@ arachnid_cl_parser.add_argument("-f", "--find",
                                 dest="find",
                                 nargs='+',
                                 choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
-                                help="Find various information from a page. See man page for more details.")
+                                help="Find various information from a page. See README for more details.")
 
 arachnid_cl_parser.add_argument("-t", "--delay",
                                 dest="default_delay",
