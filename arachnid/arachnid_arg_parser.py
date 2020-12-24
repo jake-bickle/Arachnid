@@ -97,6 +97,10 @@ arachnid_cl_parser.add_argument("seed",
                                 type=valid_url,
                                 help="The URL for Arachnid to begin its search from.")
 
+arachnid_cl_parser.add_argument("-o", "--output",
+                                help="Where to store arachnid_results.txt",
+                                default=".")
+
 arachnid_cl_parser.add_argument("-s", "--string",
                                 dest="custom_str",
                                 help="Find the occurrences of string on each web page.")
