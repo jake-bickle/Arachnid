@@ -1,5 +1,6 @@
 *.sw?
 *.pyc
 .idea
-arachnid/output/scraped_data/*
+.vscode
 *.code-workspace
+arachnid_results.json
