@@ -3,7 +3,7 @@ import urllib.parse
 import tldextract
 
 from collections import namedtuple
-from . import crawler_url
+from arachnid.crawler import crawler_url
 
 URLParts = namedtuple("URLParts", ["scheme", "subdomain", "domain", "suffix", "path", "params", "query", "fragment"])
 url_regex = re.compile(r"http[s]?://[a-zA-Z0-9\-]*\.?[a-zA-Z0-9\-]+\.\w{2,5}[0-9a-zA-Z$/\-_.+!*'()]*")

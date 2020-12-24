@@ -1,5 +1,5 @@
 import os
-import arachnid_enums
+from arachnid import arachnid_enums
 
 from argparse import ArgumentTypeError
 

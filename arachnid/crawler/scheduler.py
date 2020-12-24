@@ -3,11 +3,11 @@ import threading
 
 from collections import deque, namedtuple
 
-from . import url_functions
-from . import warning_issuer
-from .crawler_url import CrawlerURL
-from .robotparser import RobotFileParser
-from .aopic_bank import AOPICBank
+from arachnid.crawler import url_functions
+from arachnid.crawler import warning_issuer
+from arachnid.crawler.crawler_url import CrawlerURL
+from arachnid.crawler.robotparser import RobotFileParser
+from arachnid.crawler.aopic_bank import AOPICBank
 
 FuzzingOptions = namedtuple("FuzzingOptions", ["paths_list_loc", "subs_list_loc"])
 

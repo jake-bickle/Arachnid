@@ -1,15 +1,15 @@
 import requests
 import random
-from timewidgets import Timer
 
-from .config import CrawlerConfig, generate_crawler_config
-from . import responseparser
-from .scheduler import Scheduler, FuzzingOptions
-from .scraper import Scraper
-from .domaindata import DomainData
-from .crawler_url import CrawlerURL
-from . import url_functions
-from . import warning_issuer
+from arachnid.timewidgets import Timer
+from arachnid.crawler.config import CrawlerConfig, generate_crawler_config
+from arachnid.crawler import responseparser
+from arachnid.crawler.scheduler import Scheduler, FuzzingOptions
+from arachnid.crawler.scraper import Scraper
+from arachnid.crawler.domaindata import DomainData
+from arachnid.crawler.crawler_url import CrawlerURL
+from arachnid.crawler import url_functions
+from arachnid.crawler import warning_issuer
 
 
 class Crawler:

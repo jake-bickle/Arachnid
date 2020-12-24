@@ -2,7 +2,7 @@ import json
 import tldextract
 import datetime
 
-from timewidgets import Timer
+from arachnid.timewidgets import Timer
 
 
 class SetToList(json.JSONEncoder):

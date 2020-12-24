@@ -1,8 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 
-from . import crawler_url
-from . import url_functions
+from arachnid.crawler import crawler_url
+from arachnid.crawler import url_functions
 
 
 class HashableDict(dict):

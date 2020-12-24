@@ -1,4 +1,4 @@
-from . import url_functions as uf
+from arachnid.crawler import url_functions as uf
 
 
 class CrawlerURL:
