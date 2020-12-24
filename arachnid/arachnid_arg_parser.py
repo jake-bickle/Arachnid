@@ -1,8 +1,8 @@
 import argparse
 import os
 
-from .arachnid_enums import Delay, Agent
-from .crawler.url_functions import is_url
+from arachnid.arachnid_enums import Delay, Agent
+from arachnid.crawler.url_functions import is_url
 
 arachnid_cl_parser = argparse.ArgumentParser(prog="Arachnid",
                                              description="TODO: Create help description",

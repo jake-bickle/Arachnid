@@ -1,8 +1,7 @@
-# TODO Git rid of relative imports
 import os
-from . import crawler
-from .timewidgets import Timer
-from .arachnid_arg_parser import arachnid_cl_parser
+from arachnid.crawler import crawler
+from arachnid.timewidgets import Timer
+from arachnid.arachnid_arg_parser import arachnid_cl_parser
 
 __version__ = "0.9.4"
 
