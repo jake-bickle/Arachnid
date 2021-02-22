@@ -4,3 +4,6 @@
 .vscode
 *.code-workspace
 arachnid_results.json
+build
+dist
+*.egg-info
