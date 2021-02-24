@@ -2,30 +2,18 @@ import requests
 import random
 
 from arachnid.timewidgets import Timer
-from arachnid.crawler.config import CrawlerConfig, generate_crawler_config
+from arachnid.config import Config, generate_config
 from arachnid.crawler.scheduler import Scheduler, FuzzingOptions
 from arachnid.crawler.domaindata import DomainData
 from arachnid.crawler.crawler_url import CrawlerURL
 
 
 class Crawler:
-    """
-    TODO Delete this comment
-    Does the crawling.
-    Returns a scraper object.
-    """
-    def __init__(self, seed, configuration=CrawlerConfig()):
+    def __init__(self, seed, configuration=Config()):
         seed = CrawlerURL(seed)
         self.config = configuration
         self.headers = {"User-Agent": self.config.agent}
-        fuzzing_options = FuzzingOptions(self.config.paths_list_file_loc if self.config.fuzz_paths else None,
-                                         self.config.subs_list_file_loc if self.config.fuzz_subs else None)
-        self.schedule = Scheduler(seed,
-                                  useragent=self.config.agent,
-                                  fuzzing_options=fuzzing_options,
-                                  respect_robots=self.config.obey_robots,
-                                  allow_subdomains=self.config.scrape_subdomains,
-                                  blacklist_dirs=self.config.blacklisted_directories)
+        self.schedule = Scheduler(seed, configuration)
         self.output = DomainData(seed.get_netloc())
         self.output.start()
         self.output.add_config(self.config)
@@ -66,4 +54,4 @@ class Crawler:
 
 
 def get_crawler_from_namespace(namespace):
-    return Crawler(namespace.seed, configuration=generate_crawler_config(namespace))
+    return Crawler(namespace.seed, configuration=generate_config(namespace))

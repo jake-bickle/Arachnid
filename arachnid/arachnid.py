@@ -1,4 +1,5 @@
 import os
+from arachnid.config import generate_config
 from arachnid.crawler import crawler
 from arachnid.timewidgets import Timer
 from arachnid.arachnid_arg_parser import arachnid_cl_parser
@@ -23,6 +24,7 @@ class Arachnid:
             ns = arachnid_cl_parser.parse_args(cli_args)
         else:
             ns = arachnid_cl_parser.parse_args()
+        self.config = generate_config(ns) 
         self.crawler = crawler.get_crawler_from_namespace(ns)
         self.pages_crawled = 0
         self.page_limit = ns.page_limit if ns.page_limit >= 0 else None

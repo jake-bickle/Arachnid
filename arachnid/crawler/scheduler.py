@@ -13,23 +13,28 @@ FuzzingOptions = namedtuple("FuzzingOptions", ["paths_list_loc", "subs_list_loc"
 
 
 class Scheduler:
-    def __init__(self, c_url, useragent="", fuzzing_options=None, respect_robots=True, allow_subdomains=True,
-                 blacklist_dirs=[]):
+    def __init__(self, c_url, config):
         self.seed = c_url
         self.bank = AOPICBank(self.seed)
         self.prev_c_url = None
         self.prev_c_url_is_supplemental = False
         self.supplemental_c_url_queue = deque()  # A URL from robots.txt or Fuzz of any kind
-        self.allow_subdomains = allow_subdomains
-        self.blacklist_dirs = set(blacklist_dirs)
-        self.respect_robots = respect_robots
+        self.allow_subdomains = config.scrape_subdomains
+        self.blacklist_dirs = set(config.blacklisted_directories)
+        self.obey_robots = config.obey_robots
         self.robot_cache = dict()  # Key netloc string: Value RobotFileParser object
-        self.useragent = useragent
-        self.paths_to_fuzz = []
-        self.subs_to_fuzz = []
+        self.useragent = config.agent
+        self.paths_to_fuzz = set()
+        self.subs_to_fuzz = set()
         self.fuzz_paths = False
-        if fuzzing_options:
-            self.apply_fuzzing_options(fuzzing_options)
+        if config.fuzz_paths:
+            with open(config.paths_list_loc) as f:
+                self.paths_to_fuzz = set("/" + line.strip() for line in f)
+            self.fuzz_paths = True
+        if config.fuzz_subs:
+            with open(config.subs_list_loc) as f:
+                self.subs_to_fuzz = set(line.strip() for line in f)
+            threading.Thread(target=self._add_sub_fuzz_to_sq).start()
         self._add_new_subdomain(self.seed)
 
     def report_found_urls(self, found_c_urls):
@@ -61,7 +66,7 @@ class Scheduler:
         return c_url
 
     def get_crawl_delay(self):
-        if self.respect_robots and self.prev_c_url:
+        if self.obey_robots and self.prev_c_url:
             robots = self._get_robots(self.prev_c_url)
             if robots.crawl_delay(self.useragent):
                 return robots.crawl_delay(self.useragent)
@@ -90,13 +95,13 @@ class Scheduler:
         return True
 
     def blocked_by_robots(self, c_url):
-        if self.respect_robots:
+        if self.obey_robots:
             robots = self._get_robots(c_url)
             return not robots.can_fetch(self.useragent, c_url.get_url())
 
     def _add_new_subdomain(self, c_url):
         robots = self._get_robots(c_url)
-        if not self.respect_robots:
+        if not self.obey_robots:
             for path in robots.all_paths():
                 new_url = url_functions.join_url(c_url.get_base(), path)
                 c_url = CrawlerURL(new_url, in_robots=True)
@@ -146,13 +151,3 @@ class Scheduler:
             new_sub_robots.read()
             self.robot_cache[c_url.get_netloc()] = new_sub_robots
             return new_sub_robots
-
-    def apply_fuzzing_options(self, fuzzing_options):
-        if fuzzing_options.paths_list_loc:
-            with open(fuzzing_options.paths_list_loc) as f:
-                self.paths_to_fuzz = set("/" + line.strip() for line in f)
-            self.fuzz_paths = True
-        if fuzzing_options.subs_list_loc:
-            with open(fuzzing_options.subs_list_loc) as f:
-                self.subs_to_fuzz = set(line.strip() for line in f)
-            threading.Thread(target=self._add_sub_fuzz_to_sq).start()

@@ -6,7 +6,7 @@ from argparse import ArgumentTypeError
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-class CrawlerConfig:
+class Config:
     def __init__(self):
         self.set_default()
 
@@ -54,9 +54,9 @@ class CrawlerConfig:
         self.custom_regex = None
 
 
-def generate_crawler_config(namespace):
+def generate_config(namespace):
     """ Given a namespace provided by argparse, convert to a config the crawler can interpret """
-    config = CrawlerConfig()
+    config = Config()
     apply_pre_configurations(namespace, config)
     apply_direct_translation_options(namespace, config)
     config.documents.update(namespace.custom_doc)
@@ -101,7 +101,7 @@ def apply_find_options(namespace, config):
 
 
 def apply_direct_translation_options(namespace, config):
-    """ Many 'dest's in the namespace have the same name and value type as attributes found in CrawlerConfig. This
+    """ Many 'dest's in the namespace have the same name and value type as attributes found in Config. This
         function simply assigns those like-named 'dest's to the config
     """
     for k, v in vars(namespace).items():
