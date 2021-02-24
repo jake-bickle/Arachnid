@@ -5,7 +5,7 @@ from arachnid.timewidgets import Timer
 from arachnid.arachnid_arg_parser import arachnid_cl_parser
 
 from arachnid import url_functions
-from arachnid import responseparser
+from arachnid import documentparser
 from arachnid import warning_issuer
 from arachnid.scraper import Scraper
 from arachnid.crawler import url_functions
@@ -83,7 +83,6 @@ class Arachnid:
                      "on_robots": crawler_url.in_robots(),
                      "code": response.status_code}
         self.output.add_page(crawler_url.get_netloc(), page_info)
-
     
     def _parse_document(self, response, crawler_url):
         """ 
@@ -91,12 +90,8 @@ class Arachnid:
             response is a requests.response containing the document.
             crawler_url is a CrawlerURL associated with the document.
         """
-        parser = responseparser.DocumentResponse(response, self.config.documents)
-        data = parser.extract()
+        data = documentparser.parse_document_response(response, crawler_url)
         self.schedule.report_found_urls([])
-        if data:
-            data["path"] = crawler_url.get_url_parts().path
-            self.output.add_document(crawler_url.get_netloc(), data)
 
     def close(self):
         input("Crawl complete. Press ENTER to exit.")
