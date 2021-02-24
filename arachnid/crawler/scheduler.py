@@ -3,8 +3,8 @@ import threading
 
 from collections import deque, namedtuple
 
-from arachnid.crawler import url_functions
-from arachnid.crawler import warning_issuer
+from arachnid import url_functions
+from arachnid import warning_issuer
 from arachnid.crawler.crawler_url import CrawlerURL
 from arachnid.crawler.robotparser import RobotFileParser
 from arachnid.crawler.aopic_bank import AOPICBank

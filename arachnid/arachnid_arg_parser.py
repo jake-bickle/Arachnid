@@ -2,7 +2,7 @@ import argparse
 import os
 
 from arachnid.arachnid_enums import Delay, Agent
-from arachnid.crawler.url_functions import is_url
+from arachnid.url_functions import is_url
 
 arachnid_cl_parser = argparse.ArgumentParser(prog="Arachnid",
                                              description="Find data leaks on a targetted domain",

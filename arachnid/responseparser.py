@@ -1,6 +1,6 @@
 import mimetypes
 
-from . import crawler_url
+from arachnid.crawler import crawler_url
 
 
 def _get_matching_element(a, b):

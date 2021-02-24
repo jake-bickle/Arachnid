@@ -3,6 +3,10 @@ from arachnid.crawler import crawler
 from arachnid.timewidgets import Timer
 from arachnid.arachnid_arg_parser import arachnid_cl_parser
 
+from arachnid import url_functions
+from arachnid import responseparser
+from arachnid import warning_issuer
+from arachnid.scraper import Scraper
 from arachnid.crawler import url_functions
 from arachnid.crawler import responseparser
 from arachnid.crawler import warning_issuer

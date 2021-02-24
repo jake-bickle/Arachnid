@@ -8,7 +8,7 @@ import urllib.parse
 import urllib.request
 import urllib.error
 
-from . import warning_issuer
+from arachnid import warning_issuer
 
 __all__ = ["RobotFileParser"]
 

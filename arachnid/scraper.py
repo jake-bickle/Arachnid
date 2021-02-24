@@ -1,8 +1,8 @@
 import re
 from bs4 import BeautifulSoup
 
-from arachnid.crawler import crawler_url
-from arachnid.crawler import url_functions
+from arachnid import url_functions
+from arachnid.crawler.crawler_url import CrawlerURL
 
 
 class HashableDict(dict):
@@ -61,7 +61,7 @@ class Scraper(BeautifulSoup):
                 if url_functions.is_social_media_profile(link):
                     media = HashableDict()
                     media["link"] = link
-                    media["domain"] = crawler_url.CrawlerURL(link).get_url_parts().domain
+                    media["domain"] = CrawlerURL(link).get_url_parts().domain
                     found_social.append(media)
         return found_social
 
