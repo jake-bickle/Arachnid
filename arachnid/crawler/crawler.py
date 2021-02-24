@@ -46,7 +46,7 @@ class Crawler:
         r = requests.get(c_url.get_url(), headers=self.headers, timeout=30)
         self._update_crawl_delay()
         self.delay_sw.start()
-        return r
+        return c_url, r
 
     def has_next_page(self):
         return self.schedule.view_next_url() is not None

@@ -37,20 +37,20 @@ class Arachnid:
             self.pages_crawled += 1
             if "content-type" in response.headers.keys():  # TODO What happens if there is no response type??
                 if "text/html" in response.headers["content-type"]:
-                    self._parse_page(r, c_url)
+                    self._parse_page(response, c_url)
                 else:
-                    self._parse_document(r, c_url)
+                    self._parse_document(response, c_url)
 
         self.close()
 
     def is_done(self):
         return self.above_time_limit() or self.above_page_limit() or not self.crawler.has_next_page()
 
-    def _parse_page(self, crawler_url, response):
+    def _parse_page(self, response, crawler_url):
         """ 
             Parses the page and writes information to output directory.
-            crawler_url is a CrawlerURL associated with the page.
             response is a requests.response containing the page.
+            crawler_url is a CrawlerURL associated with the page.
         """
         scraper = Scraper(response.text, "html.parser")
         if self.config.scrape_email:
@@ -83,11 +83,11 @@ class Arachnid:
         self.output.add_page(crawler_url.get_netloc(), page_info)
 
     
-    def _parse_document(self, crawler_url, response):
+    def _parse_document(self, response, crawler_url):
         """ 
             Parses the page and writes information to output directory.
-            crawler_url is a CrawlerURL associated with the document.
             response is a requests.response containing the document.
+            crawler_url is a CrawlerURL associated with the document.
         """
         parser = responseparser.DocumentResponse(response, self.config.documents)
         data = parser.extract()
