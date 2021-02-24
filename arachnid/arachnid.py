@@ -43,8 +43,6 @@ class Arachnid:
                 else:
                     self._parse_document(response, c_url)
 
-        self.close()
-
     def is_done(self):
         return self.above_time_limit() or self.above_page_limit() or not self.crawler.has_next_page()
 
@@ -92,9 +90,6 @@ class Arachnid:
         """
         data = documentparser.parse_document_response(response, crawler_url)
         self.schedule.report_found_urls([])
-
-    def close(self):
-        input("Crawl complete. Press ENTER to exit.")
 
     def above_time_limit(self):
         return self.time_limit_timer.elapsed() >= self.time_limit * 60 if self.time_limit else False
