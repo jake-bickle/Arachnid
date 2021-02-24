@@ -45,6 +45,11 @@ class Scheduler:
             if c_url.get_url_parts().path in self.paths_to_fuzz:
                 c_url.set_on_fuzz(True)
 
+    def view_next_url(self):
+        if len(self.supplemental_c_url_queue) != 0:
+            return self.supplemental_c_url_queue[-1]
+        return self.bank.highest_priority_c_url()
+
     def next_url(self):
         try:
             c_url = self.supplemental_c_url_queue.pop()

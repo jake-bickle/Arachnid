@@ -49,8 +49,7 @@ class Crawler:
         return r
 
     def has_next_page(self):
-        # TODO
-        pass
+        return self.schedule.view_next_url() is not None
 
     def report_found_urls(self, urls):
         """ Given a list of strings, report back a list of URLs to be crawled at a later time. """
