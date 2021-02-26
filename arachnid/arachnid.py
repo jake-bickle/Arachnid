@@ -1,4 +1,7 @@
-import os
+"""
+TODO Pass over all docstrings and update them.
+"""
+import mimetypes
 from arachnid.config import generate_config
 from arachnid.crawler import crawler
 from arachnid.timewidgets import Timer
@@ -8,10 +11,6 @@ from arachnid import url_functions
 from arachnid import documentparser
 from arachnid import warning_issuer
 from arachnid.scraper import Scraper
-from arachnid.crawler import url_functions
-from arachnid.crawler import responseparser
-from arachnid.crawler import warning_issuer
-from arachnid.crawler.scraper import Scraper
 
 __version__ = "0.9.5.1"
 
@@ -30,57 +29,56 @@ class Arachnid:
         self.page_limit = ns.page_limit if ns.page_limit >= 0 else None
         self.time_limit = ns.time_limit if ns.time_limit >= 0 else None
         self.time_limit_timer = Timer()
-        self.output_file = os.path.join(ns.output, "arachnid_results.json")
 
     def start(self):
         self.time_limit_timer.start()
-        while not self.is_done() :
-            c_url, response = self.crawler.crawl_next()
-            self.pages_crawled += 1
-            if "content-type" in response.headers.keys():  # TODO What happens if there is no response type??
-                if "text/html" in response.headers["content-type"]:
-                    self._parse_page(response, c_url)
-                else:
-                    self._parse_document(response, c_url)
+        while not self.is_done():
+            pageinfo = self.get_next_pageinfo()
+
+    def get_next_pageinfo(self):
+        """ Pulls next page and scrapes its data. Returns a dictionary with applicable data. """
+        c_url, response = self.crawler.crawl_next()
+        self.pages_crawled += 1
+        if "content-type" in response.headers.keys():  # TODO What happens if there is no response type??
+            if "text/html" in response.headers["content-type"]:
+                return self._parse_page(response, c_url)
+            else:
+                return self._parse_document(response, c_url)
 
     def is_done(self):
         return self.above_time_limit() or self.above_page_limit() or not self.crawler.has_next_page()
 
     def _parse_page(self, response, crawler_url):
-        """ 
-            Parses the page and writes information to output directory.
-            response is a requests.response containing the page.
-            crawler_url is a CrawlerURL associated with the page.
-        """
         scraper = Scraper(response.text, "html.parser")
+        pageinfo = PageInfo()
+        pageinfo.type = "html"
+        backup_title = crawler_url.get_url_parts().path.split("/")[-1]
+        pageinfo.link = crawler_url.get_url()
+        pageinfo.netloc = crawler_url.get_netloc()
+        pageinfo.title = scraper.title.string if scraper.title and scraper.title.string else backup_title 
+        pageinfo.on_fuzz_list = crawler_url.is_fuzzed()
+        pageinfo.on_robots_txt = crawler_url.in_robots()
+        pageinfo.status_code = response.status_code
         if self.config.scrape_email:
-            for email in scraper.find_all_emails():
-                self.output.add_email(email)
+            pageinfo.emails = scraper.find_all_emails() 
         if self.config.scrape_phone_number:
-            for number in scraper.find_all_phones():
-                self.output.add_phone(number)
+            pageinfo.phone_numbers = scraper.find_all_phones()
         if self.config.scrape_social_media:
-            for social in scraper.find_all_social():
-                self.output.add_social(social)
+            pageinfo.social_handles = scraper.find_all_social()
         if self.config.custom_regex:
-            for regex in scraper.find_all_regex(self.config.custom_regex):
-                self.output.add_custom_regex(regex)
+            pageinfo.regex_patterns = scraper.find_all_regex()
+        if self.config.custom_str:
+            pageinfo.string_occurrences = scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) 
+
         found_urls = []
         if self.config.scrape_links:
             for page in scraper.find_all_http_refs():
                 page = page.strip().replace(" ", "%20")
                 url = url_functions.join_url(crawler_url.get_url(), page)
                 found_urls.append(url)
-        self.schedule.report_found_urls(found_urls)
+        self.crawler.report_found_urls(found_urls)
 
-        backup_title = crawler_url.get_url_parts().path.split("/")[-1]
-        page_info = {"path": crawler_url.get_extension(),
-                     "title": scraper.title.string if scraper.title and scraper.title.string else backup_title,
-                     "custom_string_occurances": scraper.string_occurances(self.config.custom_str, self.config.custom_str_case_sensitive) if self.config.custom_str else None,
-                     "on_fuzz_list": crawler_url.is_fuzzed(),
-                     "on_robots": crawler_url.in_robots(),
-                     "code": response.status_code}
-        self.output.add_page(crawler_url.get_netloc(), page_info)
+        return pageinfo 
     
     def _parse_document(self, response, crawler_url):
         """ 
@@ -88,8 +86,32 @@ class Arachnid:
             response is a requests.response containing the document.
             crawler_url is a CrawlerURL associated with the document.
         """
-        data = documentparser.parse_document_response(response, crawler_url)
+        pageinfo = PageInfo()
+        pageinfo.link = crawler_url.get_url()
+        pageinfo.netloc = crawler_url.get_netloc()
+        pageinfo.on_fuzz_list = crawler_url.is_fuzzed()
+        pageinfo.on_robots_txt = crawler_url.in_robots()
+        pageinfo.status_code = response.status_code
+        possible_extensions = [t.lstrip(".") for t in mimetypes.guess_all_extensions(response.headers["content-type"])]
+        pageinfo.type = self._get_matching_element(self.config.documents, possible_extensions)
+        try:
+            cd = response.headers["content-disposition"]
+            file_name_start = cd.find("filename") + 10  # Get index after filename="
+            file_name_end = cd.find("\"", file_name_start)
+            file_name = cd[file_name_start : file_name_end]
+        except KeyError:  # Responses don't have to contain "content-disposition"
+            path = crawler_url.get_url_parts().path
+            file_name = path.split("/")[-1]
+        pageinfo.title = file_name
         self.schedule.report_found_urls([])
+        return pageinfo
+
+    def _get_matching_element(a, b):
+        for x in a:
+            for y in b:
+                if x == y:
+                    return x
+        return None
 
     def above_time_limit(self):
         return self.time_limit_timer.elapsed() >= self.time_limit * 60 if self.time_limit else False
@@ -97,7 +119,17 @@ class Arachnid:
     def above_page_limit(self):
         return self.pages_crawled >= self.page_limit if self.page_limit else False
 
-    @staticmethod
-    def clear_file(file_loc):
-        with open(file_loc, 'w') as f:
-            f.write("")
+class PageInfo:
+    def __init__(self):
+        self.netloc = None
+        self.link = None
+        self.title = None
+        self.file_type = None  # Could be html, jpg, pdf, etc.
+        self.status_code = None
+        self.on_fuzz_list = None
+        self.on_robots_txt = None
+        self.emails = []
+        self.phone_numbers = []
+        self.social_handles = []
+        self.regex_patterns = []
+        self.string_occurrences = 0
