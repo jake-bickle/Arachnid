@@ -1,15 +1,13 @@
 import requests
 import threading
 
-from collections import deque, namedtuple
+from collections import deque
 
 from arachnid import url_functions
 from arachnid import warning_issuer
 from arachnid.crawler.crawler_url import CrawlerURL
 from arachnid.crawler.robotparser import RobotFileParser
 from arachnid.crawler.aopic_bank import AOPICBank
-
-FuzzingOptions = namedtuple("FuzzingOptions", ["paths_list_loc", "subs_list_loc"])
 
 
 class Scheduler:
