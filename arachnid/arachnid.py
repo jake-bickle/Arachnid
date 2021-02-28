@@ -12,6 +12,9 @@ from arachnid import documentparser
 from arachnid import warning_issuer
 from arachnid.scraper import Scraper
 
+HTML_DOCUMENT_TYPE = "html"
+UNKOWN_DOCUMENT_TYPE = "unkown"
+
 __version__ = "0.9.5.1"
 
 class Arachnid:
@@ -51,7 +54,7 @@ class Arachnid:
     def _parse_page(self, response, crawler_url):
         scraper = Scraper(response.text, "html.parser")
         pageinfo = PageInfo()
-        pageinfo.type = "html"
+        pageinfo.type = HTML_DOCUMENT_TYPE
         backup_title = crawler_url.get_url_parts().path.split("/")[-1]
         pageinfo.link = crawler_url.get_url()
         pageinfo.netloc = crawler_url.get_netloc()
@@ -92,13 +95,20 @@ class Arachnid:
         pageinfo.on_fuzz_list = crawler_url.is_fuzzed()
         pageinfo.on_robots_txt = crawler_url.in_robots()
         pageinfo.status_code = response.status_code
-        possible_extensions = [t.lstrip(".") for t in mimetypes.guess_all_extensions(response.headers["content-type"])]
-        pageinfo.type = self._get_matching_element(self.config.documents, possible_extensions)
+        possible_file_types = [t.lstrip(".") for t in mimetypes.guess_all_extensions(response.headers["content-type"])]
+        if len(possible_file_types) != 0:
+            flagged_types = list( set(self.config.custom_doc) & set(possible_file_types) )
+            if len(flagged_types) != 0:
+                pageinfo.type = flagged_types[0]
+            else:
+                pageinfo.type = possible_file_types[0]
+        else:
+            pageinfo.type = UNKOWN_DOCUMENT_TYPE
         try:
             cd = response.headers["content-disposition"]
-            file_name_start = cd.find("filename") + 10  # Get index after filename="
-            file_name_end = cd.find("\"", file_name_start)
-            file_name = cd[file_name_start : file_name_end]
+            file_name_start_index = cd.find("filename") + 10  # Get index after filename="
+            file_name_end_index = cd.find("\"", file_name_start_index)
+            file_name = cd[file_name_start_index : file_name_end_index]
         except KeyError:  # Responses don't have to contain "content-disposition"
             path = crawler_url.get_url_parts().path
             file_name = path.split("/")[-1]
@@ -106,7 +116,8 @@ class Arachnid:
         self.schedule.report_found_urls([])
         return pageinfo
 
-    def _get_matching_element(a, b):
+    def _get_any_matching_element(a, b):
+        """ Given list a and list b, returns any element that exists within both of them. """
         for x in a:
             for y in b:
                 if x == y:
@@ -124,12 +135,12 @@ class PageInfo:
         self.netloc = None
         self.link = None
         self.title = None
-        self.file_type = None  # Could be html, jpg, pdf, etc.
+        self.file_type = None  # String. Could be "html", "jpg", "pdf", etc.
         self.status_code = None
         self.on_fuzz_list = None
         self.on_robots_txt = None
-        self.emails = []
-        self.phone_numbers = []
-        self.social_handles = []
-        self.regex_patterns = []
-        self.string_occurrences = 0
+        self.emails = None
+        self.phone_numbers = None
+        self.social_handles = None
+        self.regex_patterns = None
+        self.string_occurrences = None
