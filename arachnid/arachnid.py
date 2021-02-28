@@ -8,8 +8,8 @@ from arachnid.timewidgets import Timer
 from arachnid.arachnid_arg_parser import arachnid_cl_parser
 
 from arachnid import url_functions
-from arachnid import documentparser
 from arachnid import warning_issuer
+from arachnid.payload import Payload
 from arachnid.scraper import Scraper
 
 HTML_DOCUMENT_TYPE = "html"
@@ -28,6 +28,7 @@ class Arachnid:
             ns = arachnid_cl_parser.parse_args()
         self.config = generate_config(ns) 
         self.crawler = Crawler(seed=self.config.seed, configuration=self.config)
+        self.payload = Payload(self.config)
         self.pages_crawled = 0
         self.page_limit = ns.page_limit if ns.page_limit >= 0 else None
         self.time_limit = ns.time_limit if ns.time_limit >= 0 else None
@@ -37,6 +38,7 @@ class Arachnid:
         self.time_limit_timer.start()
         while not self.is_done():
             pageinfo = self.get_next_pageinfo()
+            self.payload.consume_pageinfo(pageinfo)
 
     def get_next_pageinfo(self):
         """ Pulls next page and scrapes its data. Returns a dictionary with applicable data. """
@@ -131,16 +133,18 @@ class Arachnid:
         return self.pages_crawled >= self.page_limit if self.page_limit else False
 
 class PageInfo:
+    NOT_APPLICABLE = None
+
     def __init__(self):
-        self.netloc = None
-        self.link = None
-        self.title = None
-        self.file_type = None  # String. Could be "html", "jpg", "pdf", etc.
-        self.status_code = None
-        self.on_fuzz_list = None
-        self.on_robots_txt = None
-        self.emails = None
-        self.phone_numbers = None
-        self.social_handles = None
-        self.regex_patterns = None
-        self.string_occurrences = None
+        self.netloc = PageInfo.NOT_APPLICABLE
+        self.link = PageInfo.NOT_APPLICABLE
+        self.title = PageInfo.NOT_APPLICABLE
+        self.file_type = PageInfo.NOT_APPLICABLE  # String. Could be "html", "jpg", "pdf", etc.
+        self.status_code = PageInfo.NOT_APPLICABLE  
+        self.on_fuzz_list = PageInfo.NOT_APPLICABLE
+        self.on_robots_txt = PageInfo.NOT_APPLICABLE
+        self.emails = PageInfo.NOT_APPLICABLE
+        self.phone_numbers = PageInfo.NOT_APPLICABLE
+        self.social_handles = PageInfo.NOT_APPLICABLE
+        self.regex_patterns = PageInfo.NOT_APPLICABLE
+        self.string_occurrences = PageInfo.NOT_APPLICABLE  # Integer, counts the number of times config.custom_str occurred.
