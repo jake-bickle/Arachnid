@@ -3,7 +3,7 @@ TODO Pass over all docstrings and update them.
 """
 import mimetypes
 from arachnid.config import generate_config
-from arachnid.crawler import crawler
+from arachnid.crawler.crawler import Crawler
 from arachnid.timewidgets import Timer
 from arachnid.arachnid_arg_parser import arachnid_cl_parser
 
@@ -27,7 +27,7 @@ class Arachnid:
         else:
             ns = arachnid_cl_parser.parse_args()
         self.config = generate_config(ns) 
-        self.crawler = crawler.get_crawler_from_namespace(ns)
+        self.crawler = Crawler(seed=self.config.seed, configuration=self.config)
         self.pages_crawled = 0
         self.page_limit = ns.page_limit if ns.page_limit >= 0 else None
         self.time_limit = ns.time_limit if ns.time_limit >= 0 else None

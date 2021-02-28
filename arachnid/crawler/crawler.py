@@ -44,6 +44,3 @@ class Crawler:
         default_delay = random.choice(self.config.default_delay)
         s_delay = self.schedule.get_crawl_delay()
         self.delay_sw = Timer(default_delay if default_delay > s_delay else s_delay)
-
-def get_crawler_from_namespace(namespace):
-    return Crawler(namespace.seed, configuration=generate_config(namespace))
