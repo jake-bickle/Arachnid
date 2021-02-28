@@ -110,17 +110,12 @@ arachnid_cl_parser.add_argument("--case-sensitive",
                                 action="store_true",
                                 help="States that the --string argument is case sensitive.")
 
-arachnid_cl_parser.add_argument("-d", "--doc",
-                                dest="custom_doc",
+arachnid_cl_parser.add_argument("-d", "--flag-documents",
+                                dest="flagged_document_types",
                                 nargs='+',
                                 default=[],
-                                help="Document extensions to attempt to find.")
-
-# TODO: Feature not in place yet
-# arachnid_cl_parser.add_argument("--doc-grab",
-                    # dest="download_doc",
-                    # action="store_true",
-                    # help="Download documents found by the -d option")
+                                help="Document extensions to flag. If any of these document types are found, they'll be"
+                                     " listed in flagged_documents.csv")
 
 arachnid_cl_parser.add_argument("-r", "--regex",
                                 dest="custom_regex",
@@ -129,8 +124,8 @@ arachnid_cl_parser.add_argument("-r", "--regex",
 arachnid_cl_parser.add_argument("-f", "--find",
                                 dest="find",
                                 nargs='+',
-                                choices=['phone', 'email', 'social', 'docs', 'all', 'none'],
-                                help="Find various information from a page. See README for more details.")
+                                choices=['phone', 'email', 'social', 'all', 'none'],
+                                help="Search for various information types in each page.")
 
 arachnid_cl_parser.add_argument("-t", "--delay",
                                 dest="default_delay",

@@ -97,7 +97,7 @@ class Arachnid:
         pageinfo.status_code = response.status_code
         possible_file_types = [t.lstrip(".") for t in mimetypes.guess_all_extensions(response.headers["content-type"])]
         if len(possible_file_types) != 0:
-            flagged_types = list( set(self.config.custom_doc) & set(possible_file_types) )
+            flagged_types = list( set(self.config.flagged_document_types) & set(possible_file_types) )
             if len(flagged_types) != 0:
                 pageinfo.type = flagged_types[0]
             else:

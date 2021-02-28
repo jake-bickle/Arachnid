@@ -16,8 +16,7 @@ class Config:
         self.scrape_phone_number = True
         self.scrape_email = True
         self.scrape_social_media = True
-        self.documents = {"doc", "docx", "ppt", "pptx", "pps", "xls", "xlsx", "csv", "odt", "odp", "pdf", "txt",
-                          "zip", "rar", "dmg", "exe", "apk", "bin", "rpm", "dpkg"}
+        self.flagged_document_types = []
         self.obey_robots = True
         self.allow_query = True
         self.agent = arachnid_enums.Agent.FIREFOX.value
@@ -81,7 +80,6 @@ def apply_find_options(namespace, config):
         "phone": False,
         "email": False,
         "social": False,
-        "docs": False,
     }
     if "all" in supplied_options:
         for k in has_occurred:
@@ -96,8 +94,6 @@ def apply_find_options(namespace, config):
     config.scrape_phone_number = has_occurred["phone"]
     config.scrape_email = has_occurred["email"]
     config.scrape_social_media = has_occurred["social"]
-    if not has_occurred["docs"]:
-        config.documents = set()
 
 
 def apply_direct_translation_options(namespace, config):
