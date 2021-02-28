@@ -36,8 +36,8 @@ class Payload:
     def _update_sitemap(self, pageinfo):
         if pageinfo.link not in self.direct_links:
             self.direct_links.add(pageinfo.link)
-            with AppendCSV("sitemap.csv", ["netloc", "title", "direct_link", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
-                row = [pageinfo.netloc, pageinfo.title, pageinfo.link, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
+            with AppendCSV("sitemap.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
+                row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
                 csv_file.writerow(row)
     
 class AppendCSV:
