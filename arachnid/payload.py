@@ -31,15 +31,30 @@ class Payload:
         os.chdir(cwd)
     
     def _update_payload_directory(self, pageinfo):
-        self._update_sitemap(pageinfo)
-    
-    def _update_sitemap(self, pageinfo):
-        if pageinfo.link not in self.direct_links:
-            self.direct_links.add(pageinfo.link)
-            with AppendCSV("sitemap.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
+        self._update_link_related_data(pageinfo)
+
+    def _update_link_related_data(self, pageinfo):
+        """
+        Updates the following files:
+            sitemap.csv
+            flagged_documents.csv
+            pages_of_interest.txt
+        """
+        if pageinfo.link in self.direct_links:
+            return
+        self.direct_links.add(pageinfo.link)
+        with AppendCSV("sitemap.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
+            row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
+            csv_file.writerow(row)
+        if pageinfo.on_fuzz_list or pageinfo.on_robots_txt:
+            with AppendCSV("pages_of_interest.txt", ["link"]) as csv_file:
+                row = [pageinfo.link]
+                csv_file.writerow(row)
+        if pageinfo.type in self.config.flagged_document_types:
+            with AppendCSV("flagged_documents.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
                 row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
                 csv_file.writerow(row)
-    
+
 class AppendCSV:
     """
     csv.writer context manager, allowing easy creation and appending to CSV files. 
