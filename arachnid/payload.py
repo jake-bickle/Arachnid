@@ -3,6 +3,7 @@ import csv
 import json
 from datetime import datetime
 
+from arachnid.arachnid import UNKOWN_DOCUMENT_TYPE
 from arachnid.crawler.crawler_url import CrawlerURL
 
 class Payload:
@@ -115,6 +116,8 @@ class Payload:
             return "On fuzz list"
         elif pageinfo.on_robots_txt:
             return "On robots.txt"
+        elif pageinfo.type is UNKOWN_DOCUMENT_TYPE:
+            return "Unknown document type"
         return None
 
 class AppendCSV:
