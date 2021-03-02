@@ -11,6 +11,7 @@ class Config:
         self.set_default()
 
     def set_default(self):
+        self.seed = None
         self.scrape_links = True
         self.scrape_subdomains = True
         self.scrape_phone_number = True
@@ -58,7 +59,6 @@ def generate_config(namespace):
     config = Config()
     apply_pre_configurations(namespace, config)
     apply_direct_translation_options(namespace, config)
-    config.documents.update(namespace.custom_doc)
     if "find" in namespace:
         apply_find_options(namespace, config)
     return config
