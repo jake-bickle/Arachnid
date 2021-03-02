@@ -2,6 +2,7 @@
 TODO Pass over all docstrings and update them.
 """
 import mimetypes
+from datetime import datetime
 from arachnid.config import generate_config
 from arachnid.crawler.crawler import Crawler
 from arachnid.timewidgets import Timer
@@ -35,13 +36,20 @@ class Arachnid:
         self.time_limit_timer = Timer()
 
     def start(self):
+        self.payload.start_time = datetime.now()
         self.time_limit_timer.start()
         while not self.is_done():
             pageinfo = self.get_next_pageinfo()
             self.payload.consume_pageinfo(pageinfo)
+        self.payload.end_time = datetime.now()
+        self.payload.summarize()
 
     def get_next_pageinfo(self):
-        """ Pulls next page and scrapes its data. Returns a dictionary with applicable data. """
+        """ 
+        Requests next page returns a PageInfo with the scraped information found on said page.
+        PageInfo's data may be assigned PageInfo.NOT_APPLICABLE (aliased to NoneType) according to the 
+        configuration or depending on the page's type.
+        """
         c_url, response = self.crawler.crawl_next()
         self.pages_crawled += 1
         if "content-type" in response.headers.keys():  # TODO What happens if there is no response type??

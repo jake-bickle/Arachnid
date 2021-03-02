@@ -1,5 +1,6 @@
 import os
 import csv
+import json
 from datetime import datetime
 
 from arachnid.crawler.crawler_url import CrawlerURL
@@ -15,6 +16,8 @@ class Payload:
         self.social_handles = set()
         self.regex_patterns = set()
         self.string_occurrence_direct_links = set()
+        self.start_time = None
+        self.end_time = None
 
     def make_output_directory(self):
         if self.output_directory_name is None:
@@ -94,8 +97,16 @@ class Payload:
                         f.write(regex_pattern + '\n')
 
     def summarize(self):
-        with open("summary.csv", "w") as f:
-            pass
+        cwd = os.getcwd()
+        os.chdir(self.output_directory_name)
+        summary = {
+            "Start time": self.start_time.strftime("%Y/%m/%d %H:%M:%S"),
+            "End time": self.end_time.strftime("%Y/%m/%d %H:%M:%S"),
+            "Total time (In seconds)": (self.end_time - self.start_time).total_seconds()
+        }
+        with open("summary.json", 'w') as f:
+            json.dump(summary, f, indent=4)
+        os.chdir(cwd)
 
 
 class AppendCSV:
