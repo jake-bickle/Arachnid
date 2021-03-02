@@ -50,14 +50,16 @@ class Payload:
         with AppendCSV("sitemap.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
             row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
             csv_file.writerow(row)
-        if pageinfo.on_fuzz_list or pageinfo.on_robots_txt:
-            with AppendCSV("pages_of_interest.txt", ["link"]) as csv_file:
-                row = [pageinfo.link]
-                csv_file.writerow(row)
+        if pageinfo.on_fuzz_list or pageinfo.on_robots_txt or pageinfo.status_code:
+            with open("pages_of_interest.txt", 'a') as f:
+                f.write(pageinfo.link + "\n")
         if pageinfo.type in self.config.flagged_document_types:
             with AppendCSV("flagged_documents.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
                 row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
                 csv_file.writerow(row)
+        if pageinfo.string_occurrences is not pageinfo.NOT_APPLICABLE and pageinfo.string_occurrences > 0:
+            with open("string_occurrences.txt", 'a') as f:
+                f.write(pageinfo.link + "\n")
     
     def _update_emails(self, pageinfo):
         if pageinfo.emails is not pageinfo.NOT_APPLICABLE:
@@ -90,9 +92,11 @@ class Payload:
                     self.regex_patterns.add(regex_pattern)
                     with open("regex_patterns.txt", 'a') as f:
                         f.write(regex_pattern + '\n')
-    
 
-    
+    def summarize(self):
+        with open("summary.csv", "w") as f:
+            pass
+
 
 class AppendCSV:
     """
