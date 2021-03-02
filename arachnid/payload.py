@@ -53,9 +53,6 @@ class Payload:
         with AppendCSV("sitemap.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
             row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
             csv_file.writerow(row)
-        if pageinfo.on_fuzz_list or pageinfo.on_robots_txt or pageinfo.status_code:
-            with open("pages_of_interest.txt", 'a') as f:
-                f.write(pageinfo.link + "\n")
         if pageinfo.type in self.config.flagged_document_types:
             with AppendCSV("flagged_documents.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
                 row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
@@ -63,7 +60,11 @@ class Payload:
         if pageinfo.string_occurrences is not pageinfo.NOT_APPLICABLE and pageinfo.string_occurrences > 0:
             with open("string_occurrences.txt", 'a') as f:
                 f.write(pageinfo.link + "\n")
-    
+        reason_of_interest = self._get_reason_of_interest(pageinfo)
+        if reason_of_interest is not None:
+            with AppendCSV("pages_of_interest.csv", ["link", "reason"]) as csv_file:
+                csv_file.writerow([pageinfo.link])
+
     def _update_emails(self, pageinfo):
         if pageinfo.emails is not pageinfo.NOT_APPLICABLE:
             for email in pageinfo.emails:
@@ -108,6 +109,13 @@ class Payload:
             json.dump(summary, f, indent=4)
         os.chdir(cwd)
 
+    @staticmethod
+    def _get_reason_of_interest(pageinfo):
+        if pageinfo.on_fuzz_list:
+            return "On fuzz list"
+        elif pageinfo.on_robots_txt:
+            return "On robots.txt"
+        return None
 
 class AppendCSV:
     """
