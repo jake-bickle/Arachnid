@@ -12,7 +12,7 @@ class Payload:
         self.direct_links = set()
         self.emails = set()
         self.phones = set()
-        self.social_handle_direct_links = set()
+        self.social_handles = set()
         self.regex_patterns = set()
         self.string_occurrence_direct_links = set()
 
@@ -28,6 +28,10 @@ class Payload:
         cwd = os.getcwd()
         os.chdir(self.output_directory_name)
         self._update_payload_directory(pageinfo)
+        self._update_emails(pageinfo)
+        self._update_phones(pageinfo)
+        self._update_social_handles(pageinfo)
+        self._update_regex_patterns(pageinfo)
         os.chdir(cwd)
     
     def _update_payload_directory(self, pageinfo):
@@ -54,6 +58,41 @@ class Payload:
             with AppendCSV("flagged_documents.csv", ["link", "title", "netloc", "status_code", "on_fuzz_list", "on_robots", "type"]) as csv_file:
                 row = [pageinfo.link, pageinfo.title, pageinfo.netloc, pageinfo.status_code, pageinfo.on_fuzz_list, pageinfo.on_robots_txt, pageinfo.type]
                 csv_file.writerow(row)
+    
+    def _update_emails(self, pageinfo):
+        if pageinfo.emails is not pageinfo.NOT_APPLICABLE:
+            for email in pageinfo.emails:
+                if email not in self.emails:
+                    self.emails.add(email)
+                    with open("emails.txt", 'a') as f:
+                        f.write(email + '\n')
+
+    def _update_phones(self, pageinfo):
+        if pageinfo.phone_numbers is not pageinfo.NOT_APPLICABLE:
+            for phone in pageinfo.phone_numbers:
+                if phone not in self.phones:
+                    self.phones.add(phone)
+                    with open("phones.txt", 'a') as f:
+                        f.write(phone + '\n')
+    
+    def _update_social_handles(self, pageinfo):
+        if pageinfo.social_handles is not pageinfo.NOT_APPLICABLE:
+            for social_handle in pageinfo.social_handles:
+                if social_handle not in self.social_handles:
+                    self.social_handles.add(social_handle)
+                    with open("social_handles.txt", 'a') as f:
+                        f.write(social_handle + '\n')
+
+    def _update_regex_patterns(self, pageinfo):
+        if pageinfo.regex_patterns is not pageinfo.NOT_APPLICABLE:
+            for regex_pattern in pageinfo.regex_patterns:
+                if regex_pattern not in self.regex_patterns:
+                    self.regex_patterns.add(regex_pattern)
+                    with open("regex_patterns.txt", 'a') as f:
+                        f.write(regex_pattern + '\n')
+    
+
+    
 
 class AppendCSV:
     """
