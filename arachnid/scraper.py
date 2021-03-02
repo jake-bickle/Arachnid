@@ -53,17 +53,9 @@ class Scraper(BeautifulSoup):
         return sanitised_phones
 
     def find_all_social(self):
-        found_social = list()
         html_doc = str(self)
         links = RegexPatterns.LINK.findall(html_doc) 
-        if links is not None:
-            for link in links:
-                if url_functions.is_social_media_profile(link):
-                    media = HashableDict()
-                    media["link"] = link
-                    media["domain"] = CrawlerURL(link).get_url_parts().domain
-                    found_social.append(media)
-        return found_social
+        return [link for link in links if url_functions.is_social_media_profile(link)]
 
     def find_all_regex(self, pattern=""):
         regex = re.compile(pattern)
