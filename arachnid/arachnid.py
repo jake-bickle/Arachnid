@@ -14,7 +14,7 @@ from arachnid.payload import Payload
 from arachnid.scraper import Scraper
 
 HTML_DOCUMENT_TYPE = "html"
-UNKOWN_DOCUMENT_TYPE = "unkown"
+UNKNOWN_DOCUMENT_TYPE = "unkown"
 
 __version__ = "0.9.5.1"
 
