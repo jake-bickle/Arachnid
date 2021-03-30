@@ -22,7 +22,6 @@ setup(
         'requests',
         'beautifulsoup4',
         'tldextract',
-        'ndg-httpsclient',
         'pyopenssl',
         'chardet',
         'pyasn1'
