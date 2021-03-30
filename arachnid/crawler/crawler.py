@@ -2,7 +2,7 @@ import requests
 import random
 
 from arachnid.timewidgets import Timer
-from arachnid.config import Config, generate_config
+from arachnid.config import Config
 from arachnid.crawler.scheduler import Scheduler
 from arachnid.crawler.crawler_url import CrawlerURL
 
@@ -23,8 +23,7 @@ class Crawler:
         """
         c_url = self.schedule.next_url()
         if c_url is None:
-            self.finish()
-            return False
+            raise NoMoreURLsToCrawl()
         print(c_url)
         self.delay_sw.wait()
         r = requests.get(c_url.get_url(), headers=self.headers, timeout=30)
@@ -47,3 +46,6 @@ class Crawler:
         default_delay = random.choice(self.config.default_delay)
         s_delay = self.schedule.get_crawl_delay()
         self.delay_sw = Timer(default_delay if default_delay > s_delay else s_delay)
+
+class NoMoreURLsToCrawl(Exception):
+    pass
