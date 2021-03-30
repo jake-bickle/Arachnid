@@ -1,5 +1,5 @@
 import os
-from arachnid import arachnid_enums
+from arachnid import enums
 
 from argparse import ArgumentTypeError
 
@@ -20,11 +20,11 @@ class Config:
         self.flagged_document_types = []
         self.obey_robots = True
         self.allow_query = True
-        self.agent = arachnid_enums.Agent.FIREFOX.value
+        self.agent = enums.Agent.FIREFOX.value
         self.custom_str = None
         self.custom_str_case_sensitive = False
         self.custom_regex = None
-        self.default_delay = arachnid_enums.Delay.NONE.value
+        self.default_delay = enums.Delay.NONE.value
         self.paths_list_file_loc = os.path.join(this_dir, "data/fuzz_list.txt")
         self.subs_list_file_loc = os.path.join(this_dir, "data/subdomain_fuzz_list.txt")
         self.fuzz_paths = False
@@ -33,14 +33,14 @@ class Config:
 
     def set_stealth(self):
         self.obey_robots = True
-        self.agent = arachnid_enums.Agent.GOOGLE.value
-        self.default_delay = arachnid_enums.Delay.HIGH.value
+        self.agent = enums.Agent.GOOGLE.value
+        self.default_delay = enums.Delay.HIGH.value
         self.fuzz_paths = False
         self.fuzz_subs = False
 
     def set_aggressive(self):
         self.obey_robots = False
-        self.default_delay = arachnid_enums.Delay.NONE.value
+        self.default_delay = enums.Delay.NONE.value
         self.fuzz_paths = True
         self.fuzz_subs = True
 

@@ -352,7 +352,7 @@ class test_scheduler(unittest.TestCase):
 
 
 from crawler import Config, crawler_url
-import arachnid_enums
+import enums
 
 
 class test_responseparser(unittest.TestCase):
@@ -393,7 +393,7 @@ class test_generate_config(unittest.TestCase):
         namespace = self.get_namespace(cli)
         c = generate_config(namespace)
         correct_output = Config()
-        correct_output.default_delay = arachnid_enums.Delay.HIGH.value
+        correct_output.default_delay = enums.Delay.HIGH.value
 
     def test_stealth_modified(self):
         cli = "https://www.example.com -T none --stealth"
@@ -401,7 +401,7 @@ class test_generate_config(unittest.TestCase):
         c = generate_config(namespace)
         correct_output = Config()
         correct_output.set_stealth()
-        correct_output.default_delay = arachnid_enums.Delay.NONE.value
+        correct_output.default_delay = enums.Delay.NONE.value
         self.assertEqual(vars(c), vars(correct_output))
 
     def test_agent(self):
@@ -409,7 +409,7 @@ class test_generate_config(unittest.TestCase):
         namespace = self.get_namespace(cli)
         c = generate_config(namespace)
         correct_output = Config()
-        correct_output.agent = arachnid_enums.Agent.GOOGLE.value
+        correct_output.agent = enums.Agent.GOOGLE.value
         self.assertEqual(vars(c), vars(correct_output))
     
     def test_doc(self):
