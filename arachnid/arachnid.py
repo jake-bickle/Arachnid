@@ -4,17 +4,15 @@ TODO Pass over all docstrings and update them.
 import mimetypes
 from datetime import datetime
 from arachnid.config import generate_config
+from arachnid.constants import UNKNOWN_DOCUMENT_TYPE, HTML_DOCUMENT_TYPE
 from arachnid.crawler.crawler import Crawler
 from arachnid.timewidgets import Timer
 from arachnid.arachnid_arg_parser import arachnid_cl_parser
 
 from arachnid import url_functions
-from arachnid import warning_issuer
+from arachnid.exceptionhandler import handle_exception
 from arachnid.payload import Payload
 from arachnid.scraper import Scraper
-
-HTML_DOCUMENT_TYPE = "html"
-UNKNOWN_DOCUMENT_TYPE = "unkown"
 
 __version__ = "0.9.5.1"
 

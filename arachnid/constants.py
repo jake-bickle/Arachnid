@@ -1,0 +1,2 @@
+HTML_DOCUMENT_TYPE = "html"
+UNKNOWN_DOCUMENT_TYPE = "unkown"
