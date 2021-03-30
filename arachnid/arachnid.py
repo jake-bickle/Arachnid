@@ -48,13 +48,18 @@ class Arachnid:
         PageInfo's data may be assigned PageInfo.NOT_APPLICABLE (aliased to NoneType) according to the 
         configuration or depending on the page's type.
         """
-        c_url, response = self.crawler.crawl_next()
-        self.pages_crawled += 1
-        if "content-type" in response.headers.keys():  # TODO What happens if there is no response type??
-            if "text/html" in response.headers["content-type"]:
-                return self._parse_page(response, c_url)
-            else:
-                return self._parse_document(response, c_url)
+        c_url = self.crawler.view_next_url()
+        try:
+            response = self.crawler.crawl_next()
+            self.pages_crawled += 1
+            if "content-type" in response.headers.keys():  # TODO What happens if there is no response type??
+                if "text/html" in response.headers["content-type"]:
+                    return self._parse_page(response, c_url)
+                else:
+                    return self._parse_document(response, c_url)
+        except Exception as e:
+            handle_exception(e, c_url)
+            self.handle_exception(e)
 
     def is_done(self):
         return self.above_time_limit() or self.above_page_limit() or not self.crawler.has_next_page()
@@ -111,7 +116,7 @@ class Arachnid:
             else:
                 pageinfo.type = possible_file_types[0]
         else:
-            pageinfo.type = UNKOWN_DOCUMENT_TYPE
+            pageinfo.type = UNKNOWN_DOCUMENT_TYPE
         try:
             cd = response.headers["content-disposition"]
             file_name_start_index = cd.find("filename") + 10  # Get index after filename="

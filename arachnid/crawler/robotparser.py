@@ -8,7 +8,7 @@ import urllib.parse
 import urllib.request
 import urllib.error
 
-from arachnid import warning_issuer
+from arachnid.exceptionhandler import handle_exception 
 
 __all__ = ["RobotFileParser"]
 
@@ -68,7 +68,7 @@ class RobotFileParser:
                 text = raw.decode("utf-8")
                 self.parse(text.splitlines())
             except UnicodeDecodeError as e:
-                warning_issuer.issue_warning_from_exception(e, self.url)
+                handle_exception(e, self.url)
                 self.allow_all = True
 
     def _add_entry(self, entry):

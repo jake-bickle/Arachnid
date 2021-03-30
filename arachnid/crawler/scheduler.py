@@ -4,7 +4,7 @@ import threading
 from collections import deque
 
 from arachnid import url_functions
-from arachnid import warning_issuer
+from arachnid.exceptionhandler import handle_exception 
 from arachnid.crawler.crawler_url import CrawlerURL
 from arachnid.crawler.robotparser import RobotFileParser
 from arachnid.crawler.aopic_bank import AOPICBank
@@ -139,7 +139,7 @@ class Scheduler:
                 # Written as such because we are interested in SSL errors which is inherently a ConnectionError but
                 # doesn't necessarily mean that there isn't an available subdomain.
                 if not e.__class__.__name__ == "ConnectionError":
-                    warning_issuer.issue_warning_from_exception(e, sub_to_check.get_url())
+                    handle_exception(e, sub_to_check.get_url())
 
     def _get_robots(self, c_url):
         try:
